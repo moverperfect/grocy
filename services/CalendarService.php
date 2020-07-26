@@ -104,7 +104,7 @@ class CalendarService extends BaseService
 				foreach ($recipesOfCurrentDay as $recipeOfCurrentDay)
 				{
 					$mealPlanRecipeEvents[] = array(
-						'title' => $titlePrefix . FindObjectInArrayByPropertyValue($recipes, 'id', $recipeOfCurrentDay->includes_recipe_id)->name,
+						'title' => FindObjectInArrayByPropertyValue($recipes, 'id', $recipeOfCurrentDay->includes_recipe_id)->name,
 						'start' => FindObjectInArrayByPropertyValue($recipes, 'id', $recipeOfCurrentDay->recipe_id)->name,
 						'date_format' => 'date',
 						'description' => $this->UrlManager->ConstructUrl('/mealplan' . '?week=' . FindObjectInArrayByPropertyValue($recipes, 'id', $recipeOfCurrentDay->recipe_id)->name)
@@ -118,7 +118,7 @@ class CalendarService extends BaseService
 			foreach($mealPlanDayNotes as $mealPlanDayNote)
 			{
 				$mealPlanNotesEvents[] = array(
-					'title' => $titlePrefix . $mealPlanDayNote->note,
+					'title' => $mealPlanDayNote->note,
 					'start' => $mealPlanDayNote->day,
 					'date_format' => 'date'
 				);
@@ -131,7 +131,7 @@ class CalendarService extends BaseService
 			foreach($mealPlanDayProducts as $mealPlanDayProduct)
 			{
 				$mealPlanProductEvents[] = array(
-					'title' => $titlePrefix . FindObjectInArrayByPropertyValue($products, 'id', $mealPlanDayProduct->product_id)->name,
+					'title' => FindObjectInArrayByPropertyValue($products, 'id', $mealPlanDayProduct->product_id)->name,
 					'start' => $mealPlanDayProduct->day,
 					'date_format' => 'date'
 				);
