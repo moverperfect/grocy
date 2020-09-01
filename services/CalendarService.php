@@ -71,7 +71,8 @@ class CalendarService extends BaseService
 				$choreEvents[] = array(
 					'title' => $titlePrefix . $chore->name . $assignedToText,
 					'start' => $currentChoreEntry->next_estimated_execution_time,
-					'date_format' => 'datetime'
+                    'date_format' => 'datetime',
+                    'allday' => $chore->track_date_only == 1
 				);
 			}
 		}
