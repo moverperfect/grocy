@@ -4,10 +4,9 @@ namespace Grocy\Services;
 
 class TasksService extends BaseService
 {
-	public function GetCurrent()
+	public function GetCurrent(): \LessQL\Result
 	{
-		$sql = 'SELECT * from tasks_current';
-		return $this->getDatabaseService()->ExecuteDbQuery($sql)->fetchAll(\PDO::FETCH_OBJ);
+		return $this->getDatabase()->tasks_current();
 	}
 
 	public function MarkTaskAsCompleted($taskId, $doneTime)
@@ -47,5 +46,4 @@ class TasksService extends BaseService
 		$taskRow = $this->getDatabase()->tasks()->where('id = :1', $taskId)->fetch();
 		return $taskRow !== null;
 	}
-
 }

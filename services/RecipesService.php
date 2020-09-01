@@ -2,7 +2,7 @@
 
 namespace Grocy\Services;
 
-#use \Grocy\Services\StockService;
+use LessQL\Result;
 
 class RecipesService extends BaseService
 {
@@ -40,11 +40,8 @@ class RecipesService extends BaseService
 					]);
 					$shoppinglistRow->save();
 				}
-
 			}
-
 		}
-
 	}
 
 	public function ConsumeRecipe($recipeId)
@@ -63,7 +60,6 @@ class RecipesService extends BaseService
 			{
 				$this->getStockService()->ConsumeProduct($recipePosition->product_id, $recipePosition->recipe_amount, false, StockService::TRANSACTION_TYPE_CONSUME, 'default', $recipeId, null, $transactionId, true);
 			}
-
 		}
 
 		$recipeRow = $this->getDatabase()->recipes()->where('id = :1', $recipeId)->fetch();
@@ -73,7 +69,6 @@ class RecipesService extends BaseService
 			$recipeResolvedRow = $this->getDatabase()->recipes_resolved()->where('recipe_id = :1', $recipeId)->fetch();
 			$this->getStockService()->AddProduct($recipeRow->product_id, floatval($recipeRow->desired_servings), null, StockService::TRANSACTION_TYPE_SELF_PRODUCTION, date('Y-m-d'), floatval($recipeResolvedRow->costs));
 		}
-
 	}
 
 	public function GetRecipesPosResolved()
@@ -82,10 +77,9 @@ class RecipesService extends BaseService
 		return $this->getDataBaseService()->ExecuteDbQuery($sql)->fetchAll(\PDO::FETCH_OBJ);
 	}
 
-	public function GetRecipesResolved()
+	public function GetRecipesResolved(): Result
 	{
-		$sql = 'SELECT * FROM recipes_resolved';
-		return $this->getDataBaseService()->ExecuteDbQuery($sql)->fetchAll(\PDO::FETCH_OBJ);
+		return $this->getDatabase()->recipes_resolved();
 	}
 
 	public function __construct()
@@ -98,5 +92,4 @@ class RecipesService extends BaseService
 		$recipeRow = $this->getDataBase()->recipes()->where('id = :1', $recipeId)->fetch();
 		return $recipeRow !== null;
 	}
-
 }

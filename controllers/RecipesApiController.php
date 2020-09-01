@@ -35,7 +35,6 @@ class RecipesApiController extends BaseApiController
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
-
 	}
 
 	public function GetRecipeFulfillment(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -44,7 +43,7 @@ class RecipesApiController extends BaseApiController
 		{
 			if (!isset($args['recipeId']))
 			{
-				return $this->ApiResponse($response, $this->getRecipesService()->GetRecipesResolved());
+				return $this->FilteredApiResponse($response, $this->getRecipesService()->GetRecipesResolved(), $request->getQueryParams());
 			}
 
 			$recipeResolved = FindObjectInArrayByPropertyValue($this->getRecipesService()->GetRecipesResolved(), 'recipe_id', $args['recipeId']);
@@ -57,18 +56,15 @@ class RecipesApiController extends BaseApiController
 			{
 				return $this->ApiResponse($response, $recipeResolved);
 			}
-
 		}
 		catch (\Exception $ex)
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
-
 	}
 
 	public function __construct(\DI\Container $container)
 	{
 		parent::__construct($container);
 	}
-
 }

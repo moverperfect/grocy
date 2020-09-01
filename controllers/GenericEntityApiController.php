@@ -3,6 +3,7 @@
 namespace Grocy\Controllers;
 
 use Grocy\Controllers\Users\User;
+use Slim\Exception\HttpBadRequestException;
 
 class GenericEntityApiController extends BaseApiController
 {
@@ -33,13 +34,11 @@ class GenericEntityApiController extends BaseApiController
 			{
 				return $this->GenericErrorResponse($response, $ex->getMessage());
 			}
-
 		}
 		else
 		{
 			return $this->GenericErrorResponse($response, 'Entity does not exist or is not exposed');
 		}
-
 	}
 
 	public function DeleteObject(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -58,7 +57,6 @@ class GenericEntityApiController extends BaseApiController
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
-
 	}
 
 	public function EditObject(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -86,13 +84,11 @@ class GenericEntityApiController extends BaseApiController
 			{
 				return $this->GenericErrorResponse($response, $ex->getMessage());
 			}
-
 		}
 		else
 		{
 			return $this->GenericErrorResponse($response, 'Entity does not exist or is not exposed');
 		}
-
 	}
 
 	public function GetObject(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -122,7 +118,6 @@ class GenericEntityApiController extends BaseApiController
 		{
 			return $this->GenericErrorResponse($response, 'Entity does not exist or is not exposed');
 		}
-
 	}
 
 	public function GetObjects(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -142,7 +137,6 @@ class GenericEntityApiController extends BaseApiController
 				{
 					$userfieldKeyValuePairs[$userfield->name] = $userfield->value;
 				}
-
 			}
 
 			$object->userfields = $userfieldKeyValuePairs;
@@ -156,7 +150,6 @@ class GenericEntityApiController extends BaseApiController
 		{
 			return $this->GenericErrorResponse($response, 'Entity does not exist or is not exposed');
 		}
-
 	}
 
 	public function GetUserfields(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -169,7 +162,6 @@ class GenericEntityApiController extends BaseApiController
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
-
 	}
 
 	public function SearchObjects(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -178,20 +170,19 @@ class GenericEntityApiController extends BaseApiController
 		{
 			try
 			{
-				return $this->ApiResponse($response, $this->getDatabase()->{$args['entity']}
-					()->where('name LIKE ?', '%' . $args['searchString'] . '%'));
+				return $this->FilteredApiResponse($response, $this->getDatabase()->{$args['entity']}
+					()->where('name LIKE ?', '%' . $args['searchString'] . '%'), $request->getQueryParams());
 			}
 			catch (\PDOException $ex)
 			{
-				return $this->GenericErrorResponse($response, 'The given entity has no field "name"');
+				throw new HttpBadRequestException($request, $ex->getMessage(), $ex);
+				//return $this->GenericErrorResponse($response, 'The given entity has no field "name"', $ex);
 			}
-
 		}
 		else
 		{
 			return $this->GenericErrorResponse($response, 'Entity does not exist or is not exposed');
 		}
-
 	}
 
 	public function SetUserfields(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
@@ -214,7 +205,6 @@ class GenericEntityApiController extends BaseApiController
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
-
 	}
 
 	public function __construct(\DI\Container $container)
@@ -231,5 +221,4 @@ class GenericEntityApiController extends BaseApiController
 	{
 		return in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->ExposedEntity->enum);
 	}
-
 }

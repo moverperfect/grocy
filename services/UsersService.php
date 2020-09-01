@@ -62,7 +62,6 @@ class UsersService extends BaseService
 		{
 			return null;
 		}
-
 	}
 
 	public function GetUserSettings($userId)
@@ -81,19 +80,9 @@ class UsersService extends BaseService
 		return array_merge($GROCY_DEFAULT_USER_SETTINGS, $settings);
 	}
 
-	public function GetUsersAsDto()
+	public function GetUsersAsDto(): \LessQL\Result
 	{
-		$users = $this->getDatabase()->users();
-		$returnUsers = [];
-
-		foreach ($users as $user)
-		{
-			unset($user->password);
-			$user->display_name = GetUserDisplayName($user);
-			$returnUsers[] = $user;
-		}
-
-		return $returnUsers;
+		return $this->getDatabase()->users_dto();
 	}
 
 	public function SetUserSetting($userId, $settingKey, $settingValue)
@@ -116,7 +105,6 @@ class UsersService extends BaseService
 			]);
 			$settingRow->save();
 		}
-
 	}
 
 	private function UserExists($userId)
@@ -124,5 +112,4 @@ class UsersService extends BaseService
 		$userRow = $this->getDatabase()->users()->where('id = :1', $userId)->fetch();
 		return $userRow !== null;
 	}
-
 }
