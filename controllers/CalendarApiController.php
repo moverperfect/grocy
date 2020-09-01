@@ -31,7 +31,7 @@ class CalendarApiController extends BaseApiController
 					->setDtEnd($date)
 					->setSummary($event['title'])
 					->setDescription($event['description'])
-					->setNoTime($event['date_format'] === 'date')
+					->setNoTime($event['date_format'] === 'date' || $event['allday'])
 					->setUseTimezone(true);
 
 				$vCalendar->addComponent($vEvent);
