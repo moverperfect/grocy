@@ -2,15 +2,14 @@
 
 namespace Grocy\Controllers;
 
+use Grocy\Controllers\Users\User;
+
 class RecipesApiController extends BaseApiController
 {
-	public function __construct(\DI\Container $container)
-	{
-		parent::__construct($container);
-	}
-
 	public function AddNotFulfilledProductsToShoppingList(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
+		User::checkPermission($request, User::PERMISSION_SHOPPINGLIST_ITEMS_ADD);
+
 		$requestBody = $request->getParsedBody();
 		$excludedProductIds = null;
 
@@ -25,6 +24,8 @@ class RecipesApiController extends BaseApiController
 
 	public function ConsumeRecipe(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
+		User::checkPermission($request, User::PERMISSION_STOCK_CONSUME);
+
 		try
 		{
 			$this->getRecipesService()->ConsumeRecipe($args['recipeId']);
@@ -34,19 +35,21 @@ class RecipesApiController extends BaseApiController
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
+
 	}
 
 	public function GetRecipeFulfillment(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
 		try
 		{
-			if(!isset($args['recipeId']))
+			if (!isset($args['recipeId']))
 			{
 				return $this->ApiResponse($response, $this->getRecipesService()->GetRecipesResolved());
 			}
 
 			$recipeResolved = FindObjectInArrayByPropertyValue($this->getRecipesService()->GetRecipesResolved(), 'recipe_id', $args['recipeId']);
-			if(!$recipeResolved)
+
+			if (!$recipeResolved)
 			{
 				throw new \Exception('Recipe does not exist');
 			}
@@ -54,10 +57,18 @@ class RecipesApiController extends BaseApiController
 			{
 				return $this->ApiResponse($response, $recipeResolved);
 			}
+
 		}
 		catch (\Exception $ex)
 		{
 			return $this->GenericErrorResponse($response, $ex->getMessage());
 		}
+
 	}
+
+	public function __construct(\DI\Container $container)
+	{
+		parent::__construct($container);
+	}
+
 }

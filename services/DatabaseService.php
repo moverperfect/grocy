@@ -6,29 +6,60 @@ namespace Grocy\Services;
 
 class DatabaseService
 {
+	private static $DbConnection = null;
+
+	private static $DbConnectionRaw = null;
+
 	private static $instance = null;
 
-	public static function getInstance()
+	/**
+	 * @return boolean|\PDOStatement
+	 */
+	public function ExecuteDbQuery(string $sql)
 	{
-		if (self::$instance == null)
+		$pdo = $this->GetDbConnectionRaw();
+
+		if ($this->ExecuteDbStatement($sql) === true)
 		{
-			self::$instance = new self();
+			return $pdo->query($sql);
 		}
 
-		return self::$instance;
+		return false;
 	}
 
-	private function GetDbFilePath()
+	/**
+	 * @return boolean
+	 */
+	public function ExecuteDbStatement(string $sql)
 	{
-		if (GROCY_MODE === 'demo' || GROCY_MODE === 'prerelease')
+		$pdo = $this->GetDbConnectionRaw();
+
+		if ($pdo->exec($sql) === false)
 		{
-			return GROCY_DATAPATH . '/grocy_' . GROCY_CULTURE . '.db';
+			throw new Exception($pdo->errorInfo());
 		}
 
-		return GROCY_DATAPATH . '/grocy.db';
+		return true;
 	}
 
-    private static $DbConnectionRaw = null;
+	public function GetDbChangedTime()
+	{
+		return date('Y-m-d H:i:s', filemtime($this->GetDbFilePath()));
+	}
+
+	/**
+	 * @return \LessQL\Database
+	 */
+	public function GetDbConnection()
+	{
+		if (self::$DbConnection == null)
+		{
+			self::$DbConnection = new \LessQL\Database($this->GetDbConnectionRaw());
+		}
+
+		return self::$DbConnection;
+	}
+
 	/**
 	 * @return \PDO
 	 */
@@ -44,55 +75,29 @@ class DatabaseService
 		return self::$DbConnectionRaw;
 	}
 
-	private static $DbConnection = null;
-	/**
-	 * @return \LessQL\Database
-	 */
-	public function GetDbConnection()
-	{
-		if (self::$DbConnection == null)
-		{
-			self::$DbConnection = new \LessQL\Database($this->GetDbConnectionRaw());
-		}
-
-		return self::$DbConnection;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function ExecuteDbStatement(string $sql)
-	{
-		$pdo = $this->GetDbConnectionRaw();
-		if ($pdo->exec($sql) === false)
-		{
-			throw new Exception($pdo->errorInfo());
-		}
-
-		return true;
-	}
-
-	/**
-	 * @return boolean|\PDOStatement
-	 */
-	public function ExecuteDbQuery(string $sql)
-	{
-		$pdo = $this->GetDbConnectionRaw();
-		if ($this->ExecuteDbStatement($sql) === true)
-		{
-			return $pdo->query($sql);
-		}
-
-		return false;
-	}
-
-	public function GetDbChangedTime()
-	{
-		return date('Y-m-d H:i:s', filemtime($this->GetDbFilePath()));
-	}
-
 	public function SetDbChangedTime($dateTime)
 	{
 		touch($this->GetDbFilePath(), strtotime($dateTime));
 	}
+
+	public static function getInstance()
+	{
+		if (self::$instance == null)
+		{
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	private function GetDbFilePath()
+	{
+		if (GROCY_MODE === 'demo' || GROCY_MODE === 'prerelease')
+		{
+			return GROCY_DATAPATH . '/grocy_' . GROCY_DEFAULT_LOCALE . '.db';
+		}
+
+		return GROCY_DATAPATH . '/grocy.db';
+	}
+
 }

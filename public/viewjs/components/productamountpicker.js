@@ -50,7 +50,7 @@ Grocy.Components.ProductAmountPicker.SetQuantityUnit = function(quId)
 Grocy.Components.ProductAmountPicker.AllowAnyQu = function(keepInitialQu = false)
 {
 	Grocy.Components.ProductAmountPicker.AllowAnyQuEnabled = true;
-	
+
 	$("#qu_id").find("option").remove().end();
 	Grocy.QuantityUnits.forEach(qu =>
 	{
@@ -83,7 +83,7 @@ $(".input-group-productamountpicker").on("change", function()
 		$("#qu-conversion-info").text(__t("This equals %1$s %2$s in stock", destinationAmount.toLocaleString(), destinationQuName));
 	}
 
-	$("#amount").val(destinationAmount.toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: 4 }));
+	$("#amount").val(destinationAmount.toFixed(4).replace(/0*$/g, ''));
 });
 
 $("#display_amount").on("keyup", function()

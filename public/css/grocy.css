@@ -31,22 +31,24 @@ a.discrete-link:focus {
 	text-decoration: none !important;
 }
 
-.card {
-	border: 2px solid;
-	border-color: #d6d6d6;
-	border-radius: 0;
+.grocy-card .card-header {
+	background-color: inherit;
 }
 
-.card-header {
-	background-color: #e5e5e5;
+.grocy-card .card-title {
+	color: #495157;
 }
 
-.card-header:first-child {
-	border-radius: 0;
+.grocy-card .card-icons a {
+	font-size: 18px;
+	color: #495157;
+	padding: 2px 4px;
+	text-decoration: none;
+	text-align: center;
 }
 
-.card-body {
-	flex-grow: 0;
+.grocy-card .card-icons i {
+	width: 18px;
 }
 
 .content-text .invalid-feedback {
@@ -61,6 +63,7 @@ a.discrete-link:focus {
 	left: 0;
 	overflow: auto;
 	background-color: #ffffff;
+	width: 100%;
 }
 
  /* Fixes smooth scrolling on iOS */
@@ -76,13 +79,18 @@ a.discrete-link:focus {
 	top: 0;
 	left: 0;
 }
- 
+
  body.fullscreen-card {
 	 overflow: hidden;
  }
 
  .fullscreen-card .hide-on-fullscreen-card {
 	display: none;
+}
+
+.fullscreen.card .card-img-top {
+	width: 50%;
+	margin: 0 auto;
 }
 
  .form-check-input.is-valid ~ .form-check-label,
@@ -429,4 +437,151 @@ canvas.drawingBuffer {
 	position: absolute;
 	left: 0;
 	top: 0;
+}
+
+
+.warning-message,
+.error-message,
+.normal-message {
+  padding: 12px;
+  font-weight: bold;
+  width: fit-content;
+  border-top: 6px solid;
+}
+
+.warning-message {
+  background-color: #fffaeb;
+  color: #7c5e10;
+  border-top-color: #e9b949;
+}
+
+.error-message {
+  background-color: #ffeeee;
+  color: #780a0a;
+  border-top-color: #ba2525;
+}
+
+.normal-message {
+  background-color: #e0e8f9;
+  color: #2d3a8c;
+  border-top-color: #4c63b6;
+}
+
+.status-filter-message,
+.user-filter-message {
+  display: inline-block;
+  cursor: pointer;
+}
+
+#info-current-stock {
+  font-size: 1.5em;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.related-links .btn {
+  font-size: 14px;
+}
+
+.title {
+  display: inline-block;
+  margin-bottom: 0 !important;
+}
+
+.title-related-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.form-control-lg .custom-control-label {
+  padding-top: 7px;
+  padding-left: 10px;
+}
+
+.custom-control-label {
+  padding-top: 13px;
+  padding-left: 10px;
+}
+
+.custom-control-label::before,
+.custom-control-label::after {
+  top: 0.8rem;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.recipe-servings-input {
+	width: 125px;
+}
+
+.fc-event{
+	cursor: pointer;
+}
+
+.grocy-tabs .nav-link {
+	color: #767676;
+	text-transform: uppercase;
+}
+
+ .grocy-tabs .nav-link {
+	border: 2px solid transparent;
+	transition: border-bottom-color ease-in 0.1s;
+}
+
+.grocy-tabs .nav-link.active {
+	border: 2px solid transparent;
+	border-bottom-color: #0b024c !important;
+}
+
+.grocy-tabs .nav-link:hover {
+	border: 2px solid transparent;
+	border-bottom-color: #0b024c7d;
+}
+
+.grocy-tabs .nav-item {
+	margin-bottom: -2px;
+}
+
+.grocy-tabs.card-header-tabs {
+	margin-bottom: -.65rem;
+}
+
+.grocy-tabs.tab-content > .active {
+	display: flex;
+	flex-direction: column;
+}
+
+.recipe-card img {
+	height: 14rem;
+	width: 100%;
+	object-fit: cover;
+}
+
+@media print {
+	.grocy-tabs.print.tab-content > .tab-pane {
+		display: flex !important;
+		flex-direction: column !important;
+		opacity: 1 !important;
+		visibility: visible !important;
+		overflow: visible !important;
+		width: auto !important;
+		height: auto !important;
+	}
+
+	.grocy-tabs.break > .tab-pane {
+		page-break-after: always;
+	}
+
+	.print-view {
+	width: 100%;
+	max-width: 100%;
+	flex-basis: 100%;
+	}
+}
+
+.not-allowed {
+	pointer-events: none;
+	opacity: 0.5;
 }

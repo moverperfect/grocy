@@ -68,7 +68,7 @@ $("#selected-shopping-list").on("change", function()
 	window.location.href = U('/shoppinglist?list=' + value);
 });
 
-$(".status-filter-button").on("click", function()
+$(".status-filter-message").on("click", function()
 {
 	var value = $(this).data("status-filter");
 	$("#status-filter").val(value);
@@ -93,16 +93,16 @@ $("#delete-selected-shopping-list").on("click", function()
 				className: 'btn-danger'
 			}
 		},
-		callback: function (result)
+		callback: function(result)
 		{
 			if (result === true)
 			{
 				Grocy.Api.Delete('objects/shopping_lists/' + objectId, {},
-					function (result)
+					function(result)
 					{
 						window.location.href = U('/shoppinglist');
 					},
-					function (xhr)
+					function(xhr)
 					{
 						console.error(xhr);
 					}
@@ -123,7 +123,7 @@ $(document).on('click', '.shoppinglist-delete-button', function(e)
 	var shoppingListItemId = $(e.currentTarget).attr('data-shoppinglist-id');
 	Grocy.FrontendHelpers.BeginUiBusy();
 
-	Grocy.Api.Delete('objects/shopping_list/' + shoppingListItemId, { },
+	Grocy.Api.Delete('objects/shopping_list/' + shoppingListItemId, {},
 		function(result)
 		{
 			animateCSS("#shoppinglistitem-" + shoppingListItemId + "-row", "fadeOut", function()
@@ -287,7 +287,7 @@ $(document).on('click', '.order-listitem-button', function(e)
 	Grocy.FrontendHelpers.BeginUiBusy();
 
 	var listItemId = $(e.currentTarget).attr('data-item-id');
-	
+
 	var done = 1;
 	if ($(e.currentTarget).attr('data-item-done') == 1)
 	{
@@ -319,7 +319,7 @@ $(document).on('click', '.order-listitem-button', function(e)
 		}
 	);
 
-	
+
 	var statusInfoCell = $("#shoppinglistitem-" + listItemId + "-status-info");
 	if (done == 1)
 	{
@@ -403,7 +403,7 @@ $(".switch-view-mode-button").on('click', function(e)
 
 	if ($("body").hasClass("fullscreen-card"))
 	{
-		window.location.hash = "#compact";	
+		window.location.hash = "#compact";
 	}
 	else
 	{

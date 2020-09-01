@@ -359,3 +359,9 @@ msgstr ""
 
 msgid "Chinese (Taiwan)"
 msgstr ""
+
+msgid "Greek"
+msgstr ""
+
+msgid "Korean"
+msgstr ""

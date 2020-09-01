@@ -454,9 +454,6 @@ msgstr ""
 msgid "Edit recipe"
 msgstr ""
 
-msgid "New recipe"
-msgstr ""
-
 msgid "Ingredients list"
 msgstr ""
 
@@ -737,7 +734,7 @@ msgstr ""
 msgid "When not set, you will get logged out at latest after 30 days"
 msgstr ""
 
-msgid "Filter by status"
+msgid "Status"
 msgstr ""
 
 msgid "Below min. stock amount"
@@ -1323,7 +1320,7 @@ msgstr ""
 msgid "this location"
 msgstr ""
 
-msgid "Consumend amount"
+msgid "Consumed amount"
 msgstr ""
 
 msgid "Time of printing"
@@ -1430,7 +1427,7 @@ msgstr ""
 msgid "assigned to %s"
 msgstr ""
 
-msgid "Filter by assignment"
+msgid "Assignment"
 msgstr ""
 
 msgid "Consume product on chore execution"
@@ -1788,4 +1785,118 @@ msgid "Delete this item"
 msgstr ""
 
 msgid "Show an icon if the product is already on the shopping list"
+msgstr ""
+
+msgid "Calories"
+msgstr ""
+
+msgid "By default the amount to be added to the shopping list is `needed amount - stock amount - shopping list amount` - when this is enabled, it is only checked against the stock amount, not against what is already on the shopping list"
+msgstr ""
+
+msgid "means %1$s per %2$s"
+msgstr ""
+
+msgid "Create inverse QU conversion"
+msgstr ""
+
+msgid "Create recipe"
+msgstr ""
+
+msgid "Save & continue to add ingredients and included recipes"
+msgstr ""
+
+msgid "Save & continue"
+msgstr ""
+
+msgid "Save & return to recipes"
+msgstr ""
+
+msgid "Stock value"
+msgstr ""
+
+msgid "Average price"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Barcodes"
+msgstr ""
+
+msgid "Barcode"
+msgstr ""
+
+msgid "Create Barcode"
+msgstr ""
+
+msgid "Barcode for product"
+msgstr ""
+
+msgid "Edit Barcode"
+msgstr ""
+
+msgid "Not enough in stock (not included in costs), %s ingredient missing"
+msgstr ""
+
+msgid "Based on the prices of the default consume rule which is \"First expiring first, then first in first out\""
+msgstr ""
+
+msgid "Not enough in stock (not included in costs), %1$s missing, %2$s already on shopping list"
+msgstr ""
+
+msgid "Quantity unit stock cannot be changed after first purchase"
+msgstr ""
+
+msgid "Clear filter"
+msgstr ""
+
+msgid "Permissions for user %s"
+msgstr ""
+
+msgid "Are you sure you want to remove full permissions for yourself?"
+msgstr ""
+
+msgid "Permissions saved"
+msgstr ""
+
+msgid "You are not allowed to view this page"
+msgstr ""
+
+msgid "Page not found"
+msgstr ""
+
+msgid "Unauthorized"
+msgstr ""
+
+msgid "Error source"
+msgstr ""
+
+msgid "Error message"
+msgstr ""
+
+msgid "Stack trace"
+msgstr ""
+
+msgid "This page does not exist"
+msgstr ""
+
+msgid "You will be redirected to the default page in %s seconds"
+msgstr ""
+
+msgid "Server error"
+msgstr ""
+
+msgid "A server error occured while processing your request"
+msgstr ""
+
+msgid "If you think this is a bug, please report it"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "User settings"
+msgstr ""
+
+msgid "Default"
 msgstr ""

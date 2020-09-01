@@ -1,4 +1,4 @@
-Grocy.Components.ProductPicker = { };
+Grocy.Components.ProductPicker = {};
 
 Grocy.Components.ProductPicker.GetPicker = function()
 {
@@ -130,15 +130,17 @@ $('#product_id_text_input').on('blur', function(e)
 {
 	if (Grocy.Components.ProductPicker.GetPicker().hasClass("combobox-menu-visible"))
 	{
-		return;	
+		return;
 	}
+	$('#product_id').attr("barcode", "null");
 
 	var input = $('#product_id_text_input').val().toString();
 	var possibleOptionElement = $("#product_id option[data-additional-searchdata*=\"" + input + ",\"]").first();
-	
+
 	if (GetUriParam('addbarcodetoselection') === undefined && input.length > 0 && possibleOptionElement.length > 0)
 	{
 		$('#product_id').val(possibleOptionElement.val());
+		$('#product_id').attr("barcode", input);
 		$('#product_id').data('combobox').refresh();
 		$('#product_id').trigger('change');
 	}
@@ -233,7 +235,7 @@ $(document).on("Grocy.BarcodeScanned", function(e, barcode, target)
 	{
 		return;
 	}
-	
+
 	// Don't know why the blur event does not fire immediately ... this works...
 
 	Grocy.Components.ProductPicker.GetInputElement().focusout();
@@ -241,7 +243,7 @@ $(document).on("Grocy.BarcodeScanned", function(e, barcode, target)
 	Grocy.Components.ProductPicker.GetInputElement().blur();
 
 	Grocy.Components.ProductPicker.GetInputElement().val(barcode);
-	
+
 	setTimeout(function()
 	{
 		Grocy.Components.ProductPicker.GetInputElement().focusout();

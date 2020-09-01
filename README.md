@@ -11,7 +11,7 @@ There is the [r/grocy subreddit](https://www.reddit.com/r/grocy) to connect with
 If you've found something that does not work or if you have an idea for an improvement or new things which you would find useful, feel free to open an issue in the [issue tracker](https://github.com/grocy/grocy/issues) here.
 
 ## Community contributions
-See the website for a list of community contributed Add-ons / Tools: [https://grocy.info/#addons](https://grocy.info/#addons)
+See the website for a list of community contributed Add-ons / Tools: [https://grocy.info/addons](https://grocy.info/addons)
 
 ## Motivation
 A household needs to be managed. I did this so far (almost 10 years) with my first self written software (a C# windows forms application) and with a bunch of Excel sheets. The software is a pain to use and Excel is Excel. So I searched for and tried different things for a (very) long time, nothing 100 % fitted, so this is my aim for a "complete household management"-thing. ERP your fridge!
@@ -43,7 +43,7 @@ If you run grocy on Linux, there is also `update.sh` (remember to make the scrip
 ## Localization
 grocy is fully localizable - the default language is English (integrated into code), a German localization is always maintained by me.
 You can easily help translating grocy at https://www.transifex.com/grocy/grocy, if your language is incomplete or not available yet.
-(Language can be changed in `data/config.php`, e. g. `Setting('CULTURE', 'it');`)
+(The default language can be set in `data/config.php`, e. g. `Setting('DEFAULT_LOCALE', 'it');` and there is also a user setting (see the user settings page) to set a different language per user)
 
 The [pre-release demo](https://demo-prerelease.grocy.info) is available for any translation which is at least 80 % complete and will pull the translations from Transifex 10 minutes past every hour, so you can have a kind of instant preview of your contributed translations. Thank you!
 

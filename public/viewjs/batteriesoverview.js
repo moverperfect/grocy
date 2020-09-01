@@ -33,7 +33,7 @@ $("#status-filter").on("change", function()
 	batteriesOverviewTable.column(4).search(value).draw();
 });
 
-$(".status-filter-button").on("click", function()
+$(".status-filter-message").on("click", function()
 {
 	var value = $(this).data("status-filter");
 	$("#status-filter").val(value);
@@ -122,7 +122,8 @@ function RefreshStatistics()
 			var overdueCount = 0;
 			var now = moment();
 			var nextXDaysThreshold = moment().add(nextXDays, "days");
-			result.forEach(element => {
+			result.forEach(element =>
+			{
 				var date = moment(element.next_estimated_charge_time);
 				if (date.isBefore(now))
 				{

@@ -16,12 +16,12 @@
 				if (GetUriParam("embedded") !== undefined)
 				{
 					Grocy.Api.Get('stock/products/' + jsonData.product_id,
-						function (productDetails)
+						function(productDetails)
 						{
 							window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", jsonData.product_amount + " " + __n(jsonData.product_amount, productDetails.quantity_unit_purchase.name, productDetails.quantity_unit_purchase.name_plural), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
 							window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
 						},
-						function (xhr)
+						function(xhr)
 						{
 							console.error(xhr);
 						}
@@ -48,12 +48,12 @@
 				if (GetUriParam("embedded") !== undefined)
 				{
 					Grocy.Api.Get('stock/products/' + jsonData.product_id,
-						function (productDetails)
+						function(productDetails)
 						{
 							window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", jsonData.amount + " " + __n(jsonData.amount, productDetails.quantity_unit_purchase.name, productDetails.quantity_unit_purchase.name_plural), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
 							window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
 						},
-						function (xhr)
+						function(xhr)
 						{
 							console.error(xhr);
 						}
@@ -79,12 +79,12 @@
 				if (GetUriParam("embedded") !== undefined)
 				{
 					Grocy.Api.Get('stock/products/' + jsonData.product_id,
-						function (productDetails)
+						function(productDetails)
 						{
 							window.parent.postMessage(WindowMessageBag("ShowSuccessMessage", __t("Added %1$s of %2$s to the shopping list \"%3$s\"", jsonData.amount + " " + __n(jsonData.amount, productDetails.quantity_unit_purchase.name, productDetails.quantity_unit_purchase.name_plural), productDetails.product.name, $("#shopping_list_id option:selected").text())), Grocy.BaseUrl);
 							window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
 						},
-						function (xhr)
+						function(xhr)
 						{
 							console.error(xhr);
 						}
@@ -113,23 +113,10 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 		Grocy.Components.ProductCard.Refresh(productId);
 
 		Grocy.Api.Get('stock/products/' + productId,
-			function (productDetails)
+			function(productDetails)
 			{
 				$('#amount_qu_unit').text(productDetails.quantity_unit_purchase.name);
 
-				if (productDetails.product.allow_partial_units_in_stock == 1)
-				{
-					$("#amount").attr("min", "0.01");
-					$("#amount").attr("step", "0.01");
-					$("#amount").parent().find(".invalid-feedback").text(__t('The amount cannot be lower than %s', 0.01.toLocaleString()));
-				}
-				else
-				{
-					$("#amount").attr("min", "1");
-					$("#amount").attr("step", "1");
-					$("#amount").parent().find(".invalid-feedback").text(__t('The amount cannot be lower than %s', '1'));
-				}
-				
 				$('#amount').focus();
 				Grocy.FrontendHelpers.ValidateForm('shoppinglist-form');
 			},
@@ -194,3 +181,5 @@ if (GetUriParam("amount") !== undefined)
 	$("#amount").val(parseFloat(GetUriParam("amount")).toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: 4 }));
 	Grocy.FrontendHelpers.ValidateForm('shoppinglist-form');
 }
+
+$("#amount").parent().find(".invalid-feedback").text(__t('The amount cannot be lower than %s', 0.01.toLocaleString()));

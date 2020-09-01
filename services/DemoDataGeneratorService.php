@@ -6,17 +6,14 @@ namespace Grocy\Services;
 
 class DemoDataGeneratorService extends BaseService
 {
-	public function __construct()
-	{
-		parent::__construct();
-		$this->LocalizationService = new LocalizationService(GROCY_CULTURE);
-	}
+	protected $LocalizationService;
 
-    protected $LocalizationService;
+	private $LastSupermarketId = 1;
 
 	public function PopulateDemoData()
 	{
 		$rowCount = $this->getDatabaseService()->ExecuteDbQuery('SELECT COUNT(*) FROM migrations WHERE migration = -1')->fetchColumn();
+
 		if (intval($rowCount) === 0)
 		{
 			$loremIpsum = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
@@ -96,7 +93,7 @@ class DemoDataGeneratorService extends BaseService
 				INSERT INTO products (name, location_id, qu_id_purchase, qu_id_stock, qu_factor_purchase_to_stock, product_group_id, calories) VALUES ('{$this->__t_sql('Milk')}', 2, 10, 10, 1, 6, 1); --23
 				INSERT INTO products (name, location_id, qu_id_purchase, qu_id_stock, qu_factor_purchase_to_stock, product_group_id, parent_product_id) VALUES ('{$this->__t_sql('Milk Chocolate')}', 4, 3, 3, 1, 1, 2); --24
 				INSERT INTO products (name, location_id, qu_id_purchase, qu_id_stock, qu_factor_purchase_to_stock, product_group_id, parent_product_id) VALUES ('{$this->__t_sql('Dark Chocolate')}', 4, 3, 3, 1, 1, 2); --25
-				INSERT INTO products (name, location_id, qu_id_purchase, qu_id_stock, qu_factor_purchase_to_stock, product_group_id, barcode) VALUES ('{$this->__t_sql('Waffle rolls')}', 4, 3, 3, 1, 1, '22111289'); --26
+				INSERT INTO products (name, location_id, qu_id_purchase, qu_id_stock, qu_factor_purchase_to_stock, product_group_id) VALUES ('{$this->__t_sql('Waffle rolls')}', 4, 3, 3, 1, 1); --26
 				UPDATE products SET calories = 123 WHERE IFNULL(calories, 0) = 0;
 
 				/* Prevent invalid quantity unit assignments */
@@ -188,81 +185,82 @@ class DemoDataGeneratorService extends BaseService
 
 			$this->getDatabaseService()->ExecuteDbStatement($sql);
 
+			$stockTransactionId = uniqid();
 			$stockService = new StockService();
-			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(21, 1500, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(21, 2500, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(22, 1, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(22, 1, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(23, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(23, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(24, 2, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(25, 2, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
-			$stockService->AddProduct(2, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), null, $this->NextSupermarketId());
+			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(3, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(4, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 10, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 10, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 10, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 10, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(5, 1, date('Y-m-d', strtotime('+20 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 10, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(6, 1, date('Y-m-d', strtotime('+600 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(7, 1, date('Y-m-d', strtotime('+800 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(8, 1, date('Y-m-d', strtotime('+900 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(9, 1, date('Y-m-d', strtotime('+14 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(10, 1, date('Y-m-d', strtotime('+21 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(11, 1, date('Y-m-d', strtotime('+10 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(12, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(13, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(14, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-30 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(15, 1, date('Y-m-d', strtotime('-2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(21, 1500, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(21, 2500, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(22, 1, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(22, 1, date('Y-m-d', strtotime('+200 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-20 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(23, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-40 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(23, 1, date('Y-m-d', strtotime('+2 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-50 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(24, 2, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(25, 2, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
+			$stockService->AddProduct(2, 1, date('Y-m-d', strtotime('+180 days')), StockService::TRANSACTION_TYPE_PURCHASE, date('Y-m-d', strtotime('-10 days')), $this->RandomPrice(), 1.0, null, $this->NextSupermarketId(), $stockTransactionId);
 			$stockService->AddMissingProductsToShoppingList();
 			$stockService->OpenProduct(3, 1);
 			$stockService->OpenProduct(6, 1);
@@ -296,10 +294,10 @@ class DemoDataGeneratorService extends BaseService
 			$productPicturesFolder = GROCY_DATAPATH . '/storage/productpictures';
 			$equipmentManualsFolder = GROCY_DATAPATH . '/storage/equipmentmanuals';
 			$recipePicturesFolder = GROCY_DATAPATH . '/storage/recipepictures';
-			mkdir(GROCY_DATAPATH . '/storage');
-			mkdir($productPicturesFolder);
-			mkdir($equipmentManualsFolder);
-			mkdir($recipePicturesFolder);
+			@mkdir(GROCY_DATAPATH . '/storage');
+			@mkdir($productPicturesFolder);
+			@mkdir($equipmentManualsFolder);
+			@mkdir($recipePicturesFolder);
 			$this->DownloadFileIfNotAlreadyExists('https://releases.grocy.info/demoresources/cookies.jpg', "$productPicturesFolder/cookies.jpg");
 			$this->DownloadFileIfNotAlreadyExists('https://releases.grocy.info/demoresources/cucumber.jpg', "$productPicturesFolder/cucumber.jpg");
 			$this->DownloadFileIfNotAlreadyExists('https://releases.grocy.info/demoresources/gummybears.jpg', "$productPicturesFolder/gummybears.jpg");
@@ -313,14 +311,29 @@ class DemoDataGeneratorService extends BaseService
 			$this->DownloadFileIfNotAlreadyExists('https://releases.grocy.info/demoresources/chocolate_sauce.jpg', "$recipePicturesFolder/chocolate_sauce.jpg");
 			$this->DownloadFileIfNotAlreadyExists('https://releases.grocy.info/demoresources/pancakes_chocolate_sauce.jpg', "$recipePicturesFolder/pancakes_chocolate_sauce.jpg");
 		}
+
 	}
 
-	private function RandomPrice()
+	public function __construct()
 	{
-		return mt_rand(2 * 100, 25 * 100) / 100;
+		parent::__construct();
+		$this->LocalizationService = new LocalizationService(GROCY_DEFAULT_LOCALE);
 	}
 
-	private $LastSupermarketId = 1;
+	private function DownloadFileIfNotAlreadyExists($sourceUrl, $destinationPath)
+	{
+		if (!file_exists($destinationPath))
+		{
+			file_put_contents($destinationPath, file_get_contents($sourceUrl, false, stream_context_create([
+				'ssl' => [
+					'verify_peer' => false,
+					'verify_peer_name' => false
+				]
+			])));
+		}
+
+	}
+
 	private function NextSupermarketId()
 	{
 		$returnValue = $this->LastSupermarketId;
@@ -337,10 +350,9 @@ class DemoDataGeneratorService extends BaseService
 		return $returnValue;
 	}
 
-	private function __t_sql(string $text)
+	private function RandomPrice()
 	{
-		$localizedText = $this->getLocalizationService()->__t($text, null);
-		return str_replace("'", "''", $localizedText);
+		return mt_rand(2 * 100, 25 * 100) / 100;
 	}
 
 	private function __n_sql($number, string $singularForm, string $pluralForm)
@@ -349,16 +361,10 @@ class DemoDataGeneratorService extends BaseService
 		return str_replace("'", "''", $localizedText);
 	}
 
-	private function DownloadFileIfNotAlreadyExists($sourceUrl, $destinationPath)
+	private function __t_sql(string $text)
 	{
-		if (!file_exists($destinationPath))
-		{
-			file_put_contents($destinationPath, file_get_contents($sourceUrl, false, stream_context_create(array(
-				'ssl' => array(
-				'verify_peer' => false,
-				'verify_peer_name' => false,
-				),
-			))));
-		}
+		$localizedText = $this->getLocalizationService()->__t($text, null);
+		return str_replace("'", "''", $localizedText);
 	}
+
 }

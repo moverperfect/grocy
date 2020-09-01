@@ -1,11 +1,13 @@
 ﻿var stockOverviewTable = $('#stock-overview-table').DataTable({
-	'order': [[3, 'asc']],
+	'order': [[4, 'asc']],
+	'colReorder': false,
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 },
-		{ 'visible': false, 'targets': 4 },
+		{ 'searchable': false, "targets": 0 },
 		{ 'visible': false, 'targets': 5 },
-		{ 'visible': false, 'targets': 6 }
+		{ 'visible': false, 'targets': 6 },
+		{ 'visible': false, 'targets': 7 }
 	],
 });
 $('#stock-overview-table tbody').removeClass("d-none");
@@ -18,8 +20,12 @@ $("#location-filter").on("change", function()
 	{
 		value = "";
 	}
+	else
+	{
+		value = "xx" + value + "xx";
+	}
 
-	stockOverviewTable.column(4).search(value).draw();
+	stockOverviewTable.column(5).search(value).draw();
 });
 
 $("#product-group-filter").on("change", function()
@@ -29,8 +35,12 @@ $("#product-group-filter").on("change", function()
 	{
 		value = "";
 	}
+	else
+	{
+		value = "xx" + value + "xx";
+	}
 
-	stockOverviewTable.column(6).search(value).draw();
+	stockOverviewTable.column(7).search(value).draw();
 });
 
 $("#status-filter").on("change", function()
@@ -44,14 +54,26 @@ $("#status-filter").on("change", function()
 	// Transfer CSS classes of selected element to dropdown element (for background)
 	$(this).attr("class", $("#" + $(this).attr("id") + " option[value='" + value + "']").attr("class") + " form-control");
 
-	stockOverviewTable.column(5).search(value).draw();
+	stockOverviewTable.column(6).search(value).draw();
 });
 
-$(".status-filter-button").on("click", function()
+$(".status-filter-message").on("click", function()
 {
 	var value = $(this).data("status-filter");
 	$("#status-filter").val(value);
 	$("#status-filter").trigger("change");
+});
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#status-filter").val("all");
+	$("#product-group-filter").val("all");
+	$("#location-filter").val("all");
+	stockOverviewTable.column(5).search("").draw();
+	stockOverviewTable.column(6).search("").draw();
+	stockOverviewTable.column(7).search("").draw();
+	stockOverviewTable.search("").draw();
 });
 
 $("#search").on("keyup", Delay(function()
@@ -94,7 +116,7 @@ $(document).on('click', '.product-consume-button', function(e)
 					{
 						var toastMessage = __t('Removed %1$s of %2$s from stock', consumeAmount.toString() + " " + __n(consumeAmount, result.quantity_unit_stock.name, result.quantity_unit_stock.name_plural), result.product.name) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoStockTransaction(\'' + bookingResponse.transaction_id + '\')"><i class="fas fa-undo"></i> ' + __t("Undo") + '</a>';
 					}
-					
+
 					if (wasSpoiled)
 					{
 						toastMessage += " (" + __t("Spoiled") + ")";
@@ -178,7 +200,8 @@ function RefreshStatistics()
 		function(result)
 		{
 			var amountSum = 0;
-			result.forEach(element => {
+			result.forEach(element =>
+			{
 				amountSum += parseInt(element.amount);
 			});
 			$("#info-current-stock").text(__n(result.length, '%s Product', '%s Products'));
@@ -222,7 +245,7 @@ function RefreshProductRow(productId)
 			var expiringThreshold = moment().add($("#info-expiring-products").data("next-x-days"), "days");
 			var now = moment();
 			var nextBestBeforeDate = moment(result.next_best_before_date);
-			
+
 			productRow.removeClass("table-warning");
 			productRow.removeClass("table-danger");
 			productRow.removeClass("table-info");
@@ -237,7 +260,7 @@ function RefreshProductRow(productId)
 				productRow.addClass("table-warning");
 			}
 
-			if (result.stock_amount == 0 && result.product.min_stock_amount == 0)
+			if (result.stock_amount == 0 && result.stock_amount_aggregated == 0 && result.product.min_stock_amount == 0)
 			{
 				animateCSS("#product-" + productId + "-row", "fadeOut", function()
 				{
@@ -252,7 +275,7 @@ function RefreshProductRow(productId)
 				$('#product-' + productId + '-qu-name').text(__n(result.stock_amount, result.quantity_unit_stock.name, result.quantity_unit_stock.name_plural));
 				$('#product-' + productId + '-amount').text(result.stock_amount);
 				$('#product-' + productId + '-consume-all-button').attr('data-consume-amount', result.stock_amount);
-
+				$('#product-' + productId + '-factor-purchase-amount').text(__t('( %s', result.stock_factor_purchase_amount));
 				$('#product-' + productId + '-next-best-before-date').text(result.next_best_before_date);
 				$('#product-' + productId + '-next-best-before-date-timeago').attr('datetime', result.next_best_before_date);
 

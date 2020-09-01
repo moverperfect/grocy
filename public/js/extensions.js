@@ -23,7 +23,7 @@ String.prototype.replaceAll = function(search, replacement)
 
 GetUriParam = function(key)
 {
-	var currentUri = decodeURIComponent(window.location.search.substring(1));
+	var currentUri = window.location.search.substring(1);
 	var vars = currentUri.split('&');
 
 	for (i = 0; i < vars.length; i++)
@@ -32,7 +32,7 @@ GetUriParam = function(key)
 
 		if (currentParam[0] === key)
 		{
-			return currentParam[1] === undefined ? true : currentParam[1];
+			return currentParam[1] === undefined ? true : decodeURIComponent(currentParam[1]);
 		}
 	}
 };
@@ -41,7 +41,7 @@ UpdateUriParam = function(key, value)
 {
 	var queryParameters = new URLSearchParams(location.search);
 	queryParameters.set(key, value);
-	window.history.replaceState({ }, "", decodeURIComponent(`${location.pathname}?${queryParameters}`));
+	window.history.replaceState({}, "", decodeURIComponent(`${location.pathname}?${queryParameters}`));
 };
 
 IsTouchInputDevice = function()
@@ -78,12 +78,12 @@ GetFileExtension = function(pathOrFileName)
 }
 
 $.extend($.expr[":"],
-{
-	"contains_case_insensitive": function(elem, i, match, array)
 	{
-		return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
-	}
-});
+		"contains_case_insensitive": function(elem, i, match, array)
+		{
+			return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+		}
+	});
 
 FindObjectInArrayByPropertyValue = function(array, propertyName, propertyValue)
 {
@@ -91,25 +91,25 @@ FindObjectInArrayByPropertyValue = function(array, propertyName, propertyValue)
 	{
 		if (array[i][propertyName] == propertyValue)
 		{
-            return array[i];
-        }
+			return array[i];
+		}
 	}
-	
-    return null;
+
+	return null;
 }
 
 FindAllObjectsInArrayByPropertyValue = function(array, propertyName, propertyValue)
 {
 	var returnArray = [];
-	
+
 	for (var i = 0; i < array.length; i++)
 	{
 		if (array[i][propertyName] == propertyValue)
 		{
 			returnArray.push(array[i]);
-        }
+		}
 	}
-	
+
 	return returnArray;
 }
 
@@ -123,7 +123,7 @@ function IsJsonString(text)
 	try
 	{
 		JSON.parse(text);
-	} catch(e)
+	} catch (e)
 	{
 		return false;
 	}
@@ -137,7 +137,7 @@ function Delay(callable, delayMilliseconds)
 	{
 		var context = this;
 		var args = arguments;
-		
+
 		clearTimeout(timer);
 		timer = setTimeout(function()
 		{
@@ -150,7 +150,7 @@ $.fn.isVisibleInViewport = function(extraHeightPadding = 0)
 {
 	var elementTop = $(this).offset().top;
 	var viewportTop = $(window).scrollTop() - extraHeightPadding;
-	
+
 	return elementTop + $(this).outerHeight() > viewportTop && elementTop < viewportTop + $(window).height();
 };
 
@@ -163,7 +163,7 @@ function animateCSS(selector, animationName, callback, speed = "faster")
 	{
 		nodes.removeClass('animated').removeClass(speed).removeClass(animationName);
 		nodes.unbind('animationend', handleAnimationEnd);
-		
+
 		if (typeof callback === 'function')
 		{
 			callback();
@@ -171,4 +171,7 @@ function animateCSS(selector, animationName, callback, speed = "faster")
 	}
 
 	nodes.on('animationend', handleAnimationEnd);
+}
+function RandomString() {
+	return Math.random().toString(36).substring(2, 100) + Math.random().toString(36).substring(2, 100);
 }

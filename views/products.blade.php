@@ -7,40 +7,63 @@
 @section('content')
 <div class="row">
 	<div class="col">
-		<h1>
-			@yield('title')
-			<a class="btn btn-outline-dark" href="{{ $U('/product/new') }}">
-				<i class="fas fa-plus"></i>&nbsp;{{ $__t('Add') }}
-			</a>
-			<a class="btn btn-outline-secondary" href="{{ $U('/userfields?entity=products') }}">
-				<i class="fas fa-sliders-h"></i>&nbsp;{{ $__t('Configure userfields') }}
-			</a>
-			<a class="btn btn-outline-secondary" href="{{ $U('/stocksettings#productpresets') }}">
-				<i class="fas fa-sliders-h"></i>&nbsp;{{ $__t('Presets for new products') }}
-			</a>
-		</h1>
+		<div class="title-related-links">
+			<h2 class="title">@yield('title')</h2>
+			<div class="related-links">
+				<a class="btn btn-outline-secondary mb-1"
+					href="{{ $U('/userfields?entity=products') }}">
+					{{ $__t('Configure userfields') }}
+				</a>
+				<a class="btn btn-outline-secondary mb-1"
+					href="{{ $U('/stocksettings#productpresets') }}">
+					{{ $__t('Presets for new products') }}
+				</a>
+			</div>
+		</div>
+		<hr>
 	</div>
 </div>
 
 <div class="row mt-3">
+	<div class="col-xs-12 col-md-2 col-xl-1">
+		<a class="btn btn-primary btn-sm responsive-button w-100 mb-3"
+			href="{{ $U('/product/new') }}">
+			{{ $__t('Add') }}
+		</a>
+	</div>
+</div>
+<div class="row">
 	<div class="col-xs-12 col-md-6 col-xl-3">
-		<label for="search">{{ $__t('Search') }}</label> <i class="fas fa-search"></i>
-		<input type="text" class="form-control" id="search">
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-search"></i></span>
+			</div>
+			<input type="text"
+				id="search"
+				class="form-control"
+				placeholder="{{ $__t('Search') }}">
+		</div>
 	</div>
 	<div class="col-xs-12 col-md-6 col-xl-3">
-		<label for="location-filter">{{ $__t('Filter by product group') }}</label> <i class="fas fa-filter"></i>
-		<select class="form-control" id="product-group-filter">
-			<option value="all">{{ $__t('All') }}</option>
-			@foreach($productGroups as $productGroup)
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-filter"></i></span>
+			</div>
+			<select class="form-control"
+				id="location-filter">
+				<option value="all">{{ $__t('All') }}</option>
+				@foreach($productGroups as $productGroup)
 				<option value="{{ $productGroup->id }}">{{ $productGroup->name }}</option>
-			@endforeach
-		</select>
+				@endforeach
+			</select>
+		</div>
 	</div>
 </div>
 
 <div class="row">
 	<div class="col">
-		<table id="products-table" class="table table-sm table-striped dt-responsive">
+		<table id="products-table"
+			class="table table-sm table-striped dt-responsive">
 			<thead>
 				<tr>
 					<th class="border-right"></th>
@@ -51,10 +74,9 @@
 					<th>{{ $__t('QU stock') }}</th>
 					<th>{{ $__t('QU factor') }}</th>
 					<th>{{ $__t('Product group') }}</th>
-					<th>{{ $__t('Barcode(s)') }}</th>
 
 					@include('components.userfields_thead', array(
-						'userfields' => $userfields
+					'userfields' => $userfields
 					))
 
 				</tr>
@@ -63,15 +85,19 @@
 				@foreach($products as $product)
 				<tr>
 					<td class="fit-content border-right">
-						<a class="btn btn-info btn-sm" href="{{ $U('/product/') }}{{ $product->id }}">
+						<a class="btn btn-info btn-sm"
+							href="{{ $U('/product/') }}{{ $product->id }}">
 							<i class="fas fa-edit"></i>
 						</a>
-						<a class="btn btn-danger btn-sm product-delete-button" href="#" data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}">
+						<a class="btn btn-danger btn-sm product-delete-button @if($product->active == 0) disabled @endif"
+							href="#"
+							data-product-id="{{ $product->id }}"
+							data-product-name="{{ $product->name }}">
 							<i class="fas fa-trash"></i>
 						</a>
 					</td>
 					<td>
-						{{ $product->name }}@if(!empty($product->picture_file_name)) <i class="fas fa-image text-muted"></i>@endif
+						@if($product->active == 0) (deactivated) @endif {{ $product->name }}@if(!empty($product->picture_file_name)) <i class="fas fa-image text-muted"></i>@endif
 					</td>
 					<td class="@if(!GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING) d-none @endif">
 						{{ FindObjectInArrayByPropertyValue($locations, 'id', $product->location_id)->name }}
@@ -91,13 +117,10 @@
 					<td>
 						@if(!empty($product->product_group_id)) {{ FindObjectInArrayByPropertyValue($productGroups, 'id', $product->product_group_id)->name }} @endif
 					</td>
-					<td>
-						{{ $product->barcode }}
-					</td>
 
 					@include('components.userfields_tbody', array(
-						'userfields' => $userfields,
-						'userfieldValues' => FindAllObjectsInArrayByPropertyValue($userfieldValues, 'object_id', $product->id)
+					'userfields' => $userfields,
+					'userfieldValues' => FindAllObjectsInArrayByPropertyValue($userfieldValues, 'object_id', $product->id)
 					))
 
 				</tr>
