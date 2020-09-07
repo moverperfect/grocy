@@ -10,6 +10,8 @@
 - Users can now have permissions, can be configured per user on the "Manage users" page (lock icon)
 - Default permissions for new users can be set via a new `config.php` setting `DEFAULT_PERMISSIONS` (defaults to `ADMIN`, so no changed behavior when not configured)
 - All currently existing users will get all permissions (`ADMIN`) during the update/migration
+- Creating API keys on the "Manage API keys"-page (top right corner settings menu) now requires the `ADMIN` permission
+  - Other users only see their API keys on that page
 - (Thanks @fipwmaqzufheoxq92ebc)
 
 ### New feature: Reverse proxy authenticaton support
@@ -26,6 +28,7 @@
 - Improved/fixed that changing the products "Factor purchase to stock quantity unit" not longer messes up historical prices (which results for example in wrong recipe costs) (thanks @kriddles)
 - On the stock journal page, it's now visible if a consume-booking was spoiled
 - Added a "Clear filter"-button on the stock overview page to quickly reset applied filters
+- It's now tracked who made a stock change (currently logged in user, visible on the stock journal page) (thanks @fipwmaqzufheoxq92ebc)
 - Fixed that it was not possible to leave the "Barcode(s)" on the product edit page by `TAB`
 - Fixed that when adding products through a product picker workflow and when the created products contains special characters, the product was not preselected on the previous page (thanks @Forceu)
 - Fixed that when editing a product the default store was not visible / always empty regardless if the product had one set (thanks @kriddles)
@@ -70,6 +73,9 @@
 - Breaking changes:
   - All prices are now related to the products **stock** quantity unit (instead the purchase QU)
   - The product object no longer has a field `barcodes` with a comma separated barcode list, instead barcodes are now stored in a separate table/entity `product_barcodes` (use the existing "Generic entity interactions" endpoints to access them)
+- For better integration (apps), it's now possible to show a QR-Code for API keys (thanks @fipwmaqzufheoxq92ebc)
+  - New QR-Code button on the "Manage API keys"-page (top right corner settings menu), the QR-Codes contains `<API-Url>|<API-Key>`
+  - And on the calendar page when using the button "Share/Integrate calendar (iCal)", there the QR-Codes contains the Share-URL (which is displayed in the textbox above)
 - The output of the following endpoints can now be filtered (by any field), ordered and paginated (thanks @fipwmaqzufheoxq92ebc)
   - `/objects/{entity}/search`
   - `/stock/products/{productId}/entries`
@@ -93,6 +99,7 @@
         - `>=` greater or equal
         - `<=` less or equal
       - `<value>` is the value to search for
+- New endpoints `/stock/journal` and `/stock/journal/summary` to get the stock journal (thanks @fipwmaqzufheoxq92ebc)
 - Performance improvements of the `/stock/products/*` endpoints (thanks @fipwmaqzufheoxq92ebc)
 - Fixed that the endpoint `/objects/{entity}/{objectId}` always returned successfully, even when the given object not exists (now returns `404` when the object is not found) (thanks @fipwmaqzufheoxq92ebc)
 - Fixed that the endpoint `/stock/volatile` didn't include products which expire today (thanks @fipwmaqzufheoxq92ebc)
