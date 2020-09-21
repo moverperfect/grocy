@@ -29,6 +29,7 @@
 - On the stock journal page, it's now visible if a consume-booking was spoiled
 - Added a "Clear filter"-button on the stock overview page to quickly reset applied filters
 - It's now tracked who made a stock change (currently logged in user, visible on the stock journal page) (thanks @fipwmaqzufheoxq92ebc)
+- Product edit page improvements ("Save & continue" button, deleting and adding a product picuture is now possible in one go) (thanks @Ma27)
 - Fixed that it was not possible to leave the "Barcode(s)" on the product edit page by `TAB`
 - Fixed that when adding products through a product picker workflow and when the created products contains special characters, the product was not preselected on the previous page (thanks @Forceu)
 - Fixed that when editing a product the default store was not visible / always empty regardless if the product had one set (thanks @kriddles)
@@ -40,6 +41,7 @@
 - Fixed that the amount on the success popup was wrong when consuming a product with "Tare weight handling" enabled
 - Fixed that the aggregated amount of parent products was wrong on the stock overview page when the child products had not the same stock quantity units
 - Fixed that edited stock entries were not considered for the price history chart on the product card
+- Fixed that `FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING` is set to `false`, the purchase page validation failed (thanks @fipwmaqzufheoxq92ebc)
 
 ### Shopping list improvements
 - Decimal amounts are now allowed (for any product, rounded by two decimal places)
