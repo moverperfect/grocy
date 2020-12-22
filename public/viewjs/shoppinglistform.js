@@ -10,28 +10,39 @@
 		Grocy.Api.Post('objects/shopping_lists', jsonData,
 			function(result)
 			{
-				window.location.href = U('/shoppinglist?list=' + result.created_object_id);
+				Grocy.EditObjectId = result.created_object_id;
+				Grocy.Components.UserfieldsForm.Save(function()
+				{
+					window.parent.postMessage(WindowMessageBag("ShoppingListChanged", result.created_object_id), Grocy.BaseUrl);
+					window.parent.postMessage(WindowMessageBag("Ready"), Grocy.BaseUrl);
+					window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
+				});
 			},
 			function(xhr)
 			{
 				Grocy.FrontendHelpers.EndUiBusy("shopping-list-form");
-				Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response)
+				Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response);
 			}
 		);
 	}
 	else
 	{
-		Grocy.Api.Put('objects/shopping_lists/' + Grocy.EditObjectId, jsonData,
-			function(result)
-			{
-				window.location.href = U('/shoppinglist');
-			},
-			function(xhr)
-			{
-				Grocy.FrontendHelpers.EndUiBusy("shopping-list-form");
-				Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response)
-			}
-		);
+		Grocy.Components.UserfieldsForm.Save(function()
+		{
+			Grocy.Api.Put('objects/shopping_lists/' + Grocy.EditObjectId, jsonData,
+				function(result)
+				{
+					window.parent.postMessage(WindowMessageBag("ShoppingListChanged", Grocy.EditObjectId), Grocy.BaseUrl);
+					window.parent.postMessage(WindowMessageBag("Ready"), Grocy.BaseUrl);
+					window.parent.postMessage(WindowMessageBag("CloseAllModals"), Grocy.BaseUrl);
+				},
+				function(xhr)
+				{
+					Grocy.FrontendHelpers.EndUiBusy("shopping-list-form");
+					Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response);
+				}
+			);
+		});
 	}
 });
 
@@ -57,5 +68,6 @@ $('#shopping-list-form input').keydown(function(event)
 	}
 });
 
+Grocy.Components.UserfieldsForm.Load();
 $('#name').focus();
 Grocy.FrontendHelpers.ValidateForm('shopping-list-form');

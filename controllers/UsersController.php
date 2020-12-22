@@ -22,7 +22,8 @@ class UsersController extends BaseController
 		{
 			User::checkPermission($request, User::PERMISSION_USERS_CREATE);
 			return $this->renderPage($response, 'userform', [
-				'mode' => 'create'
+				'mode' => 'create',
+				'userfields' => $this->getUserfieldsService()->GetFields('users')
 			]);
 		}
 		else
@@ -38,7 +39,9 @@ class UsersController extends BaseController
 
 			return $this->renderPage($response, 'userform', [
 				'user' => $this->getDatabase()->users($args['userId']),
-				'mode' => 'edit'
+				'mode' => 'edit',
+				'userfields' => $this->getUserfieldsService()->GetFields('users'),
+				'userfieldValues' => $this->getUserfieldsService()->GetAllValues('users')
 			]);
 		}
 	}
@@ -61,7 +64,9 @@ class UsersController extends BaseController
 	{
 		User::checkPermission($request, User::PERMISSION_USERS_READ);
 		return $this->renderPage($response, 'users', [
-			'users' => $this->getDatabase()->users()->orderBy('username')
+			'users' => $this->getDatabase()->users()->orderBy('username'),
+			'userfields' => $this->getUserfieldsService()->GetFields('users'),
+			'userfieldValues' => $this->getUserfieldsService()->GetAllValues('users')
 		]);
 	}
 }

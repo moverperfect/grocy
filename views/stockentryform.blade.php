@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-xs-12 col-md-6 col-xl-4 pb-3">
 
@@ -34,16 +36,16 @@
 			@include('components.datetimepicker', array(
 			'id' => 'best_before_date',
 			'initialValue' => $stockEntry->best_before_date,
-			'label' => 'Best before',
+			'label' => 'Due date',
 			'format' => 'YYYY-MM-DD',
 			'initWithNow' => false,
 			'limitEndToNow' => false,
 			'limitStartToNow' => false,
-			'invalidFeedback' => $__t('A best before date is required'),
+			'invalidFeedback' => $__t('A due date is required'),
 			'nextInputSelector' => '#best_before_date',
 			'additionalGroupCssClasses' => 'date-only-datetimepicker',
 			'shortcutValue' => '2999-12-31',
-			'shortcutLabel' => 'Never expires',
+			'shortcutLabel' => 'Never overdue',
 			'earlierThanInfoLimit' => date('Y-m-d'),
 			'earlierThanInfoText' => $__t('The given date is earlier than today, are you sure?'),
 			'additionalGroupCssClasses' => $additionalGroupCssClasses,
@@ -54,23 +56,11 @@
 			@include('components.numberpicker', array(
 			'id' => 'amount',
 			'value' => $stockEntry->amount,
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'decimals' => $userSettings['stock_decimal_places_amounts'],
 			'label' => 'Amount',
-			'hintId' => 'amount_qu_unit',
-			'invalidFeedback' => $__t('The amount cannot be lower than %s', '0'),
-			'additionalAttributes' => 'data-not-equal="-1"',
-			'additionalHtmlContextHelp' => '<div id="tare-weight-handling-info"
-				class="text-small text-info font-italic d-none">' . $__t('Tare weight handling enabled - please weigh the whole container, the amount to be posted will be automatically calculcated') . '</div>'
-			))
-
-			@include('components.numberpicker', array(
-			'id' => 'qu_factor_purchase_to_stock',
-			'label' => 'Factor purchase to stock quantity unit',
-			'value' => $stockEntry->qu_factor_purchase_to_stock,
-			'min' => 1,
-			'invalidFeedback' => $__t('The amount cannot be lower than %s', '1'),
-			'additionalCssClasses' => 'input-group-qu',
-			'additionalHtmlElements' => '<p id="qu-conversion-info"
-				class="form-text text-muted small d-none"></p>'
+			'contextInfoId' => 'amount_qu_unit',
+			'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
 			))
 
 			@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)
@@ -88,11 +78,11 @@
 			'id' => 'price',
 			'value' => $price,
 			'label' => 'Price',
-			'min' => 0,
-			'step' => 0.01,
-			'hint' => $__t('in %s per purchase quantity unit', GROCY_CURRENCY),
-			'invalidFeedback' => $__t('The price cannot be lower than %s', '0'),
-			'isRequired' => false
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_prices'] - 1) . '1',
+			'decimals' => $userSettings['stock_decimal_places_prices'],
+			'hint' => $__t('Per stock quantity unit'),
+			'isRequired' => false,
+			'additionalCssClasses' => 'locale-number-input locale-number-currency'
 			))
 			@include('components.shoppinglocationpicker', array(
 			'label' => 'Store',
@@ -131,10 +121,12 @@
 			'additionalGroupCssClasses' => 'date-only-datetimepicker'
 			))
 
-			<div class="checkbox">
-				<label for="open">
-					<input @if($stockEntry->open == 1) checked @endif type="checkbox" id="open" name="open"> {{ $__t('Opened') }}
-				</label>
+			<div class="form-group">
+				<div class="custom-control custom-checkbox">
+					<input @if($stockEntry->open == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="open" name="open" value="1">
+					<label class="form-check-label custom-control-label"
+						for="open">{{ $__t('Opened') }}</label>
+				</div>
 			</div>
 
 			<button id="save-stockentry-button"

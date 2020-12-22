@@ -1,10 +1,10 @@
-﻿Grocy.RecipePosFormProductChangeCount = 0;
+﻿Grocy.RecipePosFormInitialLoadDone = false;
 
 $('#save-recipe-pos-button').on('click', function(e)
 {
 	e.preventDefault();
 
-	var jsonData = $('#recipe-pos-form').serializeJSON({ checkboxUncheckedValue: "0" });
+	var jsonData = $('#recipe-pos-form').serializeJSON();
 	jsonData.recipe_id = Grocy.EditObjectParentId;
 	delete jsonData.display_amount;
 
@@ -53,9 +53,7 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 		Grocy.Api.Get('stock/products/' + productId,
 			function(productDetails)
 			{
-				Grocy.RecipePosFormProductChangeCount++;
-
-				if (Grocy.RecipePosFormProductChangeCount < 3) // This triggers twice on initial page load, however
+				if (!Grocy.RecipePosFormInitialLoadDone)
 				{
 					Grocy.Components.ProductAmountPicker.Reload(productDetails.product.id, productDetails.quantity_unit_stock.id, true);
 				}
@@ -64,31 +62,19 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 					Grocy.Components.ProductAmountPicker.Reload(productDetails.product.id, productDetails.quantity_unit_stock.id);
 				}
 
-				if (productDetails.product.allow_partial_units_in_stock == 1)
-				{
-					$("#display_amount").attr("min", "0.01");
-					$("#display_amount").attr("step", "0.01");
-					$("#display_amount").parent().find(".invalid-feedback").text(__t('The amount cannot be lower than %s', 0.01.toLocaleString()));
-				}
-				else
-				{
-					$("#display_amount").attr("min", "1");
-					$("#display_amount").attr("step", "1");
-					$("#display_amount").parent().find(".invalid-feedback").text(__t('The amount cannot be lower than %s', '1'));
-				}
-
 				if (Grocy.Mode == "create")
 				{
 					$("#not_check_stock_fulfillment").prop("checked", productDetails.product.not_check_stock_fulfillment_for_recipes == 1);
 				}
 
-				if (!$("#only_check_single_unit_in_stock").prop("checked"))
+				if (!$("#only_check_single_unit_in_stock").prop("checked") && Grocy.RecipePosFormInitialLoadDone)
 				{
 					Grocy.Components.ProductAmountPicker.SetQuantityUnit(productDetails.quantity_unit_stock.id);
 				}
 
 				$('#display_amount').focus();
 				Grocy.FrontendHelpers.ValidateForm('recipe-pos-form');
+				Grocy.RecipePosFormInitialLoadDone = true;
 			},
 			function(xhr)
 			{
@@ -105,6 +91,11 @@ if (Grocy.Components.ProductPicker.InProductAddWorkflow() === false)
 	Grocy.Components.ProductPicker.GetInputElement().focus();
 }
 Grocy.Components.ProductPicker.GetPicker().trigger('change');
+
+if (Grocy.EditMode == "create")
+{
+	Grocy.RecipePosFormInitialLoadDone = true;
+}
 
 $('#display_amount').on('focus', function(e)
 {
@@ -145,22 +136,18 @@ $('#recipe-pos-form input').keydown(function(event)
 	}
 });
 
-$("#only_check_single_unit_in_stock").on("click", function()
+$("#only_check_single_unit_in_stock").on("change", function()
 {
 	if (this.checked)
 	{
-		$("#display_amount").attr("min", "0.01");
-		$("#display_amount").attr("step", "0.01");
-		$("#display_amount").parent().find(".invalid-feedback").text(__t("This cannot be negative"));
+		$("#display_amount").attr("min", "0." + "0".repeat(parseInt(Grocy.UserSettings.stock_decimal_places_amounts) - 1) + "1");
 		Grocy.Components.ProductAmountPicker.AllowAnyQu(true);
 		Grocy.FrontendHelpers.ValidateForm("recipe-pos-form");
 	}
 	else
 	{
 		$("#display_amount").attr("min", "0");
-		$("#display_amount").attr("step", "1");
 		Grocy.Components.ProductPicker.GetPicker().trigger("change"); // Selects the default quantity unit of the selected product
-		$("#display_amount").parent().find(".invalid-feedback").text(__t("This cannot be negative and must be an integral number"));
 		Grocy.Components.ProductAmountPicker.AllowAnyQuEnabled = false;
 		Grocy.FrontendHelpers.ValidateForm("recipe-pos-form");
 	}

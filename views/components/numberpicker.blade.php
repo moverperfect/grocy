@@ -4,8 +4,8 @@
 
 @php if(!isset($value)) { $value = 1; } @endphp
 @php if(empty($min)) { $min = 0; } @endphp
-@php if(empty($max)) { $max = 999999; } @endphp
-@php if(empty($step)) { $step = 1; } @endphp
+@php if(!isset($max)) { $max = ''; } @endphp
+@php if(empty($decimals)) { $decimals = 0; } @endphp
 @php if(empty($hint)) { $hint = ''; } @endphp
 @php if(empty($hintId)) { $hintId = ''; } @endphp
 @php if(empty($additionalCssClasses)) { $additionalCssClasses = ''; } @endphp
@@ -15,14 +15,26 @@
 @php if(empty($additionalHtmlContextHelp)) { $additionalHtmlContextHelp = ''; } @endphp
 @php if(!isset($isRequired)) { $isRequired = true; } @endphp
 @php if(!isset($noNameAttribute)) { $noNameAttribute = false; } @endphp
+@php if(empty($contextInfoId)) { $additionalHtmlContextHelp = ''; } @endphp
+@php if(!isset($invalidFeedback)) { $invalidFeedback = ''; } @endphp
 
 <div id="group-{{ $id }}"
 	class="form-group {{ $additionalGroupCssClasses }}">
-	<label for="{{ $id }}">
-		{{ $__t($label) }}&nbsp;
-		<span id="{{ $hintId }}"
+	<label class="w-100"
+		for="{{ $id }}">
+		{{ $__t($label) }}
+		@if(!empty($hint) || !empty($hintId))
+		<i id="{{ $hintId }}"
+			class="fas fa-question-circle text-muted"
 			data-toggle="tooltip"
-			title="{{ $hint }}"></span>{!! $additionalHtmlContextHelp !!}</label>
+			title="{{ $hint }}"></i>
+		@endif
+		{!! $additionalHtmlContextHelp !!}
+		@if(!empty($contextInfoId))
+		<span id="{{ $contextInfoId }}"
+			class="small text-muted float-right mt-1"></span>
+		@endif
+	</label>
 	<div class="input-group">
 		<input {!!
 			$additionalAttributes
@@ -34,9 +46,12 @@
 			name="{{ $id }}"
 			@endif
 			value="{{ $value }}"
-			min="{{ $min }}"
-			max="{{ $max }}"
-			step="{{ $step }}"
+			min="{{ number_format($min, $decimals, '.', '') }}"
+			@if(!empty($max))
+			max="{{ number_format($max, $decimals, '.', '') }}"
+			@endif
+			step="@if($decimals == 0){{1}}@else{{'.' . str_repeat('0', $decimals - 1) . '1'}}@endif"
+			data-decimals="{{ $decimals }}"
 			@if($isRequired)
 			required
 			@endif>

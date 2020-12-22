@@ -18,10 +18,23 @@
 	data-disallow-all-product-workflows="{{ BoolToString($disallowAllProductWorkflows) }}"
 	data-prefill-by-name="{{ $prefillByName }}"
 	data-prefill-by-id="{{ $prefillById }}">
-	<label for="product_id">
-		{{ $__t($label) }}&nbsp;<i class="fas fa-barcode"></i>&nbsp;
+	<label class="w-100"
+		for="product_id">
+		{{ $__t($label) }}
+		@if(!$disallowAllProductWorkflows)
+		<i class="fas fa-question-circle text-muted"
+			data-toggle="tooltip"
+			title="{{ $__t('Type a new product name or barcode and hit TAB or ENTER to start a workflow') }}"></i>
+		@endif
+		@if(!empty($hint))
+		<i class="fas fa-question-circle text-muted"
+			data-toggle="tooltip"
+			title="{{ $hint }}"></i>
+		@endif
 		<span id="barcode-lookup-disabled-hint"
-			class="small text-muted d-none"> {{ $__t('Barcode lookup is disabled') }}</span>&nbsp;
+			class="small text-muted d-none float-right"> {{ $__t('Barcode lookup is disabled') }}</span>
+		<i id="barcode-lookup-hint"
+			class="fas fa-barcode float-right mt-1"></i>
 	</label>
 	<select class="form-control product-combobox barcodescanner-input"
 		id="product_id"
@@ -47,11 +60,8 @@
 	<div class="invalid-feedback">{{ $__t('You have to select a product') }}</div>
 	<div id="custom-productpicker-error"
 		class="form-text text-danger d-none"></div>
-	@if(!$disallowAllProductWorkflows)
-	<div class="form-text text-info small">{{ $__t('Type a new product name or barcode and hit TAB to start a workflow') }}</div>
-	@endif
-	<div id="flow-info-addbarcodetoselection"
-		class="form-text text-muted small d-none"><strong><span id="addbarcodetoselection"></span></strong> {{ $__t('will be added to the list of barcodes for the selected product on submit') }}</div>
+	<div id="flow-info-InplaceAddBarcodeToExistingProduct"
+		class="form-text text-info small d-none"><strong><span id="InplaceAddBarcodeToExistingProduct"></span></strong> {{ $__t('will be added to the list of barcodes for the selected product on submit') }}</div>
 </div>
 
 @include('components.barcodescanner')

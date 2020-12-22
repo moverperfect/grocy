@@ -12,6 +12,7 @@ class UserfieldsService extends BaseService
 	const USERFIELD_TYPE_IMAGE = 'image';
 	const USERFIELD_TYPE_INTEGRAL_NUMBER = 'number-integral';
 	const USERFIELD_TYPE_LINK = 'link';
+	const USERFIELD_TYPE_LINK_WITH_TITLE = 'link-with-title';
 	const USERFIELD_TYPE_PRESET_CHECKLIST = 'preset-checklist';
 	const USERFIELD_TYPE_PRESET_LIST = 'preset-list';
 	const USERFIELD_TYPE_SINGLE_LINE_TEXT = 'text-single-line';
@@ -21,31 +22,31 @@ class UserfieldsService extends BaseService
 
 	public function GetAllFields()
 	{
-		return $this->getDatabase()->userfields()->orderBy('name')->fetchAll();
+		return $this->getDatabase()->userfields()->orderBy('name', 'COLLATE NOCASE')->fetchAll();
 	}
 
 	public function GetAllValues($entity)
 	{
-		if (!$this->IsValidEntity($entity))
+		if (!$this->IsValidExposedEntity($entity))
 		{
 			throw new \Exception('Entity does not exist or is not exposed');
 		}
 
-		return $this->getDatabase()->userfield_values_resolved()->where('entity', $entity)->orderBy('name')->fetchAll();
+		return $this->getDatabase()->userfield_values_resolved()->where('entity', $entity)->orderBy('name', 'COLLATE NOCASE')->fetchAll();
 	}
 
 	public function GetEntities()
 	{
 		$exposedDefaultEntities = $this->getOpenApiSpec()->components->internalSchemas->ExposedEntity->enum;
+		$userEntities = [];
+		$specialEntities = ['users'];
 
-		$userentities = [];
-
-		foreach ($this->getDatabase()->userentities()->orderBy('name') as $userentity)
+		foreach ($this->getDatabase()->userentities()->orderBy('name', 'COLLATE NOCASE') as $userentity)
 		{
-			$userentities[] = 'userentity-' . $userentity->name;
+			$userEntities[] = 'userentity-' . $userentity->name;
 		}
 
-		return array_merge($exposedDefaultEntities, $userentities);
+		return array_merge($exposedDefaultEntities, $userEntities, $specialEntities);
 	}
 
 	public function GetField($fieldId)
@@ -60,22 +61,22 @@ class UserfieldsService extends BaseService
 
 	public function GetFields($entity)
 	{
-		if (!$this->IsValidEntity($entity))
+		if (!$this->IsValidExposedEntity($entity))
 		{
 			throw new \Exception('Entity does not exist or is not exposed');
 		}
 
-		return $this->getDatabase()->userfields()->where('entity', $entity)->orderBy('name')->fetchAll();
+		return $this->getDatabase()->userfields()->where('entity', $entity)->orderBy('sort_number')->orderBy('name', 'COLLATE NOCASE')->fetchAll();
 	}
 
 	public function GetValues($entity, $objectId)
 	{
-		if (!$this->IsValidEntity($entity))
+		if (!$this->IsValidExposedEntity($entity))
 		{
 			throw new \Exception('Entity does not exist or is not exposed');
 		}
 
-		$userfields = $this->getDatabase()->userfield_values_resolved()->where('entity = :1 AND object_id = :2', $entity, $objectId)->orderBy('name')->fetchAll();
+		$userfields = $this->getDatabase()->userfield_values_resolved()->where('entity = :1 AND object_id = :2', $entity, $objectId)->orderBy('name', 'COLLATE NOCASE')->fetchAll();
 		$userfieldKeyValuePairs = [];
 
 		foreach ($userfields as $userfield)
@@ -88,7 +89,7 @@ class UserfieldsService extends BaseService
 
 	public function SetValues($entity, $objectId, $userfields)
 	{
-		if (!$this->IsValidEntity($entity))
+		if (!$this->IsValidExposedEntity($entity))
 		{
 			throw new \Exception('Entity does not exist or is not exposed');
 		}
@@ -139,7 +140,7 @@ class UserfieldsService extends BaseService
 		return $this->OpenApiSpec;
 	}
 
-	private function IsValidEntity($entity)
+	private function IsValidExposedEntity($entity)
 	{
 		return in_array($entity, $this->GetEntities());
 	}

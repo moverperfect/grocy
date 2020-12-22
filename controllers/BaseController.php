@@ -70,6 +70,11 @@ class BaseController
 
 	protected function getLocalizationService()
 	{
+		if (!defined('GROCY_LOCALE'))
+		{
+			define('GROCY_LOCALE', GROCY_DEFAULT_LOCALE);
+		}
+
 		return LocalizationService::getInstance(GROCY_LOCALE);
 	}
 
@@ -120,21 +125,26 @@ class BaseController
 		});
 		$this->View->set('GettextPo', $localizationService->GetPoAsJsonString());
 
+		// TODO: Better handle this generically based on the current language (header in .po file?)
+		$dir = 'ltr';
+		if (GROCY_LOCALE == 'he_IL')
+		{
+			$dir = 'rtl';
+		}
+		$this->View->set('dir', $dir);
+
 		$this->View->set('U', function ($relativePath, $isResource = false) use ($container) {
 			return $container->get('UrlManager')->ConstructUrl($relativePath, $isResource);
 		});
 
 		$embedded = false;
-
 		if (isset($_GET['embedded']))
 		{
 			$embedded = true;
 		}
-
 		$this->View->set('embedded', $embedded);
 
 		$constants = get_defined_constants();
-
 		foreach ($constants as $constant => $value)
 		{
 			if (substr($constant, 0, 19) !== 'GROCY_FEATURE_FLAG_')
@@ -144,7 +154,6 @@ class BaseController
 		}
 
 		$this->View->set('featureFlags', $constants);
-
 		if (GROCY_AUTHENTICATED)
 		{
 			$this->View->set('permissions', User::PermissionList());
@@ -175,5 +184,28 @@ class BaseController
 		}
 
 		return $this->render($response, $page, $data);
+	}
+
+	private static $htmlPurifierInstance = null;
+
+	protected function GetParsedAndFilteredRequestBody($request)
+	{
+		if (self::$htmlPurifierInstance == null)
+		{
+			self::$htmlPurifierInstance = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
+		}
+
+		$requestBody = $request->getParsedBody();
+		foreach ($requestBody as $key => &$value)
+		{
+			// HTMLPurifier removes boolean values (true/false), so explicitly keep them
+			// Maybe also possible through HTMLPurifier config (http://htmlpurifier.org/live/configdoc/plain.html)
+			if (!is_bool($value))
+			{
+				$value = self::$htmlPurifierInstance->purify($value);
+			}
+		}
+
+		return $requestBody;
 	}
 }

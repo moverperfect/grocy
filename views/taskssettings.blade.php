@@ -8,18 +8,19 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 
 		@include('components.numberpicker', array(
 		'id' => 'tasks_due_soon_days',
 		'additionalAttributes' => 'data-setting-key="tasks_due_soon_days"',
-		'label' => 'Tasks due soon days',
+		'label' => 'Due soon days',
 		'min' => 1,
-		'invalidFeedback' => $__t('This cannot be lower than %s', '1'),
 		'additionalCssClasses' => 'user-setting-control'
 		))
 

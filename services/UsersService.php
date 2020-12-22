@@ -4,13 +4,14 @@ namespace Grocy\Services;
 
 class UsersService extends BaseService
 {
-	public function CreateUser(string $username, string $firstName, string $lastName, string $password)
+	public function CreateUser(string $username, string $firstName, string $lastName, string $password, string $pictureFileName = null)
 	{
 		$newUserRow = $this->getDatabase()->users()->createRow([
 			'username' => $username,
 			'first_name' => $firstName,
 			'last_name' => $lastName,
-			'password' => password_hash($password, PASSWORD_DEFAULT)
+			'password' => password_hash($password, PASSWORD_DEFAULT),
+			'picture_file_name' => $pictureFileName
 		]);
 		$newUserRow = $newUserRow->save();
 		$permList = [];
@@ -34,7 +35,7 @@ class UsersService extends BaseService
 		$row->delete();
 	}
 
-	public function EditUser(int $userId, string $username, string $firstName, string $lastName, string $password)
+	public function EditUser(int $userId, string $username, string $firstName, string $lastName, string $password, string $pictureFileName = null)
 	{
 		if (!$this->UserExists($userId))
 		{
@@ -46,21 +47,30 @@ class UsersService extends BaseService
 			'username' => $username,
 			'first_name' => $firstName,
 			'last_name' => $lastName,
-			'password' => password_hash($password, PASSWORD_DEFAULT)
+			'password' => password_hash($password, PASSWORD_DEFAULT),
+			'picture_file_name' => $pictureFileName
 		]);
 	}
 
 	public function GetUserSetting($userId, $settingKey)
 	{
 		$settingRow = $this->getDatabase()->user_settings()->where('user_id = :1 AND key = :2', $userId, $settingKey)->fetch();
-
 		if ($settingRow !== null)
 		{
 			return $settingRow->value;
 		}
 		else
 		{
-			return null;
+			// Use the configured default values for a missing setting, otherwise return NULL
+			global $GROCY_DEFAULT_USER_SETTINGS;
+			if (array_key_exists($settingKey, $GROCY_DEFAULT_USER_SETTINGS))
+			{
+				return $GROCY_DEFAULT_USER_SETTINGS[$settingKey];
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 
@@ -69,7 +79,6 @@ class UsersService extends BaseService
 		$settings = [];
 
 		$settingRows = $this->getDatabase()->user_settings()->where('user_id = :1', $userId)->fetchAll();
-
 		foreach ($settingRows as $settingRow)
 		{
 			$settings[$settingRow->key] = $settingRow->value;
@@ -105,6 +114,11 @@ class UsersService extends BaseService
 			]);
 			$settingRow->save();
 		}
+	}
+
+	public function DeleteUserSetting($userId, $settingKey)
+	{
+		$this->getDatabase()->user_settings()->where('user_id = :1 AND key = :2', $userId, $settingKey)->delete();
 	}
 
 	private function UserExists($userId)

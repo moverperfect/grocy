@@ -16,34 +16,63 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-	</div>
-	<div class="col">
-		@include('components.productpicker', array(
-		'products' => $products,
-		'disallowAllProductWorkflows' => true
-		))
+		<div class="float-right">
+			<button class="btn btn-outline-dark d-md-none mt-2 order-1 order-md-3"
+				type="button"
+				data-toggle="collapse"
+				data-target="#table-filter-row">
+				<i class="fas fa-filter"></i>
+			</button>
+		</div>
 	</div>
 </div>
-<hr>
+
+<hr class="my-2">
+
+<div class="row collapse d-md-flex"
+	id="table-filter-row">
+	<div class="col-xs-12 col-md-6 col-xl-3">
+		@include('components.productpicker', array(
+		'products' => $products,
+		'disallowAllProductWorkflows' => true,
+		'isRequired' => false
+		))
+	</div>
+	<div class="col">
+		<div class="float-right mt-3">
+			<a id="clear-filter-button"
+				class="btn btn-sm btn-outline-info"
+				href="#">
+				{{ $__t('Clear filter') }}
+			</a>
+		</div>
+	</div>
+</div>
+
 <div class="row">
 	<div class="col">
 		<table id="stockentries-table"
-			class="table table-sm table-striped dt-responsive">
+			class="table table-sm table-striped nowrap w-100">
 			<thead>
 				<tr>
-					<th class="border-right"></th>
+					<th class="border-right"><a class="text-muted change-table-columns-visibility-button"
+							data-toggle="tooltip"
+							data-toggle="tooltip"
+							title="{{ $__t('Table options') }}"
+							data-table-selector="#stockentries-table"
+							href="#"><i class="fas fa-eye"></i></a>
+					</th>
 					<th class="d-none">product_id</th> <!-- This must be in the first column for searching -->
 					<th>{{ $__t('Product') }}</th>
 					<th>{{ $__t('Amount') }}</th>
 					@if (GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING)
-					<th>{{ $__t('Best before date') }}</th>
+					<th>{{ $__t('Due date') }}</th>
 					@endif
 					@if(GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING)<th>{{ $__t('Location') }}</th>@endif
 					@if(GROCY_FEATURE_FLAG_STOCK_PRICE_TRACKING)
 					<th>{{ $__t('Store') }}</th>
 					<th>{{ $__t('Price') }}</th>
 					@endif
-					<th>{{ $__t('Factor purchase to stock quantity unit') }}</th>
 					<th>{{ $__t('Purchased date') }}</th>
 
 					@include('components.userfields_thead', array(
@@ -54,7 +83,8 @@
 			<tbody class="d-none">
 				@foreach($stockEntries as $stockEntry)
 				<tr id="stock-{{ $stockEntry->id }}-row"
-					class="@if(GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING && $stockEntry->best_before_date < date('Y-m-d 23:59:59', strtotime('-1 days')) && $stockEntry->amount > 0) table-danger @elseif(GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING && $stockEntry->best_before_date < date('Y-m-d 23:59:59', strtotime("+$nextXDays days"))
+					data-due-type="{{ FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->due_type }}"
+					class="@if(GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING && $stockEntry->best_before_date < date('Y-m-d 23:59:59', strtotime('-1 days')) && $stockEntry->amount > 0) @if(FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->due_type == 1) table-secondary @else table-danger @endif @elseif(GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING && $stockEntry->best_before_date < date('Y-m-d 23:59:59', strtotime('+' . $nextXDays . ' days'))
 					&&
 					$stockEntry->amount > 0) table-warning @endif">
 					<td class="fit-content border-right">
@@ -73,7 +103,7 @@
 							<i class="fas fa-utensils"></i>
 						</a>
 						@if(GROCY_FEATURE_FLAG_STOCK_PRODUCT_OPENED_TRACKING)
-						<a class="btn btn-success btn-sm product-open-button @if($stockEntry->open == 1) disabled @endif"
+						<a class="btn btn-success btn-sm product-open-button @if($stockEntry->open == 1 || FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->enable_tare_weight_handling == 1) disabled @endif"
 							href="#"
 							data-toggle="tooltip"
 							data-placement="left"
@@ -109,7 +139,7 @@
 								<a class="dropdown-item show-as-dialog-link"
 									type="button"
 									href="{{ $U('/purchase?embedded&product=' . $stockEntry->product_id ) }}">
-									<i class="fas fa-shopping-cart"></i> {{ $__t('Purchase') }}
+									<i class="fas fa-cart-plus"></i> {{ $__t('Purchase') }}
 								</a>
 								<a class="dropdown-item show-as-dialog-link"
 									type="button"
@@ -129,23 +159,6 @@
 									<i class="fas fa-list"></i> {{ $__t('Inventory') }}
 								</a>
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item product-name-cell"
-									data-product-id="{{ $stockEntry->product_id }}"
-									type="button"
-									href="#">
-									<i class="fas fa-info"></i> {{ $__t('Show product details') }}
-								</a>
-								<a class="dropdown-item"
-									type="button"
-									href="{{ $U('/stockjournal?product=') }}{{ $stockEntry->product_id }}">
-									<i class="fas fa-file-alt"></i> {{ $__t('Stock journal for this product') }}
-								</a>
-								<a class="dropdown-item"
-									type="button"
-									href="{{ $U('/product/') }}{{ $stockEntry->product_id . '?returnto=/stockentries' }}">
-									<i class="fas fa-edit"></i> {{ $__t('Edit product') }}
-								</a>
-								<div class="dropdown-divider"></div>
 								<a class="dropdown-item stock-consume-button stock-consume-button-spoiled @if($stockEntry->amount < 1) disabled @endif"
 									type="button"
 									href="#"
@@ -156,15 +169,37 @@
 									data-stockrow-id="{{ $stockEntry->id }}"
 									data-location-id="{{ $stockEntry->location_id }}"
 									data-consume-amount="1">
-									<i class="fas fa-utensils"></i> {{ $__t('Consume %1$s of %2$s as spoiled', '1 ' . FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name, FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->name) }}
+									{{ $__t('Consume this stock entry as spoiled', '1 ' . FindObjectInArrayByPropertyValue($quantityunits, 'id', FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->qu_id_stock)->name, FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->name) }}
 								</a>
 								@if(GROCY_FEATURE_FLAG_RECIPES)
 								<a class="dropdown-item"
 									type="button"
 									href="{{ $U('/recipes?search=') }}{{ FindObjectInArrayByPropertyValue($products, 'id', $stockEntry->product_id)->name }}">
-									<i class="fas fa-cocktail"></i> {{ $__t('Search for recipes containing this product') }}
+									{{ $__t('Search for recipes containing this product') }}
 								</a>
 								@endif
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item product-name-cell"
+									data-product-id="{{ $stockEntry->product_id }}"
+									type="button"
+									href="#">
+									{{ $__t('Product overview') }}
+								</a>
+								<a class="dropdown-item show-as-dialog-link"
+									type="button"
+									href="{{ $U('/stockjournal?embedded&product=') }}{{ $stockEntry->product_id }}">
+									{{ $__t('Stock journal') }}
+								</a>
+								<a class="dropdown-item show-as-dialog-link"
+									type="button"
+									href="{{ $U('/stockjournal/summary?embedded&product=') }}{{ $stockEntry->product_id }}">
+									{{ $__t('Stock journal summary') }}
+								</a>
+								<a class="dropdown-item"
+									type="button"
+									href="{{ $U('/product/') }}{{ $stockEntry->product_id . '?returnto=/stockentries' }}">
+									{{ $__t('Edit product') }}
+								</a>
 							</div>
 						</div>
 					</td>
@@ -184,8 +219,8 @@
 					</td>
 					@if (GROCY_FEATURE_FLAG_STOCK_BEST_BEFORE_DATE_TRACKING)
 					<td>
-						<span id="stock-{{ $stockEntry->id }}-best-before-date">{{ $stockEntry->best_before_date }}</span>
-						<time id="stock-{{ $stockEntry->id }}-best-before-date-timeago"
+						<span id="stock-{{ $stockEntry->id }}-due-date">{{ $stockEntry->best_before_date }}</span>
+						<time id="stock-{{ $stockEntry->id }}-due-date-timeago"
 							class="timeago timeago-contextual"
 							datetime="{{ $stockEntry->best_before_date }} 23:59:59"></time>
 					</td>
@@ -209,9 +244,6 @@
 						{{ $stockEntry->price }}
 					</td>
 					@endif
-					<td id="stock-{{ $stockEntry->id }}-qu-factor-purchase-to-stock">
-						{{ $stockEntry->qu_factor_purchase_to_stock }}
-					</td>
 					<td>
 						<span id="stock-{{ $stockEntry->id }}-purchased-date">{{ $stockEntry->purchased_date }}</span>
 						<time id="stock-{{ $stockEntry->id }}-purchased-date-timeago"

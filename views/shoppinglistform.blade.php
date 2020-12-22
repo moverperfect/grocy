@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 		<script>
@@ -40,6 +42,11 @@
 					value="@if($mode == 'edit'){{ $shoppingList->name }}@endif">
 				<div class="invalid-feedback">{{ $__t('A name is required') }}</div>
 			</div>
+
+			@include('components.userfieldsform', array(
+			'userfields' => $userfields,
+			'entity' => 'shopping_lists'
+			))
 
 			<button id="save-shopping-list-button"
 				class="btn btn-success">{{ $__t('Save') }}</button>

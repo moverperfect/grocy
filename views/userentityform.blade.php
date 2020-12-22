@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 		<script>
@@ -66,14 +68,11 @@
 			</div>
 
 			<div class="form-group">
-				<div class="form-check">
-					<input type="hidden"
-						name="show_in_sidebar_menu"
-						value="0">
+				<div class="custom-control custom-checkbox">
 					<input @if($mode=='edit'
 						&&
-						$userentity->show_in_sidebar_menu == 1) checked @endif class="form-check-input" type="checkbox" id="show_in_sidebar_menu" name="show_in_sidebar_menu" value="1">
-					<label class="form-check-label"
+						$userentity->show_in_sidebar_menu == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="show_in_sidebar_menu" name="show_in_sidebar_menu" value="1">
+					<label class="form-check-label custom-control-label"
 						for="show_in_sidebar_menu">{{ $__t('Show in sidebar menu') }}</label>
 				</div>
 			</div>

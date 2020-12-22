@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 		<script>
@@ -42,6 +44,19 @@
 			</div>
 
 			<div class="form-group">
+				<div class="custom-control custom-checkbox">
+					<input @if($mode=='create'
+						)
+						checked
+						@elseif($mode=='edit'
+						&&
+						$chore->active == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="active" name="active" value="1">
+					<label class="form-check-label custom-control-label"
+						for="active">{{ $__t('Active') }}</label>
+				</div>
+			</div>
+
+			<div class="form-group">
 				<label for="description">{{ $__t('Description') }}</label>
 				<textarea class="form-control"
 					rows="2"
@@ -50,10 +65,12 @@
 			</div>
 
 			<div class="form-group">
-				<label for="period_type">{{ $__t('Period type') }} <span id="chore-period-type-info"
-						class="small text-muted"></span></label>
+				<label for="period_type">{{ $__t('Period type') }}&nbsp;<i id="chore-period-type-info"
+						class="fas fa-question-circle text-muted"
+						data-toggle="tooltip"
+						title=""></i></label>
 				<select required
-					class="form-control input-group-chore-period-type"
+					class="custom-control custom-select input-group-chore-period-type"
 					id="period_type"
 					name="period_type">
 					@foreach($periodTypes as $periodType)
@@ -72,66 +89,65 @@
 			'value' => $value,
 			'min' => '0',
 			'additionalCssClasses' => 'input-group-chore-period-type',
-			'invalidFeedback' => $__t('This cannot be negative'),
 			'additionalGroupCssClasses' => 'period-type-input period-type-dynamic-regular period-type-monthly'
 			))
 
 			<div class="form-group period-type-input period-type-weekly">
-				<div class="form-check form-check-inline">
-					<input class="form-check-input input-group-chore-period-type"
+				<div class="custom-control custom-checkbox custom-control-inline">
+					<input class="form-check-input custom-control-input input-group-chore-period-type"
 						type="checkbox"
 						id="monday"
 						value="monday">
-					<label class="form-check-label"
+					<label class="form-check-label custom-control-label"
 						for="monday">{{ $__t('Monday') }}</label>
 				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input input-group-chore-period-type"
+				<div class="custom-control custom-checkbox custom-control-inline">
+					<input class="form-check-input custom-control-input input-group-chore-period-type"
 						type="checkbox"
 						id="tuesday"
 						value="tuesday">
-					<label class="form-check-label"
+					<label class="form-check-label custom-control-label"
 						for="tuesday">{{ $__t('Tuesday') }}</label>
 				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input input-group-chore-period-type"
+				<div class="custom-control custom-checkbox custom-control-inline">
+					<input class="form-check-input custom-control-input input-group-chore-period-type"
 						type="checkbox"
 						id="wednesday"
 						value="wednesday">
-					<label class="form-check-label"
+					<label class="form-check-label custom-control-label"
 						for="wednesday">{{ $__t('Wednesday') }}</label>
 				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input input-group-chore-period-type"
+				<div class="custom-control custom-checkbox custom-control-inline">
+					<input class="form-check-input custom-control-input input-group-chore-period-type"
 						type="checkbox"
 						id="thursday"
 						value="thursday">
-					<label class="form-check-label"
+					<label class="form-check-label custom-control-label"
 						for="thursday">{{ $__t('Thursday') }}</label>
 				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input input-group-chore-period-type"
+				<div class="custom-control custom-checkbox custom-control-inline">
+					<input class="form-check-input custom-control-input input-group-chore-period-type"
 						type="checkbox"
 						id="friday"
 						value="friday">
-					<label class="form-check-label"
+					<label class="form-check-label custom-control-label"
 						for="friday">{{ $__t('Friday') }}</label>
 				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input input-group-chore-period-type"
+				<div class="custom-control custom-checkbox custom-control-inline">
+					<input class="form-check-input custom-control-input input-group-chore-period-type"
 						type="checkbox"
 						id="saturday"
 						value="saturday">
-					<label class="form-check-label"
-						for="saturday">{{ $__t('Saturday') }}</label>
+					<label class="form-check-label custom-control-label"
+						for="friday">{{ $__t('Saturday') }}</label>
 				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input input-group-chore-period-type"
+				<div class="custom-control custom-checkbox custom-control-inline">
+					<input class="form-check-input custom-control-input input-group-chore-period-type"
 						type="checkbox"
 						id="sunday"
 						value="sunday">
-					<label class="form-check-label"
-						for="sunday">{{ $__t('Sunday') }}</label>
+					<label class="form-check-label custom-control-label"
+						for="friday">{{ $__t('Sunday') }}</label>
 				</div>
 			</div>
 
@@ -147,17 +163,18 @@
 			'value' => $value,
 			'min' => '1',
 			'additionalCssClasses' => 'input-group-chore-period-type',
-			'invalidFeedback' => $__t('This cannot be lower than %s', '1'),
 			'additionalGroupCssClasses' => 'period-type-input period-type-daily period-type-weekly period-type-monthly period-type-yearly',
 			'hintId' => 'chore-period-interval-info'
 			))
 
 			@if(GROCY_FEATURE_FLAG_CHORES_ASSIGNMENTS)
 			<div class="form-group">
-				<label for="assignment_type">{{ $__t('Assignment type') }} <span id="chore-assignment-type-info"
-						class="small text-muted"></span></label>
+				<label for="assignment_type">{{ $__t('Assignment type') }} <i id="chore-assignment-type-info"
+						class="fas fa-question-circle text-muted"
+						data-toggle="tooltip"
+						title=""></i></label>
 				<select required
-					class="form-control input-group-chore-assignment-type"
+					class="custom-control custom-select input-group-chore-assignment-type"
 					id="assignment_type"
 					name="assignment_type">
 					@foreach($assignmentTypes as $assignmentType)
@@ -198,45 +215,40 @@
 			@endif
 
 			<div class="form-group">
-				<div class="form-check">
-					<input type="hidden"
-						name="track_date_only"
-						value="0">
+				<div class="custom-control custom-checkbox">
 					<input @if($mode=='edit'
 						&&
-						$chore->track_date_only == 1) checked @endif class="form-check-input" type="checkbox" id="track_date_only" name="track_date_only" value="1">
-					<label class="form-check-label"
+						$chore->track_date_only == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="track_date_only" name="track_date_only" value="1">
+					<label class="form-check-label custom-control-label"
 						for="track_date_only">{{ $__t('Track date only') }}
-						<span class="text-muted small">{{ $__t('When enabled only the day of an execution is tracked, not the time') }}</span>
+						&nbsp;<i class="fas fa-question-circle text-muted"
+							data-toggle="tooltip"
+							title="{{ $__t('When enabled only the day of an execution is tracked, not the time') }}"></i>
 					</label>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<div class="form-check">
-					<input type="hidden"
-						name="rollover"
-						value="0">
+				<div class="custom-control custom-checkbox">
 					<input @if($mode=='edit'
 						&&
-						$chore->rollover == 1) checked @endif class="form-check-input" type="checkbox" id="rollover" name="rollover" value="1">
-					<label class="form-check-label"
+						$chore->rollover == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="rollover" name="rollover" value="1">
+					<label class="form-check-label custom-control-label"
 						for="rollover">{{ $__t('Due date rollover') }}
-						<span class="text-muted small">{{ $__t('When enabled the chore can never be overdue, the due date will shift forward each day when due') }}</span>
+						&nbsp;<i class="fas fa-question-circle text-muted"
+							data-toggle="tooltip"
+							title="{{ $__t('When enabled the chore can never be overdue, the due date will shift forward each day when due') }}"></i>
 					</label>
 				</div>
 			</div>
 
 			@if(GROCY_FEATURE_FLAG_STOCK)
 			<div class="form-group mt-4 mb-1">
-				<div class="form-check">
-					<input type="hidden"
-						name="consume_product_on_execution"
-						value="0">
+				<div class="custom-control custom-checkbox">
 					<input @if($mode=='edit'
 						&&
-						$chore->consume_product_on_execution == 1) checked @endif class="form-check-input" type="checkbox" id="consume_product_on_execution" name="consume_product_on_execution" value="1">
-					<label class="form-check-label"
+						$chore->consume_product_on_execution == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="consume_product_on_execution" name="consume_product_on_execution" value="1">
+					<label class="form-check-label custom-control-label"
 						for="consume_product_on_execution">{{ $__t('Consume product on chore execution') }}</label>
 				</div>
 			</div>
@@ -254,12 +266,12 @@
 			@include('components.numberpicker', array(
 			'id' => 'product_amount',
 			'label' => 'Amount',
-			'hintId' => 'amount_qu_unit',
-			'min' => 0.0001,
-			'step' => 0.0001,
-			'invalidFeedback' => $__t('The amount cannot be lower than %s', '1'),
+			'contextInfoId' => 'amount_qu_unit',
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'decimals' => $userSettings['stock_decimal_places_amounts'],
 			'isRequired' => false,
-			'value' => $value
+			'value' => $value,
+			'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
 			))
 			@endif
 

@@ -3,6 +3,9 @@
 	e.preventDefault();
 
 	var jsonData = $('#barcode-form').serializeJSON();
+	jsonData.amount = jsonData.display_amount;
+	delete jsonData.display_amount;
+
 	Grocy.FrontendHelpers.BeginUiBusy("barcode-form");
 
 	if (Grocy.EditMode === 'create')
@@ -10,6 +13,11 @@
 		Grocy.Api.Post('objects/product_barcodes', jsonData,
 			function(result)
 			{
+				Grocy.EditObjectId = result.created_object_id;
+				Grocy.Components.UserfieldsForm.Save()
+
+				window.parent.postMessage(WindowMessageBag("ProductBarcodesChanged"), U("/product/" + GetUriParam("product")));
+				window.parent.postMessage(WindowMessageBag("CloseAllModals"), U("/product/" + GetUriParam("product")));
 			},
 			function(xhr)
 			{
@@ -20,9 +28,12 @@
 	}
 	else
 	{
+		Grocy.Components.UserfieldsForm.Save();
 		Grocy.Api.Put('objects/product_barcodes/' + Grocy.EditObjectId, jsonData,
 			function(result)
 			{
+				window.parent.postMessage(WindowMessageBag("ProductBarcodesChanged"), U("/product/" + GetUriParam("product")));
+				window.parent.postMessage(WindowMessageBag("CloseAllModals"), U("/product/" + GetUriParam("product")));
 			},
 			function(xhr)
 			{
@@ -31,17 +42,19 @@
 			}
 		);
 	}
-
-	window.parent.postMessage(WindowMessageBag("ProductBarcodesChanged"), U("/product/" + GetUriParam("product")));
-	window.parent.postMessage(WindowMessageBag("CloseAllModals"), U("/product/" + GetUriParam("product")));
 });
 
-$('#barcode').on('change', function(e)
+$('#barcode').on('keyup', function(e)
 {
 	Grocy.FrontendHelpers.ValidateForm('barcode-form');
 });
 
-$('#qu_factor_purchase_to_stock').on('change', function(e)
+$('#qu_id').on('change', function(e)
+{
+	Grocy.FrontendHelpers.ValidateForm('barcode-form');
+});
+
+$('#display_amount').on('keyup', function(e)
 {
 	Grocy.FrontendHelpers.ValidateForm('barcode-form');
 });
@@ -62,4 +75,16 @@ $('#barcode-form input').keydown(function(event)
 		}
 	}
 });
+
+Grocy.Components.ProductAmountPicker.Reload(Grocy.EditObjectProduct.id, Grocy.EditObjectProduct.qu_id_purchase);
+if (Grocy.EditMode == "edit")
+{
+	$("#display_amount").val(Grocy.EditObject.amount);
+	$(".input-group-productamountpicker").trigger("change");
+	Grocy.Components.ProductAmountPicker.SetQuantityUnit(Grocy.EditObject.qu_id);
+}
+
 Grocy.FrontendHelpers.ValidateForm('barcode-form');
+$('#barcode').focus();
+RefreshLocaleNumberInput();
+Grocy.Components.UserfieldsForm.Load()

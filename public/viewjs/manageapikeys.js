@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#apikeys-table tbody').removeClass("d-none");
 apiKeysTable.columns.adjust().draw();
@@ -24,6 +24,12 @@ $("#search").on("keyup", Delay(function()
 
 	apiKeysTable.search(value).draw();
 }, 200));
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	apiKeysTable.search("").draw();
+});
 
 $(document).on('click', '.apikey-delete-button', function(e)
 {
@@ -61,9 +67,21 @@ $(document).on('click', '.apikey-delete-button', function(e)
 		}
 	});
 });
+
+function QrCodeForApiKey(apiKeyType, apiKey)
+{
+	var content = U('/api') + '|' + apiKey;
+	if (apiKeyType === 'special-purpose-calendar-ical')
+	{
+		content = U('/api/calendar/ical?secret=' + apiKey);
+	}
+
+	return QrCodeImgHtml(content);
+}
+
 $('.apikey-show-qr-button').on('click', function()
 {
-	var qrcodeHtml = getQRCodeForAPIKey($(this).data('apikey-key'), $(this).data('apikey-type'));
+	var qrcodeHtml = QrCodeForApiKey($(this).data('apikey-type'), $(this).data('apikey-key'));
 	bootbox.alert({
 		title: __t('API key'),
 		message: "<p class='text-center'>" + qrcodeHtml + "</p>",

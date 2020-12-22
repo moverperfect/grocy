@@ -4,20 +4,18 @@
 
 <div class="card chorecard">
 	<div class="card-header">
-		<i class="fas fa-home"></i> {{ $__t('Chore overview') }}
+		<span class="float-left">{{ $__t('Chore overview') }}</span>
 		<a id="chorecard-chore-edit-button"
-			class="btn btn-sm btn-outline-info py-0 float-right disabled"
+			class="btn btn-sm btn-outline-secondary py-0 float-right disabled"
 			href="#"
 			data-toggle="tooltip"
 			title="{{ $__t('Edit chore') }}">
 			<i class="fas fa-edit"></i>
 		</a>
 		<a id="chorecard-chore-journal-button"
-			class="btn btn-sm btn-outline-secondary py-0 mr-2 float-right disabled show-as-dialog-link"
-			href="#"
-			data-toggle="tooltip"
-			title="{{ $__t('Journal for this chore') }}">
-			<i class="fas fa-file-alt"></i>
+			class="btn btn-sm btn-outline-secondary py-0 mr-1 float-right disabled show-as-dialog-link"
+			href="#">
+			{{ $__t('Chore journal') }}
 		</a>
 	</div>
 	<div class="card-body">

@@ -14,27 +14,49 @@
 	<div class="col">
 		<div class="title-related-links">
 			<h2 class="title">@yield('title')</h2>
-			<div class="related-links">
-				<a class="btn btn-outline-dark responsive-button"
+			<button class="btn btn-outline-dark d-md-none mt-2 float-right order-1 order-md-3"
+				type="button"
+				data-toggle="collapse"
+				data-target="#related-links">
+				<i class="fas fa-ellipsis-v"></i>
+			</button>
+			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
+				id="related-links">
+				<a class="btn btn-outline-dark responsive-button m-1 mt-md-0 mb-md-0 float-right"
 					href="{{ $U('/batteriesjournal') }}">
 					{{ $__t('Journal') }}
 				</a>
 			</div>
 		</div>
-		<hr>
-		<p id="info-due-batteries"
-			data-status-filter="duesoon"
-			data-next-x-days="{{ $nextXDays }}"
-			class="warning-message status-filter-message responsive-button mr-2"></p>
-		<p id="info-overdue-batteries"
-			data-status-filter="overdue"
-			class="error-message status-filter-message responsive-button"></p>
+		<div class="border-top border-bottom my-2 py-1">
+			<div id="info-due-batteries"
+				data-status-filter="duesoon"
+				data-next-x-days="{{ $nextXDays }}"
+				class="warning-message status-filter-message responsive-button mr-2"></div>
+			<div id="info-overdue-batteries"
+				data-status-filter="overdue"
+				class="error-message status-filter-message responsive-button"></div>
+			<div class="float-right">
+				<a class="btn btn-sm btn-outline-info d-md-none mt-1"
+					data-toggle="collapse"
+					href="#table-filter-row"
+					role="button">
+					<i class="fas fa-filter"></i>
+				</a>
+				<a id="clear-filter-button"
+					class="btn btn-sm btn-outline-info mt-1"
+					href="#">
+					{{ $__t('Clear filter') }}
+				</a>
+			</div>
+		</div>
 	</div>
 </div>
 
-<div class="row mt-3">
+<div class="row collapse d-md-flex"
+	id="table-filter-row">
 	<div class="col-xs-12 col-md-6 col-xl-3">
-		<div class="input-group mb-3">
+		<div class="input-group">
 			<div class="input-group-prepend">
 				<span class="input-group-text"><i class="fas fa-search"></i></span>
 			</div>
@@ -45,11 +67,11 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-6 col-xl-3">
-		<div class="input-group mb-3">
+		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i></span>
+				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
 			</div>
-			<select class="form-control"
+			<select class="custom-control custom-select"
 				id="status-filter">
 				<option value="all">{{ $__t('All') }}</option>
 				<option value="duesoon">{{ $__t('Due soon') }}</option>
@@ -62,11 +84,18 @@
 <div class="row">
 	<div class="col">
 		<table id="batteries-overview-table"
-			class="table table-sm table-striped dt-responsive">
+			class="table table-sm table-striped nowrap w-100">
 			<thead>
 				<tr>
-					<th class="border-right"></th>
+					<th class="border-right"><a class="text-muted change-table-columns-visibility-button"
+							data-toggle="tooltip"
+							data-toggle="tooltip"
+							title="{{ $__t('Table options') }}"
+							data-table-selector="#batteries-overview-table"
+							href="#"><i class="fas fa-eye"></i></a>
+					</th>
 					<th>{{ $__t('Battery') }}</th>
+					<th>{{ $__t('Used in') }}</th>
 					<th>{{ $__t('Last charged') }}</th>
 					<th>{{ $__t('Next planned charge cycle') }}</th>
 					<th class="d-none">Hidden status</th>
@@ -80,7 +109,7 @@
 			<tbody class="d-none">
 				@foreach($current as $currentBatteryEntry)
 				<tr id="battery-{{ $currentBatteryEntry->battery_id }}-row"
-					class="@if(FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->charge_interval_days > 0 && $currentBatteryEntry->next_estimated_charge_time < date('Y-m-d H:i:s')) table-danger @elseif(FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->charge_interval_days > 0 && $currentBatteryEntry->next_estimated_charge_time < date('Y-m-d H:i:s', strtotime("+$nextXDays days")))
+					class="@if(FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->charge_interval_days > 0 && $currentBatteryEntry->next_estimated_charge_time < date('Y-m-d H:i:s')) table-danger @elseif(FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->charge_interval_days > 0 && $currentBatteryEntry->next_estimated_charge_time < date('Y-m-d H:i:s', strtotime('+' . $nextXDays . ' days')))
 					table-warning
 					@endif">
 					<td class="fit-content border-right">
@@ -88,10 +117,10 @@
 							href="#"
 							data-toggle="tooltip"
 							data-placement="left"
-							title="{{ $__t('Track charge cycle of battery %s', FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->name) }}"
+							title="{{ $__t('Track charge cycle') }}"
 							data-battery-id="{{ $currentBatteryEntry->battery_id }}"
 							data-battery-name="{{ FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->name }}">
-							<i class="fas fa-fire"></i>
+							<i class="fas fa-car-battery"></i>
 						</a>
 						<div class="dropdown d-inline-block">
 							<button class="btn btn-sm btn-light text-secondary"
@@ -104,17 +133,17 @@
 									data-battery-id="{{ $currentBatteryEntry->battery_id }}"
 									type="button"
 									href="#">
-									<span class="dropdown-item-icon"><i class="fas fa-info"></i></span> <span class="dropdown-item-text">{{ $__t('Show battery details') }}</span>
+									<span class="dropdown-item-text">{{ $__t('Battery overview') }}</span>
 								</a>
-								<a class="dropdown-item"
+								<a class="dropdown-item show-as-dialog-link"
 									type="button"
-									href="{{ $U('/batteriesjournal?battery=') }}{{ $currentBatteryEntry->battery_id }}">
-									<span class="dropdown-item-icon"><i class="fas fa-file-alt"></i></span> <span class="dropdown-item-text">{{ $__t('Journal for this battery') }}</span>
+									href="{{ $U('/batteriesjournal?embedded&battery=') }}{{ $currentBatteryEntry->battery_id }}">
+									<span class="dropdown-item-text">{{ $__t('Battery journal') }}</span>
 								</a>
-								<a class="dropdown-item permission-MASTER_DATA_EDIT"
+								<a class="dropdown-item permission-MASTER_DATA_EDIT show-as-dialog-link"
 									type="button"
-									href="{{ $U('/battery/') }}{{ $currentBatteryEntry->battery_id }}">
-									<span class="dropdown-item-icon"><i class="fas fa-edit"></i></span> <span class="dropdown-item-text">{{ $__t('Edit battery') }}</span>
+									href="{{ $U('/battery/') }}{{ $currentBatteryEntry->battery_id }}?embedded">
+									<span class="dropdown-item-text">{{ $__t('Edit battery') }}</span>
 								</a>
 							</div>
 						</div>
@@ -122,6 +151,9 @@
 					<td class="battery-name-cell cursor-link"
 						data-battery-id="{{ $currentBatteryEntry->battery_id }}">
 						{{ FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->name }}
+					</td>
+					<td class="fit-content">
+						{{ FindObjectInArrayByPropertyValue($batteries, 'id', $currentBatteryEntry->battery_id)->used_in }}
 					</td>
 					<td>
 						<span id="battery-{{ $currentBatteryEntry->battery_id }}-last-tracked-time">{{ $currentBatteryEntry->last_tracked_time }}</span>
@@ -147,7 +179,11 @@
 							,
 							$currentBatteryEntry->battery_id)->charge_interval_days > 0 && $currentBatteryEntry->next_estimated_charge_time < date('Y-m-d
 								H:i:s',
-								strtotime("+$nextXDays days")))
+								strtotime('+'
+								.
+								$nextXDays
+								. ' days'
+								)))
 								duesoon
 								@endif
 								</td>

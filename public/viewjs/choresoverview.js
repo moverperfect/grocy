@@ -2,8 +2,11 @@
 	'order': [[2, 'desc']],
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
-		{ 'searchable': false, "targets": 0 }
-	]
+		{ 'searchable': false, "targets": 0 },
+		{ "type": "html", "targets": 5 },
+		{ "type": "html", "targets": 2 },
+		{ "type": "html", "targets": 3 }
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#chores-overview-table tbody').removeClass("d-none");
 choresOverviewTable.columns.adjust().draw();
@@ -50,6 +53,16 @@ $("#user-filter").on("change", function()
 	{
 		UpdateUriParam("user", $("#user-filter option:selected").data("user-id"));
 	}
+});
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#status-filter").val("all");
+	$("#user-filter").val("all");
+	choresOverviewTable.column(5).search("").draw();
+	choresOverviewTable.column(6).search("").draw();
+	choresOverviewTable.search("").draw();
 });
 
 $(".status-filter-message").on("click", function()
@@ -200,9 +213,9 @@ function RefreshStatistics()
 				}
 			});
 
-			$("#info-due-chores").text(__n(dueCount, '%s chore is due to be done', '%s chores are due to be done') + ' ' + __n(nextXDays, 'within the next day', 'within the next %s days'));
-			$("#info-overdue-chores").text(__n(overdueCount, '%s chore is overdue to be done', '%s chores are overdue to be done'));
-			$("#info-assigned-to-me-chores").text(__n(assignedToMeCount, '%s chore is assigned to me', '%s chores are assigned to me'));
+			$("#info-due-chores").html('<span class="d-block d-md-none">' + dueCount + ' <i class="fas fa-clock"></i></span><span class="d-none d-md-block">' + __n(dueCount, '%s chore is due to be done', '%s chores are due to be done') + ' ' + __n(nextXDays, 'within the next day', 'within the next %s days'));
+			$("#info-overdue-chores").html('<span class="d-block d-md-none">' + overdueCount + ' <i class="fas fa-times-circle"></i></span><span class="d-none d-md-block">' + __n(overdueCount, '%s chore is overdue to be done', '%s chores are overdue to be done'));
+			$("#info-assigned-to-me-chores").html('<span class="d-block d-md-none">' + assignedToMeCount + ' <i class="fas fa-exclamation-circle"></i></span><span class="d-none d-md-block">' + __n(assignedToMeCount, '%s chore is assigned to me', '%s chores are assigned to me'));
 		},
 		function(xhr)
 		{

@@ -94,7 +94,9 @@ a.discrete-link:focus {
 }
 
  .form-check-input.is-valid ~ .form-check-label,
- .was-validated .form-check-input:valid ~ .form-check-label {
+ .was-validated .form-check-input:valid ~ .form-check-label,
+.custom-control-input.is-valid ~ .custom-control-label,
+ .was-validated .custom-control-input:valid ~ .custom-control-label {
 	color: inherit;
 }
 
@@ -239,6 +241,10 @@ input::-webkit-inner-spin-button {
 	width: 96vw; /* Set width of popup menu to screen size */
 }
 
+a:not([href]) {
+    color: inherit;
+    text-decoration: none;
+}
 
 /* Set width of popup menu to fixed value on larger devices */
 @media (min-width: 400px) {
@@ -286,10 +292,18 @@ input::-webkit-inner-spin-button {
 
 /* Hide the form validation feedback icons introduced in Bootstrap 4.2.0 - a colored border is enough */
 .form-control.is-invalid,
+.custom-control.is-invalid,
 .was-validated .form-control:invalid,
+.was-validated .custom-control:invalid,
 .form-control.is-valid,
-.was-validated .form-control:valid {
-	background-size: 0 0;
+.custom-control.is-valid,
+.was-validated .form-control:valid,
+.was-validated .custom-control:valid  {
+	background-image: none;
+}
+.was-validated .custom-select:valid,
+.was-validated .custom-select:invalid {
+	background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
 }
 
 /* There is a little too much padding on form inputs */
@@ -318,7 +332,7 @@ input::-webkit-inner-spin-button {
 
 /* Always show modals over everything else */
 .modal {
-	z-index: 99999;
+	z-index: 99998;
 }
 
 /* Third party component customizations - DataTables */
@@ -337,8 +351,12 @@ input::-webkit-inner-spin-button {
 	display: none;
 }
 
-.dataTables_scrollBody {
+.force-overflow-visible {
 	overflow: visible !important;
+}
+
+tr.dtrg-group {
+	cursor: pointer;
 }
 
 /* Third party component customizations - toastr */
@@ -371,11 +389,14 @@ input::-webkit-inner-spin-button {
 	font-family: 'Font Awesome 5 Free';
 	font-weight: 900;
 }
+#mainNav .navbar-collapse .navbar-nav > .nav-item.dropdown > .nav-link.py-0:after,
+#mainNav .navbar-collapse .navbar-sidenav .nav-link-collapse.py-0:after {
+	padding-top: 8px;
+}
 
-@media (max-width:992px) {
-	#mainNav .navbar-collapse .navbar-sidenav > .nav-item > .nav-link {
-		padding: 0.8em;
-	}
+#mainNav .navbar-collapse .navbar-sidenav > .nav-item > .nav-link,
+#mainNav .navbar-collapse .navbar-sidenav > .nav-item .sidenav-second-level > li > a {
+	padding: 0.75em;
 }
 
 @media (min-width:992px) {
@@ -393,6 +414,12 @@ input::-webkit-inner-spin-button {
 
 	.content-wrapper {
 		margin-left: 245px;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.width-xs-sm-100 {
+		width: 100%;
 	}
 }
 
@@ -429,6 +456,7 @@ html {
 /* Third party component customizations - Popper.js */
 .tooltip {
 	pointer-events: none;
+	z-index: 99999 !important;
 }
 
 /* Third party component customizations - QuaggaJS */
@@ -442,7 +470,8 @@ canvas.drawingBuffer {
 
 .warning-message,
 .error-message,
-.normal-message {
+.normal-message,
+.secondary-message {
   padding: 12px;
   font-weight: bold;
   width: fit-content;
@@ -467,16 +496,17 @@ canvas.drawingBuffer {
   border-top-color: #4c63b6;
 }
 
+.secondary-message {
+	background-color: #e1e4e8;
+	color: #4e575f;
+	border-top-color: #68696b;
+}
+
 .status-filter-message,
 .user-filter-message {
   display: inline-block;
   cursor: pointer;
-}
-
-#info-current-stock {
-  font-size: 1.5em;
-  font-weight: 500;
-  line-height: 1.2;
+  line-height: 0.5;
 }
 
 .related-links .btn {

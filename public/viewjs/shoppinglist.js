@@ -1,41 +1,39 @@
-﻿var collapsedGroups = {};
-
-var shoppingListTable = $('#shoppinglist-table').DataTable({
+﻿var shoppingListTable = $('#shoppinglist-table').DataTable({
 	'order': [[1, 'asc']],
 	"orderFixed": [[3, 'asc']],
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 },
-		{ 'visible': false, 'targets': 3 }
-	],
+		{ 'visible': false, 'targets': 3 },
+		{ 'visible': false, 'targets': 5 },
+		{ 'visible': false, 'targets': 6 },
+		{ 'visible': false, 'targets': 7 },
+		{ 'visible': false, 'targets': 8 },
+		{ "type": "num", "targets": 2 },
+		{ "type": "html-num-fmt", "targets": 5 },
+		{ "type": "html-num-fmt", "targets": 6 }
+	].concat($.fn.dataTable.defaults.columnDefs),
 	'rowGroup': {
-		dataSrc: 3,
-		startRender: function(rows, group)
-		{
-			var collapsed = !!collapsedGroups[group];
-			var toggleClass = collapsed ? "fa-caret-right" : "fa-caret-down";
-
-			rows.nodes().each(function(row)
-			{
-				row.style.display = collapsed ? "none" : "";
-			});
-
-			return $("<tr/>")
-				.append('<td colspan="' + rows.columns()[0].length + '">' + group + ' <span class="fa fa-fw ' + toggleClass + '"/></td>')
-				.attr("data-name", group)
-				.toggleClass("collapsed", collapsed);
-		}
+		enable: true,
+		dataSrc: 3
 	}
 });
 $('#shoppinglist-table tbody').removeClass("d-none");
 shoppingListTable.columns.adjust().draw();
 
-$(document).on("click", "tr.dtrg-group", function()
-{
-	var name = $(this).data('name');
-	collapsedGroups[name] = !collapsedGroups[name];
-	shoppingListTable.draw();
+var shoppingListPrintShadowTable = $('#shopping-list-print-shadow-table').DataTable({
+	'order': [[1, 'asc']],
+	"orderFixed": [[2, 'asc']],
+	'columnDefs': [
+		{ 'visible': false, 'targets': 2 },
+		{ 'orderable': false, 'targets': '_all' }
+	].concat($.fn.dataTable.defaults.columnDefs),
+	'rowGroup': {
+		enable: true,
+		dataSrc: 2
+	}
 });
+shoppingListPrintShadowTable.columns.adjust().draw();
 
 $("#search").on("keyup", Delay(function()
 {
@@ -47,6 +45,14 @@ $("#search").on("keyup", Delay(function()
 
 	shoppingListTable.search(value).draw();
 }, 200));
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#status-filter").val("all");
+	$("#search").trigger("keyup");
+	$("#status-filter").trigger("change");
+});
 
 $("#status-filter").on("change", function()
 {
@@ -77,7 +83,7 @@ $(".status-filter-message").on("click", function()
 
 $("#delete-selected-shopping-list").on("click", function()
 {
-	var objectName = SanitizeHtml($("#selected-shopping-list option:selected").text());
+	var objectName = $("#selected-shopping-list option:selected").text();
 	var objectId = $("#selected-shopping-list").val();
 
 	bootbox.confirm({
@@ -141,6 +147,15 @@ $(document).on('click', '.shoppinglist-delete-button', function(e)
 	);
 });
 
+$(document).on("click", ".product-name-cell", function(e)
+{
+	if ($(e.currentTarget).attr("data-product-id") != "")
+	{
+		Grocy.Components.ProductCard.Refresh($(e.currentTarget).attr("data-product-id"));
+		$("#shoppinglist-productcard-modal").modal("show");
+	}
+});
+
 $(document).on('click', '#add-products-below-min-stock-amount', function(e)
 {
 	Grocy.Api.Post('stock/shoppinglist/add-missing-products', { "list_id": $("#selected-shopping-list").val() },
@@ -155,10 +170,33 @@ $(document).on('click', '#add-products-below-min-stock-amount', function(e)
 	);
 });
 
+$(document).on('click', '#add-overdue-expired-products', function(e)
+{
+	Grocy.Api.Post('stock/shoppinglist/add-overdue-products', { "list_id": $("#selected-shopping-list").val() },
+		function(result)
+		{
+			Grocy.Api.Post('stock/shoppinglist/add-expired-products', { "list_id": $("#selected-shopping-list").val() },
+				function(result)
+				{
+					window.location.href = U('/shoppinglist?list=' + $("#selected-shopping-list").val());
+				},
+				function(xhr)
+				{
+					console.error(xhr);
+				}
+			);
+		},
+		function(xhr)
+		{
+			console.error(xhr);
+		}
+	);
+});
+
 $(document).on('click', '#clear-shopping-list', function(e)
 {
 	bootbox.confirm({
-		message: __t('Are you sure to empty shopping list "%s"?', SanitizeHtml($("#selected-shopping-list option:selected").text())),
+		message: __t('Are you sure to empty shopping list "%s"?', $("#selected-shopping-list option:selected").text()),
 		closeButton: false,
 		buttons: {
 			confirm: {
@@ -345,9 +383,100 @@ OnListItemRemoved();
 
 $(document).on("click", "#print-shopping-list-button", function(e)
 {
-	$(".print-timestamp").text(moment().format("l LT"));
-	$("#description-for-print").html($("#description").val());
-	window.print();
+	var dialogHtml = ' \
+	<div class="text-center"><h5>' + __t('Print options') + '</h5><hr></div> \
+	<div class="custom-control custom-checkbox"> \
+		<input id="print-show-header" \
+			 checked \
+			class="form-check-input custom-control-input" \
+			type="checkbox" \
+			value="1"> \
+		<label class="form-check-label custom-control-label" \
+			for="print-show-header">' + __t('Show header') + ' \
+		</label> \
+	</div> \
+	<div class="custom-control custom-checkbox"> \
+		<input id="print-group-by-product-group" \
+			 checked \
+			class="form-check-input custom-control-input" \
+			type="checkbox" \
+			value="1"> \
+		<label class="form-check-label custom-control-label" \
+			for="print-group-by-product-group">' + __t('Group by product group') + ' \
+		</label> \
+	</div> \
+	<h5 class="pt-3 pb-0">' + __t('Layout type') + '</h5> \
+	<div class="custom-control custom-radio"> \
+		<input id="print-layout-type-table" \
+			checked \
+			class="custom-control-input" \
+			type="radio" \
+			name="print-layout-type" \
+			value="print-layout-type-table"> \
+		<label class="custom-control-label" \
+			for="print-layout-type-table">' + __t('Table') + ' \
+		</label> \
+	</div> \
+	<div class="custom-control custom-radio"> \
+		<input id="print-layout-type-list" \
+			class="custom-control-input" \
+			type="radio" \
+			name="print-layout-type" \
+			value="print-layout-type-list"> \
+		<label class="custom-control-label" \
+			for="print-layout-type-list">' + __t('List') + ' \
+		</label> \
+	</div>';
+
+	bootbox.dialog({
+		message: dialogHtml,
+		size: 'small',
+		backdrop: true,
+		closeButton: false,
+		className: "d-print-none",
+		buttons: {
+			cancel: {
+				label: __t('Cancel'),
+				className: 'btn-secondary',
+				callback: function()
+				{
+					bootbox.hideAll();
+				}
+			},
+			ok: {
+				label: __t('Print'),
+				className: 'btn-primary responsive-button',
+				callback: function()
+				{
+					bootbox.hideAll();
+
+					$(".print-timestamp").text(moment().format("l LT"));
+
+					$("#description-for-print").html($("#description").val());
+					if ($("#description").text().isEmpty())
+					{
+						$("#description-for-print").parent().addClass("d-print-none");
+					}
+
+					if (!$("#print-show-header").prop("checked"))
+					{
+						$("#print-header").addClass("d-none");
+					}
+
+					if (!$("#print-group-by-product-group").prop("checked"))
+					{
+						shoppingListPrintShadowTable.rowGroup().enable(false);
+						shoppingListPrintShadowTable.order.fixed({});
+						shoppingListPrintShadowTable.draw();
+					}
+
+					$("." + $("input[name='print-layout-type']:checked").val()).removeClass("d-none");
+
+					window.print();
+				}
+			}
+		}
+	});
 });
 
 $("#description").on("summernote.change", function()
@@ -390,37 +519,46 @@ $(document).on("click", "#clear-description-button", function(e)
 	$("#save-description-button").click();
 });
 
-$(".switch-view-mode-button").on('click', function(e)
-{
-	e.preventDefault();
-
-	$("#shoppinglist-main").toggleClass("fullscreen");
-	$(".dataTables_scrollHeadInner").width(""); // Remove absolute width on element set by DataTables
-	$(".dataTables_scrollHeadInner table").width(""); // Remove absolute width on element set by DataTables
-	$("body").toggleClass("fullscreen-card");
-	$("#shopping-list-normal-view-button").toggleClass("d-none");
-	$("#mainNav").toggleClass("d-none");
-
-	if ($("body").hasClass("fullscreen-card"))
-	{
-		window.location.hash = "#compact";
-	}
-	else
-	{
-		window.history.replaceState(null, null, " ");
-	}
-});
-
 $("#description").trigger("summernote.change");
 $("#save-description-button").addClass("disabled");
 
-if (window.location.hash === "#compact")
+$(window).on("message", function(e)
 {
-	$("#shopping-list-compact-view-button").click();
-}
+	var data = e.originalEvent.data;
 
-// Auto switch to compact view on mobile when enabled
-if ($(window).width() < 768 & window.location.hash !== "#compact" && !BoolVal(Grocy.UserSettings.shopping_list_disable_auto_compact_view_on_mobile))
+	if (data.Message === "ShoppingListChanged")
+	{
+		window.location.href = U('/shoppinglist?list=' + data.Payload);
+	}
+});
+
+var dummyCanvas = document.createElement("canvas");
+$("img.barcode").each(function()
 {
-	$("#shopping-list-compact-view-button").click();
+	var img = $(this);
+	var barcode = img.attr("data-barcode").replace(/\D/g, "");
+
+	var barcodeType = "code128";
+	if (barcode.length == 8)
+	{
+		barcodeType = "ean8";
+	}
+	else if (barcode.length == 13)
+	{
+		barcodeType = "ean13";
+	}
+
+	bwipjs.toCanvas(dummyCanvas, {
+		bcid: barcodeType,
+		text: barcode,
+		height: 5,
+		includetext: false
+	});
+
+	img.attr("src", dummyCanvas.toDataURL("image/png"));
+});
+
+if ($(window).width() < 768 || !Grocy.FeatureFlags.GROCY_FEATURE_FLAG_STOCK)
+{
+	$("#filter-container").removeClass("border-bottom");
 }

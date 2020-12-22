@@ -3,8 +3,8 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 },
-		{ 'orderData': 2, 'targets': 1 }
-	],
+		{ "type": "html-num-fmt", "targets": 2 },
+	].concat($.fn.dataTable.defaults.columnDefs),
 	select: {
 		style: 'single',
 		selector: 'tr td:not(:first-child)'
@@ -61,10 +61,17 @@ $("#search").on("keyup", Delay(function()
 	recipesTables.search(value).draw();
 
 	$(".recipe-gallery-item").removeClass("d-none");
-	console.log($(".recipe-gallery-item .card-title:not(:contains_case_insensitive(" + value + "))"));
 
 	$(".recipe-gallery-item .card-title:not(:contains_case_insensitive(" + value + "))").parent().parent().parent().addClass("d-none");
 }, 200));
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#status-filter").val("all");
+	$("#search").trigger("keyup");
+	$("#status-filter").trigger("change");
+});
 
 $("#status-filter").on("change", function()
 {
@@ -75,13 +82,30 @@ $("#status-filter").on("change", function()
 	}
 
 	recipesTables.column(5).search(value).draw();
+
+	$('.recipe-gallery-item').removeClass('d-none');
+	if (value !== "")
+	{
+		if (value === 'Xenoughinstock')
+		{
+			$('.recipe-gallery-item').not('.recipe-enoughinstock').addClass('d-none');
+		}
+		else if (value === 'enoughinstockwithshoppinglist')
+		{
+			$('.recipe-gallery-item').not('.recipe-enoughinstockwithshoppinglist').addClass('d-none');
+		}
+		if (value === 'notenoughinstock')
+		{
+			$('.recipe-gallery-item').not('.recipe-notenoughinstock').addClass('d-none');
+		}
+	}
 });
 
 $(".recipe-delete").on('click', function(e)
 {
 	e.preventDefault();
 
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-recipe-name'));
+	var objectName = $(e.currentTarget).attr('data-recipe-name');
 	var objectId = $(e.currentTarget).attr('data-recipe-id');
 
 	bootbox.confirm({
@@ -118,7 +142,7 @@ $(".recipe-delete").on('click', function(e)
 
 $(document).on('click', '.recipe-shopping-list', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-recipe-name'));
+	var objectName = $(e.currentTarget).attr('data-recipe-name');
 	var objectId = $(e.currentTarget).attr('data-recipe-id');
 
 	bootbox.confirm({
@@ -164,11 +188,11 @@ $(document).on('click', '.recipe-shopping-list', function(e)
 
 $(".recipe-consume").on('click', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-recipe-name'));
+	var objectName = $(e.currentTarget).attr('data-recipe-name');
 	var objectId = $(e.currentTarget).attr('data-recipe-id');
 
 	bootbox.confirm({
-		message: __t('Are you sure to consume all ingredients needed by recipe "%s" (ingredients marked with "check only if a single unit is in stock" will be ignored)?', objectName),
+		message: __t('Are you sure to consume all ingredients needed by recipe "%s" (ingredients marked with "only check if any amount is in stock" will be ignored)?', objectName),
 		closeButton: false,
 		buttons: {
 			confirm: {

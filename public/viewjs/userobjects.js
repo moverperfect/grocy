@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#userobjects-table tbody').removeClass("d-none");
 userobjectsTable.columns.adjust().draw();
@@ -18,6 +18,12 @@ $("#search").on("keyup", Delay(function()
 
 	userobjectsTable.search(value).draw();
 }, 200));
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	userobjectsTable.search("").draw();
+});
 
 $(document).on('click', '.userobject-delete-button', function(e)
 {

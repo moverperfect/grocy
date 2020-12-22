@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#chores-table tbody').removeClass("d-none");
 choresTable.columns.adjust().draw();
@@ -19,9 +19,16 @@ $("#search").on("keyup", Delay(function()
 	choresTable.search(value).draw();
 }, 200));
 
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	choresTable.search("").draw();
+	$("#show-disabled").prop('checked', false);
+});
+
 $(document).on('click', '.chore-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-chore-name'));
+	var objectName = $(e.currentTarget).attr('data-chore-name');
 	var objectId = $(e.currentTarget).attr('data-chore-id');
 
 	bootbox.confirm({
@@ -55,3 +62,20 @@ $(document).on('click', '.chore-delete-button', function(e)
 		}
 	});
 });
+
+$("#show-disabled").change(function()
+{
+	if (this.checked)
+	{
+		window.location.href = U('/chores?include_disabled');
+	}
+	else
+	{
+		window.location.href = U('/chores');
+	}
+});
+
+if (GetUriParam('include_disabled'))
+{
+	$("#show-disabled").prop('checked', true);
+}

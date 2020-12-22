@@ -368,3 +368,21 @@ msgstr "Japanska"
 
 msgid "Chinese (Taiwan)"
 msgstr "Kinesiska (Taiwan)"
+
+msgid "Greek"
+msgstr ""
+
+msgid "Korean"
+msgstr ""
+
+msgid "Chinese (China)"
+msgstr ""
+
+msgid "Hebrew (Israel)"
+msgstr ""
+
+msgid "Tamil"
+msgstr ""
+
+msgid "Finnish"
+msgstr ""

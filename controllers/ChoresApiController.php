@@ -10,7 +10,7 @@ class ChoresApiController extends BaseApiController
 	{
 		try
 		{
-			$requestBody = $request->getParsedBody();
+			$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 			$choreId = null;
 
@@ -22,7 +22,6 @@ class ChoresApiController extends BaseApiController
 			if ($choreId === null)
 			{
 				$chores = $this->getDatabase()->chores();
-
 				foreach ($chores as $chore)
 				{
 					$this->getChoresService()->CalculateNextExecutionAssignment($chore->id);
@@ -60,7 +59,7 @@ class ChoresApiController extends BaseApiController
 
 	public function TrackChoreExecution(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
-		$requestBody = $request->getParsedBody();
+		$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 		try
 		{

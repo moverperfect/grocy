@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 		<script>
@@ -33,7 +35,7 @@
 			<div class="form-group">
 				<label for="entity">{{ $__t('Entity') }}</label>
 				<select required
-					class="form-control"
+					class="custom-control custom-select"
 					id="entity"
 					name="entity">
 					<option></option>
@@ -47,7 +49,12 @@
 			</div>
 
 			<div class="form-group">
-				<label for="name">{{ $__t('Name') }}</label>
+				<label for="name">
+					{{ $__t('Name') }}
+					<i class="fas fa-question-circle text-muted"
+						data-toggle="tooltip"
+						title="{{ $__t('This is the internal field name, e. g. for the API') }}"></i>
+				</label>
 				<input type="text"
 					class="form-control"
 					required
@@ -59,7 +66,12 @@
 			</div>
 
 			<div class="form-group">
-				<label for="name">{{ $__t('Caption') }}</label>
+				<label for="name">
+					{{ $__t('Caption') }}
+					<i class="fas fa-question-circle text-muted"
+						data-toggle="tooltip"
+						title="{{ $__t('This is used to display the field on the frontend') }}"></i>
+				</label>
 				<input type="text"
 					class="form-control"
 					required
@@ -69,10 +81,20 @@
 				<div class="invalid-feedback">{{ $__t('A caption is required') }}</div>
 			</div>
 
+			@php if($mode == 'edit' && !empty($userfield->sort_number)) { $value = $userfield->sort_number; } else { $value = ''; } @endphp
+			@include('components.numberpicker', array(
+			'id' => 'sort_number',
+			'label' => 'Sort number',
+			'min' => 0,
+			'value' => $value,
+			'isRequired' => false,
+			'hint' => $__t('Multiple Userfields will be ordered by that number on the input form')
+			))
+
 			<div class="form-group">
 				<label for="type">{{ $__t('Type') }}</label>
 				<select required
-					class="form-control"
+					class="custom-control custom-select"
 					id="type"
 					name="type">
 					<option></option>
@@ -95,14 +117,11 @@
 			</div>
 
 			<div class="form-group">
-				<div class="form-check">
-					<input type="hidden"
-						name="show_as_column_in_tables"
-						value="0">
+				<div class="custom-control custom-checkbox">
 					<input @if($mode=='edit'
 						&&
-						$userfield->show_as_column_in_tables == 1) checked @endif class="form-check-input" type="checkbox" id="show_as_column_in_tables" name="show_as_column_in_tables" value="1">
-					<label class="form-check-label"
+						$userfield->show_as_column_in_tables == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="show_as_column_in_tables" name="show_as_column_in_tables" value="1">
+					<label class="form-check-label custom-control-label"
 						for="show_as_column_in_tables">{{ $__t('Show as column in tables') }}</label>
 				</div>
 			</div>

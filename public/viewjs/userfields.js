@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#userfields-table tbody').removeClass("d-none");
 userfieldsTable.columns.adjust().draw();
@@ -28,12 +28,20 @@ $("#entity-filter").on("change", function()
 	}
 
 	userfieldsTable.column(1).search(value).draw();
-	$("#new-userfield-button").attr("href", U("/userfield/new?entity=" + value));
+	$("#new-userfield-button").attr("href", U("/userfield/new?embedded&entity=" + value));
+});
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#entity-filter").val("all");
+	userfieldsTable.column(1).search("").draw();
+	userfieldsTable.search("").draw();
 });
 
 $(document).on('click', '.userfield-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-userfield-name'));
+	var objectName = $(e.currentTarget).attr('data-userfield-name');
 	var objectId = $(e.currentTarget).attr('data-userfield-id');
 
 	bootbox.confirm({
@@ -68,8 +76,9 @@ $(document).on('click', '.userfield-delete-button', function(e)
 	});
 });
 
-if (typeof GetUriParam("entity") !== "undefined" && !GetUriParam("entity").isEmpty())
+if (GetUriParam("entity") != undefined && !GetUriParam("entity").isEmpty())
 {
 	$("#entity-filter").val(GetUriParam("entity"));
 	$("#entity-filter").trigger("change");
+	$("#name").focus();
 }

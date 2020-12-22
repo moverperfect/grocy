@@ -11,14 +11,14 @@ class GenericEntityApiController extends BaseApiController
 	{
 		User::checkPermission($request, User::PERMISSION_MASTER_DATA_EDIT);
 
-		if ($this->IsValidEntity($args['entity']))
+		if ($this->IsValidExposedEntity($args['entity']) && !$this->IsEntityWithNoEdit($args['entity']))
 		{
 			if ($this->IsEntityWithEditRequiresAdmin($args['entity']))
 			{
 				User::checkPermission($request, User::PERMISSION_ADMIN);
 			}
 
-			$requestBody = $request->getParsedBody();
+			$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 			try
 			{
@@ -27,10 +27,10 @@ class GenericEntityApiController extends BaseApiController
 					throw new \Exception('Request body could not be parsed (probably invalid JSON format or missing/wrong Content-Type header)');
 				}
 
-				$newRow = $this->getDatabase()->{$args['entity']}
-				()->createRow($requestBody);
+				$newRow = $this->getDatabase()->{$args['entity']}()->createRow($requestBody);
 				$newRow->save();
 				$success = $newRow->isClean();
+
 				return $this->ApiResponse($response, [
 					'created_object_id' => $this->getDatabase()->lastInsertId()
 				]);
@@ -50,16 +50,17 @@ class GenericEntityApiController extends BaseApiController
 	{
 		User::checkPermission($request, User::PERMISSION_MASTER_DATA_EDIT);
 
-		if ($this->IsValidEntity($args['entity']))
+		if ($this->IsValidExposedEntity($args['entity']) && !$this->IsEntityWithNoDelete($args['entity']))
 		{
 			if ($this->IsEntityWithEditRequiresAdmin($args['entity']))
 			{
 				User::checkPermission($request, User::PERMISSION_ADMIN);
 			}
-			$row = $this->getDatabase()->{$args['entity']}
-			($args['objectId']);
+
+			$row = $this->getDatabase()->{$args['entity']}($args['objectId']);
 			$row->delete();
 			$success = $row->isClean();
+
 			return $this->EmptyApiResponse($response);
 		}
 		else
@@ -72,13 +73,14 @@ class GenericEntityApiController extends BaseApiController
 	{
 		User::checkPermission($request, User::PERMISSION_MASTER_DATA_EDIT);
 
-		if ($this->IsValidEntity($args['entity']))
+		if ($this->IsValidExposedEntity($args['entity']) && !$this->IsEntityWithNoEdit($args['entity']))
 		{
 			if ($this->IsEntityWithEditRequiresAdmin($args['entity']))
 			{
 				User::checkPermission($request, User::PERMISSION_ADMIN);
 			}
-			$requestBody = $request->getParsedBody();
+
+			$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 			try
 			{
@@ -87,10 +89,10 @@ class GenericEntityApiController extends BaseApiController
 					throw new \Exception('Request body could not be parsed (probably invalid JSON format or missing/wrong Content-Type header)');
 				}
 
-				$row = $this->getDatabase()->{$args['entity']}
-				($args['objectId']);
+				$row = $this->getDatabase()->{$args['entity']}($args['objectId']);
 				$row->update($requestBody);
 				$success = $row->isClean();
+
 				return $this->EmptyApiResponse($response);
 			}
 			catch (\Exception $ex)
@@ -106,7 +108,7 @@ class GenericEntityApiController extends BaseApiController
 
 	public function GetObject(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
-		if ($this->IsValidEntity($args['entity']) && !$this->IsEntityWithPreventedListing($args['entity']))
+		if ($this->IsValidExposedEntity($args['entity']) && !$this->IsEntityWithNoListing($args['entity']))
 		{
 			$userfields = $this->getUserfieldsService()->GetValues($args['entity'], $args['objectId']);
 
@@ -115,8 +117,7 @@ class GenericEntityApiController extends BaseApiController
 				$userfields = null;
 			}
 
-			$object = $this->getDatabase()->{$args['entity']}
-			($args['objectId']);
+			$object = $this->getDatabase()->{$args['entity']}($args['objectId']);
 
 			if ($object == null)
 			{
@@ -135,8 +136,7 @@ class GenericEntityApiController extends BaseApiController
 
 	public function GetObjects(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
-		$objects = $this->getDatabase()->{$args['entity']}
-		();
+		$objects = $this->queryData($this->getDatabase()->{$args['entity']}(), $request->getQueryParams());
 		$allUserfields = $this->getUserfieldsService()->GetAllValues($args['entity']);
 
 		foreach ($objects as $object)
@@ -155,7 +155,7 @@ class GenericEntityApiController extends BaseApiController
 			$object->userfields = $userfieldKeyValuePairs;
 		}
 
-		if ($this->IsValidEntity($args['entity']) && !$this->IsEntityWithPreventedListing($args['entity']))
+		if ($this->IsValidExposedEntity($args['entity']) && !$this->IsEntityWithNoListing($args['entity']))
 		{
 			return $this->ApiResponse($response, $objects);
 		}
@@ -177,32 +177,11 @@ class GenericEntityApiController extends BaseApiController
 		}
 	}
 
-	public function SearchObjects(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
-	{
-		if ($this->IsValidEntity($args['entity']) && !$this->IsEntityWithPreventedListing($args['entity']))
-		{
-			try
-			{
-				return $this->FilteredApiResponse($response, $this->getDatabase()->{$args['entity']}
-					()->where('name LIKE ?', '%' . $args['searchString'] . '%'), $request->getQueryParams());
-			}
-			catch (\PDOException $ex)
-			{
-				throw new HttpBadRequestException($request, $ex->getMessage(), $ex);
-				//return $this->GenericErrorResponse($response, 'The given entity has no field "name"', $ex);
-			}
-		}
-		else
-		{
-			return $this->GenericErrorResponse($response, 'Entity does not exist or is not exposed');
-		}
-	}
-
 	public function SetUserfields(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
 		User::checkPermission($request, User::PERMISSION_MASTER_DATA_EDIT);
 
-		$requestBody = $request->getParsedBody();
+		$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 		try
 		{
@@ -227,15 +206,25 @@ class GenericEntityApiController extends BaseApiController
 
 	private function IsEntityWithEditRequiresAdmin($entity)
 	{
-		return !in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->EntityEditRequiresAdmin->enum);
+		return in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->ExposedEntityEditRequiresAdmin->enum);
 	}
 
-	private function IsEntityWithPreventedListing($entity)
+	private function IsEntityWithNoListing($entity)
 	{
-		return !in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->ExposedEntityButNoListing->enum);
+		return in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->ExposedEntityNoListing->enum);
 	}
 
-	private function IsValidEntity($entity)
+	private function IsEntityWithNoEdit($entity)
+	{
+		return in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->ExposedEntityNoEdit->enum);
+	}
+
+	private function IsEntityWithNoDelete($entity)
+	{
+		return in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->ExposedEntityNoDelete->enum);
+	}
+
+	private function IsValidExposedEntity($entity)
 	{
 		return in_array($entity, $this->getOpenApiSpec()->components->internalSchemas->ExposedEntity->enum);
 	}

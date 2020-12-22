@@ -43,6 +43,7 @@ abstract class AuthMiddleware extends BaseMiddleware
 
 			define('GROCY_AUTHENTICATED', true);
 			define('GROCY_USER_USERNAME', $user->username);
+			define('GROCY_USER_PICTURE_FILE_NAME', $user->picture_file_name);
 
 			return $handler->handle($request);
 		}
@@ -70,11 +71,25 @@ abstract class AuthMiddleware extends BaseMiddleware
 				define('GROCY_AUTHENTICATED', true);
 				define('GROCY_USER_ID', $user->id);
 				define('GROCY_USER_USERNAME', $user->username);
+				define('GROCY_USER_PICTURE_FILE_NAME', $user->picture_file_name);
 
 				return $response = $handler->handle($request);
 			}
 		}
 	}
+
+	protected static function SetSessionCookie($sessionKey)
+	{
+		// Cookie never expires, session validity is up to SessionService
+		setcookie(SessionService::SESSION_COOKIE_NAME, $sessionKey, PHP_INT_SIZE == 4 ? PHP_INT_MAX : PHP_INT_MAX >> 32);
+	}
+
+	/**
+	 * @param array $postParams
+	 * @return bool True/False if the provided credentials were valid
+	 * @throws \Exception Throws an \Exception if an error happended during credentials processing or if this AuthMiddleware doesn't provide credentials processing (e. g. handles this externally)
+	 */
+	abstract public static function ProcessLogin(array $postParams);
 
 	/**
 	 * @param Request $request

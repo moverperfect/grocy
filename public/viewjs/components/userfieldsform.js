@@ -30,32 +30,33 @@ Grocy.Components.UserfieldsForm.Save = function(success, error)
 		}
 		else if (input.attr("type") == "file")
 		{
-			var old_file = input.data('old-file')
-			if (old_file) {
-				Grocy.Api.Delete('files/userfiles/' + old_file, null, null,
-					function (xhr) {
+			var oldFile = input.data('old-file')
+			if (oldFile)
+			{
+				Grocy.Api.Delete('files/userfiles/' + oldFile, null, null,
+					function(xhr)
+					{
 						Grocy.FrontendHelpers.ShowGenericError('Could not delete file', xhr);
 					});
 				jsonData[fieldName] = "";
 			}
-			if (input[0].files.length > 0){
+
+			if (input[0].files.length > 0)
+			{
 				// Files service requires an extension
 				var fileName = RandomString() + '.' + input[0].files[0].name.split('.').reverse()[0];
 
 				jsonData[fieldName] = btoa(fileName) + '_' + btoa(input[0].files[0].name);
 				Grocy.Api.UploadFile(input[0].files[0], 'userfiles', fileName,
-					function (result)
+					function(result)
 					{
 					},
-					function (xhr)
+					function(xhr)
 					{
-						Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response)
+						// When navigating away immediately from the current page, this is maybe a false positive - so ignore this for now
+						// Grocy.FrontendHelpers.ShowGenericError('Error while saving, probably this item already exists', xhr.response)
 					}
 				);
-			}
-			else
-			{
-				//jsonData[fieldName] = null;
 			}
 		}
 		else if ($(this).hasAttr("multiple"))
@@ -109,26 +110,47 @@ Grocy.Components.UserfieldsForm.Load = function()
 					input.val(value.split(","));
 					$(".selectpicker").selectpicker("render");
 				}
-				if (input.attr('type') == "file")
+				else if (input.attr('type') == "file")
 				{
-					if (value != null && !value.isEmpty()) {
-						var file_name = atob(value.split('_')[1]);
-						var file_src = value.split('_')[0];
-						input.hide();
-						var file_info = input.siblings('.userfield-file');
-						file_info.removeClass('d-none');
-						file_info.find('a.userfield-current-file')
-							.attr('href', U('/files/userfiles/' + value))
-							.text(file_name);
-						file_info.find('img.userfield-current-file')
-							.attr('src', U('/files/userfiles/' + value + '?force_serve_as=picture&best_fit_width=250&best_fit_height=250'))
-						file_info.find('button.userfield-file-delete').click(
-							function () {
-								file_info.addClass('d-none');
-								input.data('old-file', file_src);
-								input.show();
+					if (value != null && !value.isEmpty())
+					{
+						var fileName = atob(value.split('_')[1]);
+						var fileSrc = value.split('_')[0];
+						var formGroup = input.parent().parent().parent();
+
+						formGroup.find("label.custom-file-label").text(fileName);
+						formGroup.find(".userfield-file-show").attr('href', U('/files/userfiles/' + value));
+						formGroup.find('.userfield-file-show').removeClass('d-none');
+						formGroup.find('img.userfield-current-file')
+							.attr('src', U('/files/userfiles/' + value + '?force_serve_as=picture&best_fit_width=250&best_fit_height=250'));
+						LoadImagesLazy();
+
+						formGroup.find('.userfield-file-delete').click(
+							function()
+							{
+								formGroup.find("label.custom-file-label").text(__t("No file selected"));
+								formGroup.find(".userfield-file-show").addClass('d-none');
+								input.attr('data-old-file', fileSrc);
 							}
 						);
+
+						input.on("change", function(e)
+						{
+							formGroup.find(".userfield-file-show").addClass('d-none');
+						});
+					}
+				}
+				else if (input.attr("data-userfield-type") == "link")
+				{
+					if (!value.isEmpty())
+					{
+						var data = JSON.parse(value);
+
+						var formRow = input.parent().parent();
+						formRow.find(".userfield-link-title").val(data.title);
+						formRow.find(".userfield-link-link").val(data.link);
+
+						input.val(value);
 					}
 				}
 				else
@@ -143,3 +165,17 @@ Grocy.Components.UserfieldsForm.Load = function()
 		}
 	);
 }
+
+$(".userfield-link").keyup(function(e)
+{
+	var formRow = $(this).parent().parent();
+	var title = formRow.find(".userfield-link-title").val();
+	var link = formRow.find(".userfield-link-link").val();
+
+	var value = {
+		"title": title,
+		"link": link
+	};
+
+	formRow.find(".userfield-input").val(JSON.stringify(value));
+});

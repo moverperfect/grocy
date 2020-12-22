@@ -17,7 +17,7 @@ class ChoresController extends BaseController
 				'userfields' => $this->getUserfieldsService()->GetFields('chores'),
 				'assignmentTypes' => GetClassConstants('\Grocy\Services\ChoresService', 'CHORE_ASSIGNMENT_TYPE_'),
 				'users' => $users,
-				'products' => $this->getDatabase()->products()->orderBy('name')
+				'products' => $this->getDatabase()->products()->orderBy('name', 'COLLATE NOCASE')
 			]);
 		}
 		else
@@ -29,15 +29,24 @@ class ChoresController extends BaseController
 				'userfields' => $this->getUserfieldsService()->GetFields('chores'),
 				'assignmentTypes' => GetClassConstants('\Grocy\Services\ChoresService', 'CHORE_ASSIGNMENT_TYPE_'),
 				'users' => $users,
-				'products' => $this->getDatabase()->products()->orderBy('name')
+				'products' => $this->getDatabase()->products()->orderBy('name', 'COLLATE NOCASE')
 			]);
 		}
 	}
 
 	public function ChoresList(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
+		if (isset($request->getQueryParams()['include_disabled']))
+		{
+			$chores = $this->getDatabase()->chores()->orderBy('name', 'COLLATE NOCASE');
+		}
+		else
+		{
+			$chores = $this->getDatabase()->chores()->where('active = 1')->orderBy('name', 'COLLATE NOCASE');
+		}
+
 		return $this->renderPage($response, 'chores', [
-			'chores' => $this->getDatabase()->chores()->orderBy('name'),
+			'chores' => $chores,
 			'userfields' => $this->getUserfieldsService()->GetFields('chores'),
 			'userfieldValues' => $this->getUserfieldsService()->GetAllValues('chores')
 		]);
@@ -52,7 +61,7 @@ class ChoresController extends BaseController
 	{
 		return $this->renderPage($response, 'choresjournal', [
 			'choresLog' => $this->getDatabase()->chores_log()->orderBy('tracked_time', 'DESC'),
-			'chores' => $this->getDatabase()->chores()->orderBy('name'),
+			'chores' => $this->getDatabase()->chores()->where('active = 1')->orderBy('name', 'COLLATE NOCASE'),
 			'users' => $this->getDatabase()->users()->orderBy('username')
 		]);
 	}
@@ -63,7 +72,7 @@ class ChoresController extends BaseController
 		$nextXDays = $usersService->GetUserSettings(GROCY_USER_ID)['chores_due_soon_days'];
 
 		return $this->renderPage($response, 'choresoverview', [
-			'chores' => $this->getDatabase()->chores()->orderBy('name'),
+			'chores' => $this->getDatabase()->chores()->orderBy('name', 'COLLATE NOCASE'),
 			'currentChores' => $this->getChoresService()->GetCurrent(),
 			'nextXDays' => $nextXDays,
 			'userfields' => $this->getUserfieldsService()->GetFields('chores'),
@@ -75,7 +84,7 @@ class ChoresController extends BaseController
 	public function TrackChoreExecution(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
 		return $this->renderPage($response, 'choretracking', [
-			'chores' => $this->getDatabase()->chores()->orderBy('name'),
+			'chores' => $this->getDatabase()->chores()->where('active = 1')->orderBy('name', 'COLLATE NOCASE'),
 			'users' => $this->getDatabase()->users()->orderBy('username')
 		]);
 	}

@@ -31,7 +31,8 @@
 		<h2 class="title">@yield('title')</h2>
 	</div>
 </div>
-<hr>
+
+<hr class="my-2">
 
 <div class="row">
 	<div class="col">
@@ -61,9 +62,10 @@
 					@include('components.numberpicker', array(
 					'id' => 'recipe_servings',
 					'label' => 'Servings',
-					'min' => 1,
+					'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+					'decimals' => $userSettings['stock_decimal_places_amounts'],
 					'value' => '1',
-					'invalidFeedback' => $__t('This cannot be lower than %s', '1')
+					'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
 					))
 
 					<input type="hidden"

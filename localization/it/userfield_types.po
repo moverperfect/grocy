@@ -1,3 +1,4 @@
+# 
 # Translators:
 # Antonino Ursino <ninus_@libero.it>, 2020
 # 
@@ -16,32 +17,54 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: grocy/userfield_types\n"
 
+# Text (single line)
 msgid "text-single-line"
-msgstr "Testo singola riga"
+msgstr "testo singola riga"
 
+# Text (multi line)
 msgid "text-multi-line"
-msgstr "Testo multi riga"
+msgstr "testo multi riga"
 
+# Number (integral)
 msgid "number-integral"
-msgstr "Numero intero"
+msgstr "numero intero"
 
+# Number (decimal)
 msgid "number-decimal"
-msgstr "Numero decimale"
+msgstr "numero decimale"
 
+# Date (without time)
 msgid "date"
-msgstr "Data"
+msgstr "data"
 
+# Date & time
 msgid "datetime"
-msgstr "Ora"
+msgstr "ora"
 
+# Checkbox
 msgid "checkbox"
-msgstr "Casella di controllo"
+msgstr "casella di controllo"
 
+# Select list (a single item can be selected)
 msgid "preset-list"
-msgstr "Lista predefinita"
+msgstr "lista predefinita"
 
+# Select list (multiple items can be selected)
 msgid "preset-checklist"
-msgstr "Lista di controllo predefinita"
+msgstr "lista di controllo predefinita"
 
+# Link
 msgid "link"
-msgstr "Collegamento"
+msgstr "collegamento"
+
+# Link (with title)
+msgid "link-with-title"
+msgstr "collegamento con titolo"
+
+# File
+msgid "file"
+msgstr "file"
+
+# Image
+msgid "image"
+msgstr "immagine"

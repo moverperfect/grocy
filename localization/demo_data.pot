@@ -365,3 +365,15 @@ msgstr ""
 
 msgid "Korean"
 msgstr ""
+
+msgid "Chinese (China)"
+msgstr ""
+
+msgid "Hebrew (Israel)"
+msgstr ""
+
+msgid "Tamil"
+msgstr ""
+
+msgid "Finnish"
+msgstr ""

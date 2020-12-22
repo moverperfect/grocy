@@ -358,3 +358,21 @@ msgstr "日本語"
 
 msgid "Chinese (Taiwan)"
 msgstr "中国語（台湾）"
+
+msgid "Greek"
+msgstr ""
+
+msgid "Korean"
+msgstr ""
+
+msgid "Chinese (China)"
+msgstr ""
+
+msgid "Hebrew (Israel)"
+msgstr ""
+
+msgid "Tamil"
+msgstr ""
+
+msgid "Finnish"
+msgstr ""

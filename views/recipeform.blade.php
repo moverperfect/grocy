@@ -8,21 +8,11 @@
 
 @section('viewJsName', 'recipeform')
 
-@push('pageScripts')
-<script src="{{ $U('/node_modules/datatables.net-rowgroup/js/dataTables.rowGroup.min.js?v=', true) }}{{ $version }}"></script>
-<script src="{{ $U('/node_modules/datatables.net-rowgroup-bs4/js/rowGroup.bootstrap4.min.js?v=', true) }}{{ $version }}"></script>
-@endpush
-
-@push('pageStyles')
-<link href="{{ $U('/node_modules/datatables.net-rowgroup-bs4/css/rowGroup.bootstrap4.min.css?v=', true) }}{{ $version }}"
-	rel="stylesheet">
-@endpush
-
 @section('content')
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
+
 		<script>
 			Grocy.EditMode = '{{ $mode }}';
 			Grocy.QuantityUnits = {!! json_encode($quantityunits) !!};
@@ -43,6 +33,8 @@
 	</div>
 </div>
 
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-xs-12 col-md-7 pb-3">
 		<form id="recipe-form"
@@ -59,58 +51,28 @@
 				<div class="invalid-feedback">{{ $__t('A name is required') }}</div>
 			</div>
 
-			<div class="form-group">
-				<label for="recipe-picture">
-					{{ $__t('Picture') }}
-				</label>
-				<div class="input-group">
-					<div class="custom-file">
-						<input type="file"
-							class="custom-file-input"
-							id="recipe-picture"
-							accept="image/*">
-						<label id="recipe-picture-label"
-							class="custom-file-label @if(empty($recipe->picture_file_name)) d-none @endif"
-							for="recipe-picture">
-							{{ $recipe->picture_file_name }}
-						</label>
-						<label id="recipe-picture-label-none"
-							class="custom-file-label @if(!empty($recipe->picture_file_name)) d-none @endif"
-							for="recipe-picture">
-							{{ $__t('No file selected') }}
-						</label>
-					</div>
-					<div class="input-group-append">
-						<span class="input-group-text"><i class="fas fa-trash"
-								id="delete-current-recipe-picture-button"></i></span>
-					</div>
-				</div>
-			</div>
-
 			@php if($mode == 'edit') { $value = $recipe->base_servings; } else { $value = 1; } @endphp
 			@include('components.numberpicker', array(
 			'id' => 'base_servings',
 			'label' => 'Servings',
-			'min' => 1,
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'decimals' => $userSettings['stock_decimal_places_amounts'],
 			'value' => $value,
-			'invalidFeedback' => $__t('This cannot be lower than %s', '1'),
-			'hint' => $__t('The ingredients listed here result in this amount of servings')
+			'hint' => $__t('The ingredients listed here result in this amount of servings'),
+			'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
 			))
 
 			<div class="form-group">
 				<div class="custom-control custom-checkbox">
-					<input type="hidden"
-						name="not_check_shoppinglist"
-						value="0">
 					<input @if($mode=='edit'
 						&&
 						$recipe->not_check_shoppinglist == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="not_check_shoppinglist" name="not_check_shoppinglist" value="1">
 					<label class="form-check-label custom-control-label"
 						for="not_check_shoppinglist">
 						{{ $__t('Do not check against the shopping list when adding missing items to it') }}&nbsp;
-						<i class="fas fa-question-circle"
+						<i class="fas fa-question-circle text-muted"
 							data-toggle="tooltip"
-							title="{{ $__t('By default the amount to be added to the shopping list is `needed amount - stock amount - shopping list amount` - when this is enabled, it is only checked against the stock amount, not against what is already on the shopping list') }}"></i>
+							title="{{ $__t('By default the amount to be added to the shopping list is "needed amount - stock amount - shopping list amount" - when this is enabled, it is only checked against the stock amount, not against what is already on the shopping list') }}"></i>
 					</label>
 				</div>
 			</div>
@@ -120,7 +82,8 @@
 			'isRequired' => false,
 			'label' => 'Produces product',
 			'prefillById' => $mode == 'edit' ? $recipe->product_id : '',
-			'hint' => $__t('When a product is selected, one unit (per serving in purchase quantity unit) will be added to stock on consuming this recipe')
+			'hint' => $__t('When a product is selected, one unit (per serving in stock quantity unit) will be added to stock on consuming this recipe'),
+			'disallowAllProductWorkflows' => true,
 			))
 
 			@include('components.userfieldsform', array(
@@ -148,28 +111,20 @@
 	<div class="col-xs-12 col-md-5 pb-3 @if($mode == 'create') d-none @endif">
 		<div class="row">
 			<div class="col">
-				@if(!empty($recipe->picture_file_name))
-				<img id="current-recipe-picture"
-					data-src="{{ $U('/api/files/recipepictures/' . base64_encode($recipe->picture_file_name) . '?force_serve_as=picture&best_fit_width=400') }}"
-					class="img-fluid img-thumbnail mt-2 lazy mb-5">
-				<p id="delete-current-recipe-picture-on-save-hint"
-					class="form-text text-muted font-italic d-none mb-5">{{ $__t('The current picture will be deleted when you save the recipe') }}</p>
-				@else
-				<p id="no-current-recipe-picture-hint"
-					class="form-text text-muted font-italic mb-5">{{ $__t('No picture available') }}</p>
-				@endif
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col">
 				<div class="title-related-links">
 					<h4>
 						{{ $__t('Ingredients list') }}
 					</h4>
-					<div class="related-links">
+					<button class="btn btn-outline-dark d-md-none mt-2 float-right order-1 order-md-3"
+						type="button"
+						data-toggle="collapse"
+						data-target="#related-links">
+						<i class="fas fa-ellipsis-v"></i>
+					</button>
+					<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
+						id="related-links">
 						<a id="recipe-pos-add-button"
-							class="btn btn-outline-primary btn-sm recipe-pos-add-button"
+							class="btn btn-outline-primary btn-sm recipe-pos-add-button m-1 mt-md-0 mb-md-0 float-right"
 							type="button"
 							href="#">
 							{{ $__t('Add') }}
@@ -178,14 +133,20 @@
 				</div>
 
 				<table id="recipes-pos-table"
-					class="table table-sm table-striped dt-responsive">
+					class="table table-sm table-striped nowrap w-100">
 					<thead>
 						<tr>
-							<th class="border-right"></th>
+							<th class="border-right"><a class="text-muted change-table-columns-visibility-button"
+									data-toggle="tooltip"
+									data-toggle="tooltip"
+									title="{{ $__t('Table options') }}"
+									data-table-selector="#recipes-pos-table"
+									href="#"><i class="fas fa-eye"></i></a>
+							</th>
 							<th>{{ $__t('Product') }}</th>
 							<th>{{ $__t('Amount') }}</th>
 							<th class="fit-content">{{ $__t('Note') }}</th>
-							<th class="d-none">Hiden ingredient group</th>
+							<th>{{ $__t('Ingredient group') }}</th>
 						</tr>
 					</thead>
 					<tbody class="d-none">
@@ -216,7 +177,7 @@
 								$productQuConversions = FindAllObjectsInArrayByPropertyValue($quantityUnitConversionsResolved, 'product_id', $product->id);
 								$productQuConversions = FindAllObjectsInArrayByPropertyValue($productQuConversions, 'from_qu_id', $product->qu_id_stock);
 								$productQuConversion = FindObjectInArrayByPropertyValue($productQuConversions, 'to_qu_id', $recipePosition->qu_id);
-								if ($productQuConversion)
+								if ($productQuConversion && $recipePosition->only_check_single_unit_in_stock == 0)
 								{
 								$recipePosition->amount = $recipePosition->amount * $productQuConversion->factor;
 								}
@@ -259,19 +220,32 @@
 					<h4>
 						{{ $__t('Included recipes') }}
 					</h4>
-					<div class="related-links">
+					<button class="btn btn-outline-dark d-md-none mt-2 float-right order-1 order-md-3"
+						type="button"
+						data-toggle="collapse"
+						data-target="#related-links">
+						<i class="fas fa-ellipsis-v"></i>
+					</button>
+					<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
+						id="related-links">
 						<a id="recipe-include-add-button"
-							class="btn btn-outline-primary btn-sm"
+							class="btn btn-outline-primary btn-sm m-1 mt-md-0 mb-md-0 float-right"
 							href="#">
 							{{ $__t('Add') }}
 						</a>
 					</div>
 				</div>
 				<table id="recipes-includes-table"
-					class="table table-sm table-striped dt-responsive">
+					class="table table-sm table-striped nowrap w-100">
 					<thead>
 						<tr>
-							<th class="border-right"></th>
+							<th class="border-right"><a class="text-muted change-table-columns-visibility-button"
+									data-toggle="tooltip"
+									data-toggle="tooltip"
+									title="{{ $__t('Table options') }}"
+									data-table-selector="#recipes-includes-table"
+									href="#"><i class="fas fa-eye"></i></a>
+							</th>
 							<th>{{ $__t('Recipe') }}</th>
 							<th>{{ $__t('Servings') }}</th>
 						</tr>
@@ -308,6 +282,50 @@
 				</table>
 			</div>
 		</div>
+
+		<div class="row mt-5">
+			<div class="col">
+				<div class="title-related-links">
+					<h4>
+						{{ $__t('Picture') }}
+					</h4>
+					<div class="form-group w-75 m-0">
+						<div class="input-group">
+							<div class="custom-file">
+								<input type="file"
+									class="custom-file-input"
+									id="recipe-picture"
+									accept="image/*">
+								<label id="recipe-picture-label"
+									class="custom-file-label @if(empty($recipe->picture_file_name)) d-none @endif"
+									for="recipe-picture">
+									{{ $recipe->picture_file_name }}
+								</label>
+								<label id="recipe-picture-label-none"
+									class="custom-file-label @if(!empty($recipe->picture_file_name)) d-none @endif"
+									for="recipe-picture">
+									{{ $__t('No file selected') }}
+								</label>
+							</div>
+							<div class="input-group-append">
+								<span class="input-group-text"><i class="fas fa-trash"
+										id="delete-current-recipe-picture-button"></i></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				@if(!empty($recipe->picture_file_name))
+				<img id="current-recipe-picture"
+					data-src="{{ $U('/api/files/recipepictures/' . base64_encode($recipe->picture_file_name) . '?force_serve_as=picture&best_fit_width=400') }}"
+					class="img-fluid img-thumbnail mt-2 lazy mb-5">
+				<p id="delete-current-recipe-picture-on-save-hint"
+					class="form-text text-muted font-italic d-none mb-5">{{ $__t('The current picture will be deleted on save') }}</p>
+				@else
+				<p id="no-current-recipe-picture-hint"
+					class="form-text text-muted font-italic mb-5">{{ $__t('No picture available') }}</p>
+				@endif
+			</div>
+		</div>
 	</div>
 
 </div>
@@ -333,9 +351,10 @@
 					@include('components.numberpicker', array(
 					'id' => 'includes_servings',
 					'label' => 'Servings',
-					'min' => 1,
+					'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+					'decimals' => $userSettings['stock_decimal_places_amounts'],
 					'value' => '1',
-					'invalidFeedback' => $__t('This cannot be lower than %s', '1')
+					'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
 					))
 
 				</form>

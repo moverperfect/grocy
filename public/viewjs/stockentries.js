@@ -3,9 +3,10 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	],
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#stockentries-table tbody').removeClass("d-none");
+stockEntriesTable.columns.adjust().draw();
 
 $.fn.dataTable.ext.search.push(function(settings, data, dataIndex)
 {
@@ -19,8 +20,18 @@ $.fn.dataTable.ext.search.push(function(settings, data, dataIndex)
 	return false;
 });
 
+$("#clear-filter-button").on("click", function()
+{
+	Grocy.Components.ProductPicker.Clear();
+	stockEntriesTable.draw();
+});
 
 Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
+{
+	stockEntriesTable.draw();
+});
+
+Grocy.Components.ProductPicker.GetInputElement().on('keyup', function(e)
 {
 	stockEntriesTable.draw();
 });
@@ -43,13 +54,13 @@ $(document).on('click', '.stock-consume-button', function(e)
 
 	var wasSpoiled = $(e.currentTarget).hasClass("stock-consume-button-spoiled");
 
-	Grocy.Api.Post('stock/products/' + productId + '/consume', { 'amount': consumeAmount, 'spoiled': wasSpoiled, 'location_id': locationId, 'stock_entry_id': specificStockEntryId },
+	Grocy.Api.Post('stock/products/' + productId + '/consume', { 'amount': consumeAmount, 'spoiled': wasSpoiled, 'location_id': locationId, 'stock_entry_id': specificStockEntryId, 'exact_amount': true },
 		function(bookingResponse)
 		{
 			Grocy.Api.Get('stock/products/' + productId,
 				function(result)
 				{
-					var toastMessage = __t('Removed %1$s of %2$s from stock', consumeAmount.toString() + " " + __n(consumeAmount, result.quantity_unit_stock.name, result.quantity_unit_stock.name_plural), result.product.name) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoStockBookingEntry(' + bookingResponse.id + ',' + stockRowId + ')"><i class="fas fa-undo"></i> ' + __t("Undo") + '</a>';
+					var toastMessage = __t('Removed %1$s of %2$s from stock', parseFloat(consumeAmount).toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts }) + " " + __n(consumeAmount, result.quantity_unit_stock.name, result.quantity_unit_stock.name_plural), result.product.name) + '<br><a class="btn btn-secondary btn-sm mt-2" href="#" onclick="UndoStockBookingEntry(' + bookingResponse.id + ',' + stockRowId + ')"><i class="fas fa-undo"></i> ' + __t("Undo") + '</a>';
 					if (wasSpoiled)
 					{
 						toastMessage += " (" + __t("Spoiled") + ")";
@@ -135,7 +146,7 @@ function RefreshStockEntryRow(stockRowId)
 			}
 			else
 			{
-				var expiringThreshold = moment().add(Grocy.UserSettings.stock_expring_soon_days, "days");
+				var dueThreshold = moment().add(Grocy.UserSettings.stock_due_soon_days, "days");
 				var now = moment();
 				var bestBeforeDate = moment(result.best_before_date);
 
@@ -146,9 +157,16 @@ function RefreshStockEntryRow(stockRowId)
 				stockRow.removeAttr("style");
 				if (now.isAfter(bestBeforeDate))
 				{
-					stockRow.addClass("table-danger");
+					if (stockRow.attr("data-due-type") == 1)
+					{
+						stockRow.addClass("table-secondary");
+					}
+					else
+					{
+						stockRow.addClass("table-danger");
+					}
 				}
-				else if (bestBeforeDate.isBefore(expiringThreshold))
+				else if (bestBeforeDate.isBefore(dueThreshold))
 				{
 					stockRow.addClass("table-warning");
 				}
@@ -156,8 +174,8 @@ function RefreshStockEntryRow(stockRowId)
 				animateCSS("#stock-" + stockRowId + "-row td:not(:first)", "shake");
 
 				$('#stock-' + stockRowId + '-amount').text(result.amount);
-				$('#stock-' + stockRowId + '-best-before-date').text(result.best_before_date);
-				$('#stock-' + stockRowId + '-best-before-date-timeago').attr('datetime', result.best_before_date + ' 23:59:59');
+				$('#stock-' + stockRowId + '-due-date').text(result.best_before_date);
+				$('#stock-' + stockRowId + '-due-date-timeago').attr('datetime', result.best_before_date + ' 23:59:59');
 
 				$(".stock-consume-button").attr('data-location-id', result.location_id);
 
@@ -177,7 +195,6 @@ function RefreshStockEntryRow(stockRowId)
 				);
 
 				$('#stock-' + stockRowId + '-price').text(result.price);
-				$('#stock-' + stockRowId + '-qu-factor-purchase-to-stock').text(result.qu_factor_purchase_to_stock);
 				$('#stock-' + stockRowId + '-purchased-date').text(result.purchased_date);
 				$('#stock-' + stockRowId + '-purchased-date-timeago').attr('datetime', result.purchased_date + ' 23:59:59');
 

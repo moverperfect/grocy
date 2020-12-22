@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="{{ GROCY_LOCALE }}">
+<html lang="{{ GROCY_LOCALE }}"
+	dir="{{ $dir }}">
 
 <head>
 	<meta charset="utf-8">
@@ -46,7 +47,6 @@
 		content="#ffffff">
 
 	<title>@yield('title') | grocy</title>
-
 	<link href="{{ $U('/node_modules/bootstrap/dist/css/bootstrap.min.css?v=', true) }}{{ $version }}"
 		rel="stylesheet">
 	<link href="{{ $U('/node_modules/startbootstrap-sb-admin/css/sb-admin.min.css?v=', true) }}{{ $version }}"
@@ -57,9 +57,9 @@
 		rel="stylesheet">
 	<link href="{{ $U('/node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css?v=', true) }}{{ $version }}"
 		rel="stylesheet">
-	<link href="{{ $U('/node_modules/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css?v=', true) }}{{ $version }}"
-		rel="stylesheet">
 	<link href="{{ $U('/node_modules/datatables.net-colreorder-bs4/css/colReorder.bootstrap4.min.css?v=', true) }}{{ $version }}"
+		rel="stylesheet">
+	<link href="{{ $U('/node_modules/datatables.net-rowgroup-bs4/css/rowGroup.bootstrap4.min.css?v=', true) }}{{ $version }}"
 		rel="stylesheet">
 	<link href="{{ $U('/node_modules/datatables.net-select-bs4/css/select.bootstrap4.min.css?v=', true) }}{{ $version }}"
 		rel="stylesheet">
@@ -71,7 +71,7 @@
 		rel="stylesheet">
 	<link href="{{ $U('/node_modules/bootstrap-select/dist/css/bootstrap-select.min.css?v=', true) }}{{ $version }}"
 		rel="stylesheet">
-	<link href="{{ $U('/components_unmanaged/noto-sans-v9-latin/noto-sans-v9-latin.min.css?v=', true) }}{{ $version }}"
+	<link href="{{ $U('/components_unmanaged/noto-sans-v11-latin/noto-sans-v11-latin.min.css?v=', true) }}{{ $version }}"
 		rel="stylesheet">
 	<link href="{{ $U('/css/grocy.css?v=', true) }}{{ $version }}"
 		rel="stylesheet">
@@ -82,7 +82,6 @@
 	@if(file_exists(GROCY_DATAPATH . '/custom_css.html'))
 	@php include GROCY_DATAPATH . '/custom_css.html' @endphp
 	@endif
-
 	<script>
 		var Grocy = { };
 		Grocy.Components = { };
@@ -171,7 +170,7 @@
 					data-nav-for-page="recipes">
 					<a class="nav-link discrete-link"
 						href="{{ $U('/recipes') }}">
-						<i class="fas fa-cocktail"></i>
+						<i class="fas fa-pizza-slice"></i>
 						<span class="nav-link-text">{{ $__t('Recipes') }}</span>
 					</a>
 				</li>
@@ -264,7 +263,7 @@
 					data-nav-for-page="purchase">
 					<a class="nav-link discrete-link"
 						href="{{ $U('/purchase') }}">
-						<i class="fas fa-shopping-cart"></i>
+						<i class="fas fa-cart-plus"></i>
 						<span class="nav-link-text">{{ $__t('Purchase') }}</span>
 					</a>
 				</li>
@@ -325,7 +324,7 @@
 					data-nav-for-page="batterytracking">
 					<a class="nav-link discrete-link"
 						href="{{ $U('/batterytracking') }}">
-						<i class="fas fa-fire"></i>
+						<i class="fas fa-car-battery"></i>
 						<span class="nav-link-text">{{ $__t('Battery tracking') }}</span>
 					</a>
 				</li>
@@ -363,21 +362,19 @@
 					</a>
 					<ul id="top-nav-manager-master-data"
 						class="sidenav-second-level collapse">
-						@if(GROCY_FEATURE_FLAG_STOCK)
 						<li data-nav-for-page="products"
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/products') }}">
-								<i class="fab fa-product-hunt"></i>
 								<span class="nav-link-text">{{ $__t('Products') }}</span>
 							</a>
 						</li>
+						@if(GROCY_FEATURE_FLAG_STOCK)
 						@if(GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING)
 						<li data-nav-for-page="locations"
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/locations') }}">
-								<i class="fas fa-map-marker-alt"></i>
 								<span class="nav-link-text">{{ $__t('Locations') }}</span>
 							</a>
 						</li>
@@ -387,16 +384,15 @@
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/shoppinglocations') }}">
-								<i class="fas fa-shopping-cart"></i>
 								<span class="nav-link-text">{{ $__t('Stores') }}</span>
 							</a>
 						</li>
+						@endif
 						@endif
 						<li data-nav-for-page="quantityunits"
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/quantityunits') }}">
-								<i class="fas fa-balance-scale"></i>
 								<span class="nav-link-text">{{ $__t('Quantity units') }}</span>
 							</a>
 						</li>
@@ -404,17 +400,14 @@
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/productgroups') }}">
-								<i class="fas fa-object-group"></i>
 								<span class="nav-link-text">{{ $__t('Product groups') }}</span>
 							</a>
 						</li>
-						@endif
 						@if(GROCY_FEATURE_FLAG_CHORES)
 						<li data-nav-for-page="chores"
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/chores') }}">
-								<i class="fas fa-home"></i>
 								<span class="nav-link-text">{{ $__t('Chores') }}</span>
 							</a>
 						</li>
@@ -424,7 +417,6 @@
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/batteries') }}">
-								<i class="fas fa-battery-half"></i>
 								<span class="nav-link-text">{{ $__t('Batteries') }}</span>
 							</a>
 						</li>
@@ -434,7 +426,6 @@
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/taskcategories') }}">
-								<i class="fas fa-project-diagram "></i>
 								<span class="nav-link-text">{{ $__t('Task categories') }}</span>
 							</a>
 						</li>
@@ -443,7 +434,6 @@
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/userfields') }}">
-								<i class="fas fa-bookmark "></i>
 								<span class="nav-link-text">{{ $__t('Userfields') }}</span>
 							</a>
 						</li>
@@ -451,7 +441,6 @@
 							data-sub-menu-of="#top-nav-manager-master-data">
 							<a class="nav-link discrete-link"
 								href="{{ $U('/userentities') }}">
-								<i class="fas fa-bookmark "></i>
 								<span class="nav-link-text">{{ $__t('Userentities') }}</span>
 							</a>
 						</li>
@@ -471,9 +460,17 @@
 			<ul class="navbar-nav ml-auto">
 				@if(GROCY_AUTHENTICATED === true && !GROCY_IS_EMBEDDED_INSTALL && GROCY_SHOW_AUTH_VIEWS)
 				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle discrete-link"
+					<a class="nav-link dropdown-toggle discrete-link @if(!empty(GROCY_USER_PICTURE_FILE_NAME)) py-0 @endif"
 						href="#"
-						data-toggle="dropdown"><i class="fas fa-user"></i> {{ GROCY_USER_USERNAME }}</a>
+						data-toggle="dropdown">
+						@if(empty(GROCY_USER_PICTURE_FILE_NAME))
+						<i class="fas fa-user"></i>
+						@else
+						<img class="rounded-circle"
+							src="{{ $U('/files/userpictures/' . base64_encode(GROCY_USER_PICTURE_FILE_NAME) . '_' . base64_encode(GROCY_USER_PICTURE_FILE_NAME) . '?force_serve_as=picture&best_fit_width=32&best_fit_height=32') }}">
+						@endif
+						{{ GROCY_USER_USERNAME }}
+					</a>
 
 					<div class="dropdown-menu dropdown-menu-right">
 						<a class="dropdown-item logout-button discrete-link"
@@ -612,7 +609,7 @@
 						@endif
 						@if(GROCY_FEATURE_FLAG_RECIPES)
 						<a class="dropdown-item discrete-link permission-RECIPES"
-							href="{{ $U('/recipessettings') }}"><i class="fas fa-cocktail"></i>&nbsp;{{ $__t('Recipes settings') }}</a>
+							href="{{ $U('/recipessettings') }}"><i class="fas fa-pizza-slice"></i>&nbsp;{{ $__t('Recipes settings') }}</a>
 						@endif
 						@if(GROCY_FEATURE_FLAG_CHORES)
 						<a class="dropdown-item discrete-link permission-CHORES"
@@ -675,13 +672,14 @@
 	<script src="{{ $U('/node_modules/@danielfarrell/bootstrap-combobox/js/bootstrap-combobox.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules/datatables.net/js/jquery.dataTables.min.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js?v=', true) }}{{ $version }}"></script>
-	<script src="{{ $U('/node_modules/datatables.net-responsive/js/dataTables.responsive.min.js?v=', true) }}{{ $version }}"></script>
-	<script src="{{ $U('/node_modules/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules/datatables.net-colreorder/js/dataTables.colReorder.min.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules/datatables.net-colreorder-bs4/js/colReorder.bootstrap4.min.js?v=', true) }}{{ $version }}"></script>
+	<script src="{{ $U('/node_modules/datatables.net-plugins/filtering/type-based/accent-neutralise.js?v=', true) }}{{ $version }}"></script>
+	<script src="{{ $U('/node_modules/datatables.net-plugins/sorting/chinese-string.js?v=', true) }}{{ $version }}"></script>
+	<script src="{{ $U('/node_modules/datatables.net-rowgroup/js/dataTables.rowGroup.min.js?v=', true) }}{{ $version }}"></script>
+	<script src="{{ $U('/node_modules/datatables.net-rowgroup-bs4/js/rowGroup.bootstrap4.min.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules/datatables.net-select/js/dataTables.select.min.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules/datatables.net-select-bs4/js/select.bootstrap4.min.js?v=', true) }}{{ $version }}"></script>
-	<script src="{{ $U('/node_modules/datatables.net-plugins/filtering/type-based/accent-neutralise.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules/timeago/jquery.timeago.js?v=', true) }}{{ $version }}"></script>
 	<script src="{{ $U('/node_modules', true) }}/timeago/locales/jquery.timeago.{{ $__t('timeago_locale') }}.js?v={{ $version }}"></script>
 	<script src="{{ $U('/node_modules/toastr/build/toastr.min.js?v=', true) }}{{ $version }}"></script>

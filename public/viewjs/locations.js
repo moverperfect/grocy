@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#locations-table tbody').removeClass("d-none");
 locationsTable.columns.adjust().draw();
@@ -19,9 +19,15 @@ $("#search").on("keyup", Delay(function()
 	locationsTable.search(value).draw();
 }, 200));
 
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	locationsTable.search("").draw();
+});
+
 $(document).on('click', '.location-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-location-name'));
+	var objectName = $(e.currentTarget).attr('data-location-name');
 	var objectId = $(e.currentTarget).attr('data-location-id');
 
 	bootbox.confirm({

@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 
@@ -43,6 +45,19 @@
 			</div>
 
 			<div class="form-group">
+				<div class="custom-control custom-checkbox">
+					<input @if($mode=='create'
+						)
+						checked
+						@elseif($mode=='edit'
+						&&
+						$battery->active == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="active" name="active" value="1">
+					<label class="form-check-label custom-control-label"
+						for="active">{{ $__t('Active') }}</label>
+				</div>
+			</div>
+
+			<div class="form-group">
 				<label for="description">{{ $__t('Description') }}</label>
 				<input type="text"
 					class="form-control"
@@ -66,8 +81,7 @@
 			'label' => 'Charge cycle interval (days)',
 			'value' => $value,
 			'min' => '0',
-			'hint' => $__t('0 means suggestions for the next charge cycle are disabled'),
-			'invalidFeedback' => $__t('This cannot be negative')
+			'hint' => $__t('0 means suggestions for the next charge cycle are disabled')
 			))
 
 			@include('components.userfieldsform', array(

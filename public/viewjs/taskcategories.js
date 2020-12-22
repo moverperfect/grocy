@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#taskcategories-table tbody').removeClass("d-none");
 categoriesTable.columns.adjust().draw();
@@ -19,9 +19,15 @@ $("#search").on("keyup", Delay(function()
 	categoriesTable.search(value).draw();
 }, 200));
 
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	categoriesTable.search("").draw();
+});
+
 $(document).on('click', '.task-category-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-category-name'));
+	var objectName = $(e.currentTarget).attr('data-category-name');
 	var objectId = $(e.currentTarget).attr('data-category-id');
 
 	bootbox.confirm({

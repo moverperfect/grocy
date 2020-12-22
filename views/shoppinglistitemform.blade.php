@@ -9,12 +9,19 @@
 @section('viewJsName', 'shoppinglistitemform')
 
 @section('content')
+<script>
+	Grocy.QuantityUnits = {!! json_encode($quantityUnits) !!};
+	Grocy.QuantityUnitConversionsResolved = {!! json_encode($quantityUnitConversionsResolved) !!};
+</script>
+
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-xs-12 col-md-6 col-xl-4 pb-3">
 		<script>
@@ -33,7 +40,7 @@
 			@if(GROCY_FEATURE_FLAG_SHOPPINGLIST_MULTIPLE_LISTS)
 			<div class="form-group">
 				<label for="shopping_list_id">{{ $__t('Shopping list') }}</label>
-				<select class="form-control"
+				<select class="custom-control custom-select"
 					id="shopping_list_id"
 					name="shopping_list_id">
 					@foreach($shoppingLists as $shoppingList)
@@ -50,23 +57,23 @@
 				value="1">
 			@endif
 
-			@php if($mode == 'edit') { $productId = $listItem->product_id; } else { $productId = ''; } @endphp
-			@include('components.productpicker', array(
-			'products' => $products,
-			'nextInputSelector' => '#amount',
-			'isRequired' => false,
-			'prefillById' => $productId
-			))
+			<div>
+				@php if($mode == 'edit') { $productId = $listItem->product_id; } else { $productId = ''; } @endphp
+				@include('components.productpicker', array(
+				'products' => $products,
+				'nextInputSelector' => '#amount',
+				'isRequired' => false,
+				'prefillById' => $productId
+				))
+			</div>
 
 			@php if($mode == 'edit') { $value = $listItem->amount; } else { $value = 1; } @endphp
-			@include('components.numberpicker', array(
-			'id' => 'amount',
-			'label' => 'Amount',
-			'hintId' => 'amount_qu_unit',
-			'min' => 0.01,
-			'step' => 0.01,
+			@php if($mode == 'edit') { $initialQuId = $listItem->qu_id; } else { $initialQuId = ''; } @endphp
+			@include('components.productamountpicker', array(
 			'value' => $value,
-			'invalidFeedback' => $__t('The amount cannot be lower than %s', '0.01')
+			'initialQuId' => $initialQuId,
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'isRequired' => false
 			))
 
 			<div class="form-group">
@@ -77,14 +84,15 @@
 					name="note">@if($mode == 'edit'){{ $listItem->note }}@endif</textarea>
 			</div>
 
+			@include('components.userfieldsform', array(
+			'userfields' => $userfields,
+			'entity' => 'shopping_list'
+			))
+
 			<button id="save-shoppinglist-button"
 				class="btn btn-success">{{ $__t('Save') }}</button>
 
 		</form>
-	</div>
-
-	<div class="col-xs-12 col-md-6 col-xl-4 hide-when-embedded">
-		@include('components.productcard')
 	</div>
 </div>
 @stop

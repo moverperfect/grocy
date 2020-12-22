@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 		<script>
@@ -51,16 +53,15 @@
 
 			@if(GROCY_FEATURE_FLAG_STOCK_PRODUCT_FREEZING)
 			<div class="form-group">
-				<div class="form-check">
-					<input type="hidden"
-						name="is_freezer"
-						value="0">
+				<div class="custom-control custom-checkbox">
 					<input @if($mode=='edit'
 						&&
-						$location->is_freezer == 1) checked @endif class="form-check-input" type="checkbox" id="is_freezer" name="is_freezer" value="1">
-					<label class="form-check-label"
+						$location->is_freezer == 1) checked @endif class="form-check-input custom-control-input" type="checkbox" id="is_freezer" name="is_freezer" value="1">
+					<label class="form-check-label custom-control-label"
 						for="is_freezer">{{ $__t('Is freezer') }}
-						<span class="text-muted small">{{ $__t('When moving products from/to a freezer location, the products best before date is automatically adjusted according to the product settings') }}</span>
+						&nbsp;<i class="fas fa-question-circle text-muted"
+							data-toggle="tooltip"
+							title="{{ $__t('When moving products from/to a freezer location, the products due date is automatically adjusted according to the product settings') }}"></i>
 					</label>
 				</div>
 			</div>

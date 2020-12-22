@@ -4,20 +4,18 @@
 
 <div class="card batterycard">
 	<div class="card-header">
-		<i class="fas fa-battery-three-quarters"></i> {{ $__t('Battery overview') }}
+		<span class="float-left">{{ $__t('Battery overview') }}</span>
 		<a id="batterycard-battery-edit-button"
-			class="btn btn-sm btn-outline-info py-0 float-right disabled"
+			class="btn btn-sm btn-outline-secondary py-0 float-right disabled"
 			href="#"
 			data-toggle="tooltip"
 			title="{{ $__t('Edit battery') }}">
 			<i class="fas fa-edit"></i>
 		</a>
 		<a id="batterycard-battery-journal-button"
-			class="btn btn-sm btn-outline-secondary py-0 mr-2 float-right disabled show-as-dialog-link"
-			href="#"
-			data-toggle="tooltip"
-			title="{{ $__t('Journal for this battery') }}">
-			<i class="fas fa-file-alt"></i>
+			class="btn btn-sm btn-outline-secondary py-0 mr-1 float-right disabled show-as-dialog-link"
+			href="#">
+			{{ $__t('Battery journal') }}
 		</a>
 	</div>
 	<div class="card-body">

@@ -1,6 +1,13 @@
 ﻿var equipmentTable = $('#equipment-table').DataTable({
 	'order': [[0, 'asc']],
-	'select': 'single',
+	'columnDefs': [
+		{ 'orderable': false, 'targets': 0 },
+		{ 'searchable': false, "targets": 0 }
+	].concat($.fn.dataTable.defaults.columnDefs),
+	select: {
+		style: 'single',
+		selector: 'tr td:not(:first-child)'
+	},
 	'initComplete': function()
 	{
 		this.api().row({ order: 'current' }, 0).select();
@@ -27,14 +34,14 @@ function DisplayEquipment(id)
 			$(".selected-equipment-name").text(equipmentItem.name);
 			$("#description-tab-content").html(equipmentItem.description);
 			$(".equipment-edit-button").attr("href", U("/equipment/" + equipmentItem.id.toString()));
-			$(".equipment-delete-button").attr("data-equipment-id", equipmentItem.id);
-			$(".equipment-delete-button").attr("data-equipment-name", equipmentItem.name);
 
 			if (equipmentItem.instruction_manual_file_name !== null && !equipmentItem.instruction_manual_file_name.isEmpty())
 			{
 				var pdfUrl = U('/api/files/equipmentmanuals/' + btoa(equipmentItem.instruction_manual_file_name));
 				$("#selected-equipment-instruction-manual").attr("src", pdfUrl);
+				$("#selectedEquipmentInstructionManualDownloadButton").attr("href", pdfUrl);
 				$("#selected-equipment-instruction-manual").removeClass("d-none");
+				$("#selectedEquipmentInstructionManualDownloadButton").removeClass("d-none");
 				$("#selected-equipment-has-no-instruction-manual-hint").addClass("d-none");
 
 				$("a[href='#instruction-manual-tab']").tab("show");
@@ -43,6 +50,7 @@ function DisplayEquipment(id)
 			else
 			{
 				$("#selected-equipment-instruction-manual").addClass("d-none");
+				$("#selectedEquipmentInstructionManualDownloadButton").addClass("d-none");
 				$("#selected-equipment-has-no-instruction-manual-hint").removeClass("d-none");
 
 				$("a[href='#description-tab']").tab("show");
@@ -66,9 +74,15 @@ $("#search").on("keyup", Delay(function()
 	equipmentTable.search(value).draw();
 }, 200));
 
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	equipmentTable.search("").draw();
+});
+
 $(document).on('click', '.equipment-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-equipment-name'));
+	var objectName = $(e.currentTarget).attr('data-equipment-name');
 	var objectId = $(e.currentTarget).attr('data-equipment-id');
 
 	bootbox.confirm({

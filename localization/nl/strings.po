@@ -19,6 +19,7 @@
 # Sigi 789 <ssigi333lvl3@outlook.com>, 2020
 # Jesse Nagel <jnagel24@gmail.com>, 2020
 # Peter van den Heuvel <peter@pvandenheuvel.nl>, 2020
+# ellem, 2020
 # 
 msgid ""
 msgstr ""
@@ -26,7 +27,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-05-01T17:59:17+00:00\n"
 "PO-Revision-Date: 2019-05-01 17:42+0000\n"
-"Last-Translator: Peter van den Heuvel <peter@pvandenheuvel.nl>, 2020\n"
+"Last-Translator: ellem, 2020\n"
 "Language-Team: Dutch (https://www.transifex.com/grocy/teams/93189/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -53,6 +54,11 @@ msgid_plural "%s products are already expired"
 msgstr[0] "%s product is al verlopen"
 msgstr[1] "%s producten zijn al verlopen"
 
+msgid "%s product is overdue"
+msgid_plural "%s products are overdue"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%s product is below defined min. stock amount"
 msgid_plural "%s products are below defined min. stock amount"
 msgstr[0] "%s product onder min. voorraadhoeveelheid"
@@ -68,9 +74,6 @@ msgstr[1] "%s producten"
 
 msgid "Amount"
 msgstr "Hoeveelheid"
-
-msgid "Next best before date"
-msgstr "Eerstvolgende houdbaarheidsdatum"
 
 msgid "Logout"
 msgstr "Uitloggen"
@@ -207,15 +210,6 @@ msgstr "Locatie"
 msgid "Min. stock amount"
 msgstr "Min. voorraadhoeveelheid"
 
-msgid "QU purchase"
-msgstr "HE aankoop"
-
-msgid "QU stock"
-msgstr "HE vooraad"
-
-msgid "QU factor"
-msgstr "HE-factor"
-
 msgid "Description"
 msgstr "Omschrijving"
 
@@ -231,8 +225,8 @@ msgstr "Minimale voorraadhoeveelheid"
 msgid "Default best before days"
 msgstr "Standaard houdbaarheidsdata"
 
-msgid "Quantity unit purchase"
-msgstr "Aankoopeenheid"
+msgid "Default quantity unit purchase"
+msgstr "Standaard aankoopeenheid"
 
 msgid "Quantity unit stock"
 msgstr "Voorraadeenheid"
@@ -297,16 +291,9 @@ msgstr "nooit"
 msgid "Add products that are below defined min. stock amount"
 msgstr "Voeg producten toe die onder min. voorraadhoeveelheid zijn"
 
-msgid ""
-"For purchases this amount of days will be added to today for the best before"
-" date suggestion"
-msgstr ""
-"Bij aankopen wordt dit aantal dagen toegevoegd aan vandaag voor de THT-"
-"suggestie"
-
 msgid "This means 1 %1$s purchased will be converted into %2$s %3$s in stock"
 msgstr ""
-"Dit betekent dat 1 %1$s aankoop geconverteerd zal worden in %2$s en %3$s "
+"Dit betekent dat 1 %1$s aankoop geconverteerd zal worden in %2$s %3$s "
 "voorraad"
 
 msgid "Login"
@@ -430,15 +417,6 @@ msgstr "Consumeer alle %s in voorraad"
 msgid "All"
 msgstr "Alle"
 
-msgid "Track charge cycle of battery %s"
-msgstr "Volg laadcyclus van de batterij %s"
-
-msgid "Track execution of chore %s"
-msgstr "Volg de uitvoering van de klus %s"
-
-msgid "Filter by location"
-msgstr "Filteren op locatie"
-
 msgid "Search"
 msgstr "Zoeken"
 
@@ -459,12 +437,6 @@ msgstr "Een naam is vereist"
 
 msgid "A location is required"
 msgstr "Een locatie is vereist"
-
-msgid "The amount cannot be lower than %s"
-msgstr "De hoeveelheid kan niet lager zijn dan %s"
-
-msgid "This cannot be negative"
-msgstr "Dit kan niet negatief zijn"
 
 msgid "A quantity unit is required"
 msgstr "Een hoeveelheidseenheid is vereist"
@@ -543,7 +515,8 @@ msgid "Recipe"
 msgstr "Recept"
 
 msgid "Not enough in stock, %1$s missing, %2$s already on shopping list"
-msgstr "Niet genoeg op voorraad, %s ontbreekt, %s al op de boodschappenlijst"
+msgstr ""
+"Niet genoeg op voorraad, %1$s ontbreekt, %2$s al op de boodschappenlijst"
 
 msgid "Show notes"
 msgstr "Toon notities"
@@ -606,9 +579,6 @@ msgstr "Laatst gedaan door"
 msgid "Unknown"
 msgstr "Onbekend"
 
-msgid "Filter by chore"
-msgstr "Filteren op klus"
-
 msgid "Chores journal"
 msgstr "Klussendagboek"
 
@@ -630,12 +600,6 @@ msgstr "Geen prijsgeschiedenis beschikbaar"
 
 msgid "Price"
 msgstr "Prijs"
-
-msgid "in %s per purchase quantity unit"
-msgstr "in %s per aankoophoeveelheid"
-
-msgid "The price cannot be lower than %s"
-msgstr "Prijs kan niet lager zijn dan %s"
 
 msgid "Unit"
 msgstr "Eenheid"
@@ -668,32 +632,16 @@ msgstr[1] "%sbatterijen moeten nog opgeladen worden"
 msgid "in singular form"
 msgstr "In enkelvoud"
 
-msgid "Never expires"
-msgstr "Vervalt nooit"
-
-msgid "This cannot be lower than %s"
-msgstr "Dit kan niet lager zijn dan %s"
-
-msgid "-1 means that this product never expires"
-msgstr "-1 wil zeggen dat het product nooit vervalt"
-
 msgid "Quantity unit"
 msgstr "Hoeveelheidseenheid"
 
-msgid ""
-"Only check if a single unit is in stock (a different quantity can then be "
-"used above)"
+msgid "Only check if any amount is in stock"
 msgstr ""
-"Controleer alleen of een enkele eenheid op voorraad is (een andere "
-"hoeveelheid kan dan hierboven worden gebruikt)"
 
 msgid ""
 "Are you sure to consume all ingredients needed by recipe \"%s\" (ingredients"
-" marked with \"check only if a single unit is in stock\" will be ignored)?"
+" marked with \"only check if any amount is in stock\" will be ignored)?"
 msgstr ""
-"Weet je zeker dat je alle ingrediënten gebruikt die nodig zijn voor het "
-"recept \"%s\" (ingrediënten gemarkeerd met \"controleer alleen als een "
-"enkele eenheid op voorraad is\" worden genegeerd)?"
 
 msgid "Removed all ingredients of recipe \"%s\" from stock"
 msgstr "Alle ingrediënten van recept \"%s\" uit voorraad verwijderd"
@@ -702,7 +650,7 @@ msgid "Consume all ingredients needed by this recipe"
 msgstr "Consumeer alle ingrediënten die voor dit recept nodig zijn"
 
 msgid "Click to show technical details"
-msgstr "Klik op technische details te tonen"
+msgstr "Klik om technische details te tonen"
 
 msgid "Error while saving, probably this item already exists"
 msgstr "Error bij opslaan, waarschijnlijk bestaat dit item al"
@@ -837,15 +785,8 @@ msgstr "Productafbeelding"
 msgid "No file selected"
 msgstr "Geen bestand geslecteerd"
 
-msgid "If you don't select a file, the current picture will not be altered"
-msgstr ""
-"De huidige afbeelding wordt niet gewijzigd als je geen bestand selecteert"
-
 msgid "Delete"
 msgstr "Verwijderen"
-
-msgid "The current picture will be deleted when you save the product"
-msgstr "De huidige afbeelding wordt gewist wanneer je het product opslaat"
 
 msgid "Select file"
 msgstr "Selecteer bestand"
@@ -853,15 +794,8 @@ msgstr "Selecteer bestand"
 msgid "Image of product %s"
 msgstr "Afbeelding van product %s"
 
-msgid ""
-"This product cannot be deleted because it is in stock, please remove the "
-"stock amount first."
+msgid "Deletion not possible"
 msgstr ""
-"Dit product kan niet worden verwijderd want het is op voorraad, verwijder "
-"dit eerst uit je voorraad."
-
-msgid "Delete not possible"
-msgstr "Verwijderen niet mogelijk"
 
 msgid "Equipment"
 msgstr "Apparaten"
@@ -881,27 +815,11 @@ msgstr "Bewerk apparaat"
 msgid "Create equipment"
 msgstr "Maak apparaat"
 
-msgid ""
-"If you don't select a file, the current instruction manual will not be "
-"altered"
+msgid "The current file will be deleted on save"
 msgstr ""
-"Wanneer je geen bestand kiest zal de huidige gebruikshandleiding niet "
-"gewijzigd worden"
-
-msgid "No instruction manual available"
-msgstr "Geen gebruikshandleiding beschikbaar"
-
-msgid ""
-"The current instruction manual will be deleted when you save the equipment"
-msgstr ""
-"De huidige gebruikshandleiding zal verwijderd worden wanneer je het apparaat"
-" opslaat"
 
 msgid "No picture available"
 msgstr "Geen afbeelding beschikbaar"
-
-msgid "Filter by product group"
-msgstr "Filteren op productcategorie"
 
 msgid "Presets for new products"
 msgstr "Vooraf ingesteld voor nieuwe producten"
@@ -930,26 +848,11 @@ msgstr "Dagboek"
 msgid "Stock journal"
 msgstr "Voorraad dagboek"
 
-msgid "Filter by product"
-msgstr "Filteren op product"
-
-msgid "Booking time"
-msgstr "Boekingstijd"
-
-msgid "Booking type"
-msgstr "Boekingstype"
-
-msgid "Undo booking"
-msgstr "Boeking ongedaan maken"
-
 msgid "Undone on"
 msgstr "Ongedaan gemaakt op"
 
 msgid "Batteries journal"
 msgstr "Batterijdagboek"
-
-msgid "Filter by battery"
-msgstr "Filteren op batterij"
 
 msgid "Undo charge cycle"
 msgstr "Laadcyclus ongedaan maken"
@@ -969,9 +872,6 @@ msgstr "Boeking is ongedaan gemaakt"
 msgid "Charge cycle successfully undone"
 msgstr "Laadcyclus is ongedaan gemaakt"
 
-msgid "This cannot be negative and must be an integral number"
-msgstr "Dit kan niet negatief zijn en moet een integraal getal zijn"
-
 msgid "Disable stock fulfillment checking for this ingredient"
 msgstr "Schakel voorraadcontrole voor dit ingrediënt uit"
 
@@ -989,24 +889,11 @@ msgstr "Gebruik een specifiek voorraaditem"
 
 msgid ""
 "The first item in this list would be picked by the default rule which is "
-"\"First expiring first, then first in first out\""
+"\"Opened first, then first due first, then first in first out\""
 msgstr ""
-"Het eerste item in deze lijst wordt gekozen met de standaardregel: \"Eerst "
-"als eerste vervallen, daarna als eerste in de eerste keer\""
 
 msgid "Mark %1$s of %2$s as open"
 msgstr "Markeer %1$s %2$s als geopend"
-
-msgid ""
-"When this product was marked as opened, the best before date will be "
-"replaced by today + this amount of days (a value of 0 disables this)"
-msgstr ""
-"Wanneer een product is gemarkeerd als geopend, zal de houdbaarheidsdatum "
-"worden vervangen door vandaag + dit aantal dagen (een waarde van 0 schakelt "
-"dit uit)"
-
-msgid "Default best before days after opened"
-msgstr "Standaard houdbaar tot na geopend"
 
 msgid "Marked %1$s of %2$s as opened"
 msgstr "%1$s %2$sgemarkeerd als geopend"
@@ -1023,8 +910,8 @@ msgstr "Geopend"
 msgid "%s opened"
 msgstr "%s geopend"
 
-msgid "Product expires"
-msgstr "Product vervalt"
+msgid "Product due"
+msgstr ""
 
 msgid "Task due"
 msgstr "Taak te doen"
@@ -1043,14 +930,6 @@ msgstr "Voorraadinstellingen"
 
 msgid "Shopping list to stock workflow"
 msgstr "Boodschappenlijst voor voorraad workflow"
-
-msgid ""
-"Automatically do the booking using the last price and the amount of the "
-"shopping list item, if the product has \"Default best before days\" set"
-msgstr ""
-"Voer automatisch de boeking uit met behulp van de laatste hoeveelheid en het"
-" bedrag van het item in de boodschappenlijst, als het product de instelling "
-"\"Standaard THT dagen\" heeft ingesteld"
 
 msgid "Skip"
 msgstr "Overslaan"
@@ -1148,24 +1027,8 @@ msgstr "Lijst"
 msgid "Gallery"
 msgstr "Galerij"
 
-msgid "The current picture will be deleted when you save the recipe"
+msgid "The current picture will be deleted on save"
 msgstr ""
-"De huidige afbeelding zal worden verwijderd wanneer je het recept opslaat."
-
-msgid "Show product details"
-msgstr "Toon productdetails"
-
-msgid "Stock journal for this product"
-msgstr "Toon dagboek voor dit product"
-
-msgid "Show chore details"
-msgstr "Toon klusdetails"
-
-msgid "Journal for this chore"
-msgstr "Dagboek voor deze klus"
-
-msgid "Show battery details"
-msgstr "Toon batterijdetails"
 
 msgid "Journal for this battery"
 msgstr "Dagboek voor deze batterij"
@@ -1185,10 +1048,9 @@ msgstr "De opgegeven datum is eerder dan vandaag; weet je het zeker?"
 msgid "Product count"
 msgstr "Productenteller"
 
-msgid "Type a new product name or barcode and hit TAB to start a workflow"
+msgid ""
+"Type a new product name or barcode and hit TAB or ENTER to start a workflow"
 msgstr ""
-"Typ een nieuwe productnaam of streepjescode en druk op TAB om een workflow "
-"te starten"
 
 msgid ""
 "This will be used as the default setting when adding this product as a "
@@ -1269,9 +1131,6 @@ msgstr "Configureer gebruikersvelden"
 msgid "Userfields"
 msgstr "Gebruikersvelden"
 
-msgid "Filter by entity"
-msgstr "Entiteit filteren"
-
 msgid "Entity"
 msgstr "Entiteit"
 
@@ -1321,9 +1180,6 @@ msgid "Not enough in stock, %s ingredient missing"
 msgid_plural "Not enough in stock, %s ingredients missing"
 msgstr[0] "Niet genoeg op voorraad, %s ingrediënt ontbreekt."
 msgstr[1] "Niet genoeg op voorraad, %s ingrediënten ontbreken."
-
-msgid "The amount cannot be lower than %1$s or equal %2$s"
-msgstr "De hoeveelheid kan niet lager zijn dan %1$s of gelijk zijn aan %2$s"
 
 msgid "Not enough in stock, but already on the shopping list"
 msgstr "Niet genoeg op voorraad, maar al op het boodschappenlijstje"
@@ -1385,15 +1241,6 @@ msgstr "Configuratie"
 msgid "A predefined list of values, one per line"
 msgstr "Een vooraf gedefinieerde lijst met waarden, één per regel"
 
-msgid "Chores due soon days"
-msgstr "Klussen voor de komende dagen"
-
-msgid "Batteries due to be charged soon days"
-msgstr "Batterijen die binnenkort worden opgeladen"
-
-msgid "Tasks due soon days"
-msgstr "Taken die binnenkort worden uitgevoerd"
-
 msgid "Products"
 msgstr "Producten"
 
@@ -1421,8 +1268,8 @@ msgstr ""
 "Niet alle ingrediënten van het recept \"%s\" zijn op voorraad, er is niets "
 "verwijderd"
 
-msgid "Undo task \"%s\""
-msgstr "Ongedaan maken taak \"%s\""
+msgid "Undo task"
+msgstr ""
 
 msgid "Due date rollover"
 msgstr "Vervaldatum verlopen"
@@ -1435,7 +1282,7 @@ msgstr ""
 "wordt elke dag vooruit geschoven wanneer deze verlopen is."
 
 msgid "Location Content Sheet"
-msgstr "Locatie inhoud pagina"
+msgstr "Overzicht per locatie"
 
 msgid "Print"
 msgstr "Afdrukken"
@@ -1445,17 +1292,17 @@ msgstr "alle locaties"
 
 msgid ""
 "Here you can print a page per location with the current stock, maybe to hang"
-" it there and note the consumed things on it."
+" it there and note the consumed things on it"
 msgstr ""
-"Hier kunt u een pagina per locatie afdrukken met de huidige voorraad. "
+"Hier kunt u een overzicht per locatie afdrukken met de huidige voorraad. "
 "Bijvoorbeeld om het daar op te hangen en dan de verbruikte artikelen op te "
 "noteren."
 
 msgid "this location"
 msgstr "deze locatie"
 
-msgid "Consumend amount"
-msgstr "Geconsumeerde hoeveelheid"
+msgid "Consumed amount"
+msgstr ""
 
 msgid "Time of printing"
 msgstr "Afdruktijdstip"
@@ -1489,23 +1336,16 @@ msgid "Default for QU"
 msgstr "Standaard hoeveelheidseenheid"
 
 msgid "Quantity unit from"
-msgstr "Hoeveelheidseenheid vanaf"
+msgstr "Van hoeveelheidseenheid"
 
 msgid "Quantity unit to"
-msgstr "Hoeveelheidseenheid tot"
-
-msgid ""
-"This cannot be lower than %1$s and must be a valid number with max. %2$s "
-"decimal places"
-msgstr ""
-"Dit mag niet lager zijn dan %1$sen moet een geldig getal zijn met max. "
-"%2$sdecimalen."
+msgstr "Naar hoeveelheidseenheid"
 
 msgid "This cannot be equal to %s"
 msgstr "Dit mag niet gelijk zijn aan %s"
 
 msgid "This means 1 %1$s is the same as %2$s %3$s"
-msgstr "Dit betekent dat 1 %1$s het zelfde is als %2$s%3$s"
+msgstr "Dit betekent dat 1 %1$s hetzelfde is als %2$s%3$s"
 
 msgid "QU conversions"
 msgstr "Hoeveelheidseenheidsconversies"
@@ -1516,8 +1356,8 @@ msgstr "Product overschreden"
 msgid "Override for product"
 msgstr "Overschreden van product"
 
-msgid "This equals %1$s %2$s in stock"
-msgstr "Dit komt overeen met %1$s%2$s in voorraad"
+msgid "This equals %1$s %2$s"
+msgstr "Dit komt overeen met %1$s%2$s"
 
 msgid "Edit QU conversion"
 msgstr "Wijzig hoeveelheidseenheidsconversies"
@@ -1786,14 +1626,11 @@ msgstr "Naar locatie"
 msgid "There are no units available at this location"
 msgstr "Er zijn geen items beschikbaar op deze locatie"
 
-msgid "Amount: %1$s; Expires on %2$s; Bought on %3$s"
-msgstr "Hoeveelheid: %1$s; Verloopt op %2$s; Gekocht op %3$s"
+msgid "Amount: %1$s; Due on %2$s; Bought on %3$s"
+msgstr ""
 
 msgid "Transfered %1$s of %2$s from %3$s to %4$s"
 msgstr "%1$s van %2$s overgedragen van %3$s naar %4$s"
-
-msgid "Show stock entries"
-msgstr "Laat voorraad items zien"
 
 msgid "Stock entries"
 msgstr "Voorraad items"
@@ -1833,12 +1670,9 @@ msgid "A purchased date is required"
 msgstr "Een aanschafdatum is vereist"
 
 msgid ""
-"When a product is selected, one unit (per serving in purchase quantity unit)"
-" will be added to stock on consuming this recipe"
+"When a product is selected, one unit (per serving in stock quantity unit) "
+"will be added to stock on consuming this recipe"
 msgstr ""
-"Wanneer een product is geselecteerd, zal een eenheid ervan worden toegevoegd"
-" aan de voorraad bij consumptie van dit recept (per portie zoals in de "
-"aankoophoeveelheidseenheid)."
 
 msgid "Produces product"
 msgstr "Maakt product"
@@ -1861,14 +1695,8 @@ msgstr "Voeg notitie toe aan %s"
 msgid "per day"
 msgstr "per day"
 
-msgid "Compact view"
-msgstr "compacte weergave"
-
-msgid "Normal view"
-msgstr "normale weergave"
-
 msgid "Only undone items"
-msgstr "Alleen ongedaan gemaakte items"
+msgstr "Alleen nog niet afgehandelde items"
 
 msgid "Add product"
 msgstr "Voeg product toe"
@@ -1915,28 +1743,6 @@ msgstr ""
 "Bij het verplaatsen van producten van/naar een driepvriezer locatie, zal de "
 "THT datum automatisch aangepast worden volgens de product instellingen"
 
-msgid ""
-"On moving this product to a freezer location (so when freezing it), the best"
-" before date will be replaced by today + this amount of days"
-msgstr ""
-"Bij verplaatsen van dit product naar een driepvriezer locatie (dus bij "
-"invriezen), zal de THT datum vervangen worden door vandaag + dit aantal "
-"dagen"
-
-msgid "Default best before days after freezing"
-msgstr "Standaard aantal THT dagen na invriezen"
-
-msgid ""
-"On moving this product from a freezer location (so when thawing it), the "
-"best before date will be replaced by today + this amount of days"
-msgstr ""
-"Bij verplaatsen van dit product vanuit een driepvriezer locatie (dus bij "
-"ontdooien), zal de THT datum vervangen worden door vandaag + dit aantal "
-"dagen"
-
-msgid "Default best before days after thawing"
-msgstr "Standaard aantal THT dagen na ontdooien"
-
 msgid "This cannot be the same as the \"From\" location"
 msgstr "Dit kan niet hetzelfde zijn als de “Van” locatie"
 
@@ -1954,10 +1760,6 @@ msgstr "Instellingen voor het boodschappenlijstje"
 
 msgid "Show a month-view calendar"
 msgstr "Toon de maandkalender."
-
-msgid "Don't automatically switch to the compact view on mobile devices"
-msgstr ""
-"Niet automatisch omschakelen naar compacte weergave op mobiele apparaten"
 
 msgid "Edit note on %s"
 msgstr "Bewerk notitie over %s"
@@ -2002,7 +1804,7 @@ msgid "Mark this stock entry as open"
 msgstr "Markeer deze voorraad als open"
 
 msgid "Mark this item as done"
-msgstr "Markeer dit item als voltooid"
+msgstr "Markeer dit item als afgehandeld"
 
 msgid "Edit this item"
 msgstr "Wijzig dit item"
@@ -2016,18 +1818,6 @@ msgstr ""
 
 msgid "Calories"
 msgstr "Calorieën"
-
-msgid ""
-"By default the amount to be added to the shopping list is `needed amount - "
-"stock amount - shopping list amount` - when this is enabled, it is only "
-"checked against the stock amount, not against what is already on the "
-"shopping list"
-msgstr ""
-"Standaard is de hoeveelheid die toegevoegd  zal worden aan het "
-"boodschappenlijstje gelijk aan 'Vereiste hoeveelheid - hoeveelheid in "
-"voorraad - hoeveelheid op boodschappenlijstje'. Wanneer dit is ingeschakeld "
-"wordt alleen het verchil tussen de vereiste hoeveelheid en de voorraad "
-"vergeleken, en niet wat al op het boodschappelijstje staat."
 
 msgid "means %1$s per %2$s"
 msgstr "Betekent %1$s per %2$s"
@@ -2047,3 +1837,475 @@ msgstr "Opslaan en doorgaan"
 
 msgid "Save & return to recipes"
 msgstr "Opslaan en terugkeren naar recepten"
+
+msgid "Stock value"
+msgstr ""
+
+msgid "Average price"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Barcodes"
+msgstr ""
+
+msgid "Barcode"
+msgstr ""
+
+msgid "Create Barcode"
+msgstr ""
+
+msgid "Barcode for product"
+msgstr ""
+
+msgid "Edit Barcode"
+msgstr ""
+
+msgid "Not enough in stock (not included in costs), %s ingredient missing"
+msgstr ""
+
+msgid ""
+"Based on the prices of the default consume rule which is \"Opened first, "
+"then first due first, then first in first out\""
+msgstr ""
+
+msgid ""
+"Not enough in stock (not included in costs), %1$s missing, %2$s already on "
+"shopping list"
+msgstr ""
+
+msgid "Quantity unit stock cannot be changed after first purchase"
+msgstr ""
+
+msgid "Clear filter"
+msgstr ""
+
+msgid "Permissions for user %s"
+msgstr ""
+
+msgid "Are you sure you want to remove full permissions for yourself?"
+msgstr ""
+
+msgid "Permissions saved"
+msgstr ""
+
+msgid "You are not allowed to view this page"
+msgstr ""
+
+msgid "Page not found"
+msgstr ""
+
+msgid "Unauthorized"
+msgstr ""
+
+msgid "Error source"
+msgstr ""
+
+msgid "Error message"
+msgstr ""
+
+msgid "Stack trace"
+msgstr ""
+
+msgid "Easy error info copy & paste (for reporting)"
+msgstr ""
+
+msgid "This page does not exist"
+msgstr ""
+
+msgid "You will be redirected to the default page in %s seconds"
+msgstr ""
+
+msgid "Server error"
+msgstr ""
+
+msgid "A server error occured while processing your request"
+msgstr ""
+
+msgid "If you think this is a bug, please report it"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "User settings"
+msgstr ""
+
+msgid "Default"
+msgstr ""
+
+msgid "Stock journal summary"
+msgstr ""
+
+msgid "Journal summary"
+msgstr ""
+
+msgid "Journal summary for this product"
+msgstr ""
+
+msgid "Consume exact amount"
+msgstr ""
+
+msgid "Value"
+msgstr ""
+
+msgid "%s total value"
+msgstr ""
+
+msgid ""
+"Show purchased date on purchase and inventory page (otherwise the purchased "
+"date defaults to today)"
+msgstr ""
+
+msgid "Common"
+msgstr ""
+
+msgid "Decimal places allowed for amounts"
+msgstr ""
+
+msgid "Decimal places allowed for prices"
+msgstr ""
+
+msgid "Stock entries for this product"
+msgstr ""
+
+msgid "Edit shopping list"
+msgstr ""
+
+msgid "Save & continue to add quantity unit conversions & barcodes"
+msgstr ""
+
+msgid "Save & return to products"
+msgstr ""
+
+msgid "Save & continue to add conversions"
+msgstr ""
+
+msgid "Save & return to quantity units"
+msgstr ""
+
+msgid "price"
+msgstr ""
+
+msgid "New stock amount"
+msgstr ""
+
+msgid "Price per stock unit"
+msgstr ""
+
+msgid "Table options"
+msgstr ""
+
+msgid "This product is currently on a shopping list"
+msgstr ""
+
+msgid "Undo transaction"
+msgstr ""
+
+msgid "Transaction type"
+msgstr ""
+
+msgid "Transaction time"
+msgstr ""
+
+msgid "Chore journal"
+msgstr ""
+
+msgid "Track chore execution"
+msgstr ""
+
+msgid "Mark task as completed"
+msgstr ""
+
+msgid "Track charge cycle"
+msgstr ""
+
+msgid "Battery journal"
+msgstr ""
+
+msgid "This product has a picture"
+msgstr ""
+
+msgid "Consume this stock entry as spoiled"
+msgstr ""
+
+msgid "Configure user permissions"
+msgstr ""
+
+msgid "Show a QR-Code for this API key"
+msgstr ""
+
+msgid ""
+"This is the default quantity unit used when adding this product to the "
+"shopping list"
+msgstr ""
+
+msgid ""
+"Show a warning when the due date of the purchased product is earlier than "
+"the next due date in stock"
+msgstr ""
+
+msgid "This is due earlier than already in-stock items"
+msgstr ""
+
+msgid ""
+"When enabled, the amount will always be filled with 1 after "
+"changing/scanning a product and if all fields could be automatically "
+"populated (by product defaults), the transaction is automatically submitted"
+msgstr ""
+
+msgid "Quick consume amount"
+msgstr ""
+
+msgid ""
+"This amount is used for the \"quick consume/open buttons\" on the stock "
+"overview page (related to quantity unit stock)"
+msgstr ""
+
+msgid "Copy"
+msgstr ""
+
+msgid "Are you sure to remove this barcode?"
+msgstr ""
+
+msgid "Due date type"
+msgstr ""
+
+msgid ""
+"Based on the selected type, the highlighting on the stock overview page will"
+" be different"
+msgstr ""
+
+msgid ""
+"Means that the product is maybe still safe to be consumed after its due date"
+" is reached"
+msgstr ""
+
+msgid "Expiration date"
+msgstr ""
+
+msgid ""
+"Means that the product is not safe to be consumed after its due date is "
+"reached"
+msgstr ""
+
+msgid ""
+"For purchases this amount of days will be added to today for the due date "
+"suggestion"
+msgstr ""
+
+msgid "-1 means that this product will be never overdue"
+msgstr ""
+
+msgid "Default due days"
+msgstr ""
+
+msgid ""
+"When this product was marked as opened, the due date will be replaced by "
+"today + this amount of days (a value of 0 disables this)"
+msgstr ""
+
+msgid "Default due days after opened"
+msgstr ""
+
+msgid ""
+"On moving this product to a freezer location (so when freezing it), the due "
+"date will be replaced by today + this amount of days"
+msgstr ""
+"Wanneer dit product naar een diepvriezer locatie wordt verplaatst (dus bij "
+"invriezen), zal de THT datum vervangen worden door vandaag + dit aantal "
+"dagen"
+
+msgid "Default due days after freezing"
+msgstr ""
+
+msgid ""
+"On moving this product from a freezer location (so when thawing it), the due"
+" date will be replaced by today + this amount of days"
+msgstr ""
+"Wanneer dit product uit een diepvriezer locatie wordt gehaald (dus bij "
+"ontdooien), zal de THT datum vervangen worden door vandaag + dit aantal "
+"dagen"
+
+msgid "Default due days after thawing"
+msgstr ""
+
+msgid "Next due date"
+msgstr ""
+
+msgid "%s product is due"
+msgid_plural "%s products are due"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Due date"
+msgstr ""
+
+msgid "Never overdue"
+msgstr ""
+
+msgid "%s product is expired"
+msgid_plural "%s products are expired"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Expired"
+msgstr ""
+
+msgid "Due soon days"
+msgstr ""
+
+msgid "Add overdue/expired products"
+msgstr ""
+
+msgid ""
+"Products with tare weight enabled are currently not supported for transfer"
+msgstr ""
+
+msgid ""
+"This cannot be lower than %1$s or equal %2$s and needs to be a valid number "
+"with max. %3$s decimal places"
+msgstr ""
+
+msgid ""
+"This must be between %1$s and %2$s, cannot equal %3$s and needs to be a "
+"valid number with max. %4$s decimal places"
+msgstr ""
+
+msgid ""
+"This cannot be lower than %1$s and needs to be a valid number with max. %2$s"
+" decimal places"
+msgstr ""
+
+msgid ""
+"This must between %1$s and %2$s and needs to be a valid number with max. "
+"%3$s decimal places"
+msgstr ""
+
+msgid ""
+"Automatically do the booking using the last price and the amount of the "
+"shopping list item, if the product has \"Default due days\" set"
+msgstr ""
+
+msgid ""
+"When moving products from/to a freezer location, the products due date is "
+"automatically adjusted according to the product settings"
+msgstr ""
+"Bij het verplaatsen van producten van/naar een diepvriezer locatie wordt de "
+"THT datum automatisch aangepast op basis van de product instellingen"
+
+msgid "This is the internal field name, e. g. for the API"
+msgstr ""
+
+msgid "This is used to display the field on the frontend"
+msgstr ""
+
+msgid "Multiple Userfields will be ordered by that number on the input form"
+msgstr ""
+
+msgid "Sort number"
+msgstr ""
+
+msgid "Download file"
+msgstr ""
+
+msgid "Use the products \"Quick consume amount\""
+msgstr ""
+
+msgid "Disabled"
+msgstr ""
+
+msgid ""
+"This also removes any stock amount, the journal and all other references of "
+"this product - consider disabling it instead, if you want to keep that and "
+"just hide the product."
+msgstr ""
+
+msgid "Show disabled"
+msgstr ""
+
+msgid "Never show on stock overview"
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Group by"
+msgstr ""
+
+msgid "Ingredient group"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Are you sure to reset the table options?"
+msgstr ""
+
+msgid "Hide/view columns"
+msgstr ""
+
+msgid ""
+"A different amount/unit can then be used below while for stock fulfillment "
+"checking it is sufficient when any amount of the product in stock"
+msgstr ""
+
+msgid "Last price (Unit)"
+msgstr ""
+
+msgid "Last price (Total)"
+msgstr ""
+
+msgid "Show header"
+msgstr ""
+
+msgid "Group by product group"
+msgstr ""
+
+msgid "Table"
+msgstr ""
+
+msgid "Layout type"
+msgstr ""
+
+msgid "Merge this product with another one"
+msgstr ""
+
+msgid "Merge products"
+msgstr ""
+
+msgid "Product to keep"
+msgstr ""
+
+msgid "Product to remove"
+msgstr ""
+
+msgid "Error while merging products"
+msgstr ""
+
+msgid "After merging, this product will be kept"
+msgstr ""
+
+msgid ""
+"After merging, all occurences of this product will be replaced by \"Product "
+"to keep\" (means this product will not exist anymore)"
+msgstr ""
+
+msgid "Merge"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Link"
+msgstr ""
+
+msgid ""
+"The stock overview page lists all products which are currently in-stock or "
+"below their min. stock amount - enable this to hide this product there "
+"always"
+msgstr ""
+
+msgid "Print options"
+msgstr ""

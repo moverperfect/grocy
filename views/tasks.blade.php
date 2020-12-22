@@ -4,44 +4,59 @@
 @section('activeNav', 'tasks')
 @section('viewJsName', 'tasks')
 
-@push('pageScripts')
-<script src="{{ $U('/node_modules/datatables.net-rowgroup/js/dataTables.rowGroup.min.js?v=', true) }}{{ $version }}"></script>
-<script src="{{ $U('/node_modules/datatables.net-rowgroup-bs4/js/rowGroup.bootstrap4.min.js?v=', true) }}{{ $version }}"></script>
-@endpush
-
 @push('pageStyles')
 <link href="{{ $U('/node_modules/animate.css/animate.min.css?v=', true) }}{{ $version }}"
-	rel="stylesheet">
-<link href="{{ $U('/node_modules/datatables.net-rowgroup-bs4/css/rowGroup.bootstrap4.min.css?v=', true) }}{{ $version }}"
 	rel="stylesheet">
 @endpush
 
 @section('content')
 <div class="row">
 	<div class="col">
-		<h2 class="title">@yield('title')</h2>
-		<hr>
-		<p id="info-due-tasks"
-			data-status-filter="duesoon"
-			data-next-x-days="{{ $nextXDays }}"
-			class="warning-message status-filter-message responsive-button mr-2"></p>
-		<p id="info-overdue-tasks"
-			data-status-filter="overdue"
-			class="error-message status-filter-message responsive-button"></p>
+		<div class="title-related-links">
+			<h2 class="title">@yield('title')</h2>
+			<button class="btn btn-outline-dark d-md-none mt-2 float-right order-1 order-md-3"
+				type="button"
+				data-toggle="collapse"
+				data-target="#related-links">
+				<i class="fas fa-ellipsis-v"></i>
+			</button>
+			<div class="related-links collapse d-md-flex order-2 width-xs-sm-100 m-1 mt-md-0 mb-md-0 float-right"
+				id="related-links">
+				<a class="btn btn-primary responsive-button show-as-dialog-link"
+					href="{{ $U('/task/new?embedded') }}">
+					{{ $__t('Add') }}
+				</a>
+			</div>
+		</div>
+		<div class="border-top border-bottom my-2 py-1">
+			<div id="info-due-tasks"
+				data-status-filter="duesoon"
+				data-next-x-days="{{ $nextXDays }}"
+				class="warning-message status-filter-message responsive-button mr-2"></div>
+			<div id="info-overdue-tasks"
+				data-status-filter="overdue"
+				class="error-message status-filter-message responsive-button"></div>
+			<div class="float-right">
+				<a class="btn btn-sm btn-outline-info d-md-none mt-1"
+					data-toggle="collapse"
+					href="#table-filter-row"
+					role="button">
+					<i class="fas fa-filter"></i>
+				</a>
+				<a id="clear-filter-button"
+					class="btn btn-sm btn-outline-info mt-1"
+					href="#">
+					{{ $__t('Clear filter') }}
+				</a>
+			</div>
+		</div>
 	</div>
 </div>
 
-<div class="row mt-3">
-	<div class="col-xs-12 col-md-2 col-xl-1">
-		<a class="btn btn-primary btn-sm responsive-button w-100 mb-3"
-			href="{{ $U('/task/new') }}">
-			{{ $__t('Add') }}
-		</a>
-	</div>
-</div>
-<div class="row">
+<div class="row collapse d-md-flex"
+	id="table-filter-row">
 	<div class="col-xs-12 col-md-6 col-xl-3">
-		<div class="input-group mb-3">
+		<div class="input-group">
 			<div class="input-group-prepend">
 				<span class="input-group-text"><i class="fas fa-search"></i></span>
 			</div>
@@ -52,11 +67,11 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-6 col-xl-3">
-		<div class="input-group mb-3">
+		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i></span>
+				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Status') }}</span>
 			</div>
-			<select class="form-control"
+			<select class="custom-control custom-select"
 				id="status-filter">
 				<option value="all">{{ $__t('All') }}</option>
 				<option value="duesoon">{{ $__t('Due soon') }}</option>
@@ -65,7 +80,7 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-6 col-xl-3">
-		<div class="form-check custom-control form-control-lg custom-checkbox pt-0">
+		<div class="form-check custom-control custom-checkbox">
 			<input class="form-check-input custom-control-input"
 				type="checkbox"
 				id="show-done-tasks">
@@ -80,13 +95,19 @@
 <div class="row">
 	<div class="col">
 		<table id="tasks-table"
-			class="table table-sm table-striped dt-responsive">
+			class="table table-sm table-striped nowrap w-100">
 			<thead>
 				<tr>
-					<th class="border-right"></th>
+					<th class="border-right"><a class="text-muted change-table-columns-visibility-button"
+							data-toggle="tooltip"
+							data-toggle="tooltip"
+							title="{{ $__t('Table options') }}"
+							data-table-selector="#tasks-table"
+							href="#"><i class="fas fa-eye"></i></a>
+					</th>
 					<th>{{ $__t('Task') }}</th>
 					<th>{{ $__t('Due') }}</th>
-					<th class="d-none">Hidden category</th>
+					<th>{{ $__t('Category') }}</th>
 					<th>{{ $__t('Assigned to') }}</th>
 					<th class="d-none">Hidden status</th>
 
@@ -99,9 +120,7 @@
 			<tbody class="d-none">
 				@foreach($tasks as $task)
 				<tr id="task-{{ $task->id }}-row"
-					class="@if($task->done == 1) text-muted @endif @if(!empty($task->due_date) && $task->due_date < date('Y-m-d')) table-danger @elseif(!empty($task->due_date) && $task->due_date < date('Y-m-d', strtotime("
-					+$nextXDays
-					days")))
+					class="@if($task->done == 1) text-muted @endif @if(!empty($task->due_date) && $task->due_date < date('Y-m-d')) table-danger @elseif(!empty($task->due_date) && $task->due_date < date('Y-m-d', strtotime('+' . $nextXDays . ' days')))
 					table-warning
 					@endif">
 					<td class="fit-content border-right">
@@ -110,7 +129,7 @@
 							href="#"
 							data-toggle="tooltip"
 							data-placement="left"
-							title="{{ $__t('Mark task "%s" as completed', $task->name) }}"
+							title="{{ $__t('Mark task as completed') }}"
 							data-task-id="{{ $task->id }}"
 							data-task-name="{{ $task->name }}">
 							<i class="fas fa-check"></i>
@@ -120,21 +139,25 @@
 							href="#"
 							data-toggle="tooltip"
 							data-placement="left"
-							title="{{ $__t('Undo task "%s"', $task->name) }}"
+							title="{{ $__t('Undo task', $task->name) }}"
 							data-task-id="{{ $task->id }}"
 							data-task-name="{{ $task->name }}">
 							<i class="fas fa-undo"></i>
 						</a>
 						@endif
+						<a class="btn btn-info btn-sm show-as-dialog-link"
+							href="{{ $U('/task/') }}{{ $task->id }}?embedded"
+							data-toggle="tooltip"
+							title="{{ $__t('Edit this item') }}">
+							<i class="fas fa-edit"></i>
+						</a>
 						<a class="btn btn-sm btn-danger delete-task-button"
 							href="#"
 							data-task-id="{{ $task->id }}"
-							data-task-name="{{ $task->name }}">
+							data-task-name="{{ $task->name }}"
+							data-toggle="tooltip"
+							title="{{ $__t('Delete this item') }}">
 							<i class="fas fa-trash"></i>
-						</a>
-						<a class="btn btn-info btn-sm"
-							href="{{ $U('/task/') }}{{ $task->id }}">
-							<i class="fas fa-edit"></i>
 						</a>
 					</td>
 					<td id="task-{{ $task->id }}-name"
@@ -146,7 +169,7 @@
 						<time class="timeago timeago-contextual"
 							datetime="{{ $task->due_date }}"></time>
 					</td>
-					<td class="d-none">
+					<td>
 						@if($task->category_id != null) <span>{{ FindObjectInArrayByPropertyValue($taskCategories, 'id', $task->category_id)->name }}</span> @else <span class="font-italic font-weight-light">{{ $__t('Uncategorized') }}</span>@endif
 					</td>
 					<td>
@@ -156,7 +179,11 @@
 						@if($task->done == 1) text-muted @endif @if(!empty($task->due_date) && $task->due_date < date('Y-m-d'))
 							overdue
 							@elseif(!empty($task->due_date) && $task->due_date < date('Y-m-d',
-								strtotime("+$nextXDays days")))
+								strtotime('+'
+								.
+								$nextXDays
+								. ' days'
+								)))
 								duesoon
 								@endif
 								</td>

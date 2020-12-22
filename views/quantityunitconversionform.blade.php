@@ -11,18 +11,23 @@
 @section('content')
 <div class="row">
 	<div class="col">
-		<h2 class="title">@yield('title')</h2>
-		<hr>
+		<div class="title-related-links">
+			<h2 class="title">@yield('title')</h2>
+			<h2>
+				@if($product != null)
+				<span class="text-muted small">{{ $__t('Override for product') }} <strong>{{ $product->name }}</strong></span>
+				@else
+				<span class="text-muted small">{{ $__t('Default for QU') }} <strong>{{ $defaultQuUnit->name }}</strong></span>
+				@endif
+			</h2>
+		</div>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
-
-		@if($product != null)
-		<h3 class="text-muted">{{ $__t('Override for product') }} <strong>{{ $product->name }}</strong></h3>
-		@else
-		<h3 class="text-muted">{{ $__t('Default for QU') }} <strong>{{ $defaultQuUnit->name }}</strong></h3>
-		@endif
 
 		<script>
 			Grocy.EditMode = '{{ $mode }}';
@@ -46,8 +51,7 @@
 			<div class="form-group">
 				<label for="from_qu_id">{{ $__t('Quantity unit from') }}</label>
 				<select required
-					disabled
-					class="form-control input-group-qu"
+					class="custom-control custom-select input-group-qu"
 					id="from_qu_id"
 					name="from_qu_id">
 					<option></option>
@@ -64,7 +68,7 @@
 			<div class="form-group">
 				<label for="to_qu_id">{{ $__t('Quantity unit to') }}</label>
 				<select required
-					class="form-control input-group-qu"
+					class="custom-control custom-select input-group-qu"
 					id="to_qu_id"
 					name="to_qu_id">
 					<option></option>
@@ -81,24 +85,27 @@
 			@include('components.numberpicker', array(
 			'id' => 'factor',
 			'label' => 'Factor',
-			'min' => 0,
-			'step' => 0.001,
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'decimals' => $userSettings['stock_decimal_places_amounts'],
 			'value' => $value,
-			'invalidFeedback' => $__t('This cannot be lower than %1$s and must be a valid number with max. %2$s decimal places', '0', '3'),
 			'additionalHtmlElements' => '<p id="qu-conversion-info"
 				class="form-text text-info d-none"></p>',
-			'additionalCssClasses' => 'input-group-qu'
+			'additionalCssClasses' => 'input-group-qu locale-number-input locale-number-quantity-amount'
 			))
 
-			<div class="checkbox @if($mode == 'edit') d-none @endif">
-				<label for="create_inverse">
-					<input type="checkbox"
+			<div class="form-group @if($mode == 'edit') d-none @endif">
+				<div class="custom-control custom-checkbox">
+					<input checked
+						class="form-check-input custom-control-input"
+						type="checkbox"
 						id="create_inverse"
 						name="create_inverse:skip"
-						checked> {{ $__t('Create inverse QU conversion') }}
-					<span id="qu-conversion-inverse-info"
-						class="form-text text-info d-none"></span>
-				</label>
+						value="1">
+					<label class="form-check-label custom-control-label"
+						for="create_inverse">{{ $__t('Create inverse QU conversion') }}</label>
+				</div>
+				<span id="qu-conversion-inverse-info"
+					class="form-text text-info d-none"></span>
 			</div>
 
 			@include('components.userfieldsform', array(

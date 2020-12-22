@@ -1,6 +1,6 @@
-﻿function saveRecipePicture(result, location)
+﻿function saveRecipePicture(result, location, jsonData)
 {
-	$recipeId = Grocy.EditObjectId || result.created_object_id;
+	var recipeId = Grocy.EditObjectId || result.created_object_id;
 	Grocy.Components.UserfieldsForm.Save(() =>
 	{
 		if (jsonData.hasOwnProperty("picture_file_name") && !Grocy.DeleteRecipePictureOnSave)
@@ -8,7 +8,7 @@
 			Grocy.Api.UploadFile($("#recipe-picture")[0].files[0], 'recipepictures', jsonData.picture_file_name,
 				(result) =>
 				{
-					window.location.href = U(location + $recipeId);
+					window.location.href = U(location + recipeId);
 				},
 				(xhr) =>
 				{
@@ -19,7 +19,7 @@
 		}
 		else
 		{
-			window.location.href = U(location + $recipeId);
+			window.location.href = U(location + recipeId);
 		}
 	});
 }
@@ -41,9 +41,8 @@ $('.save-recipe').on('click', function(e)
 
 	if (Grocy.EditMode == 'create')
 	{
-		console.log(jsonData);
 		Grocy.Api.Post('objects/recipes', jsonData,
-			(result) => saveRecipePicture(result, location));
+			(result) => saveRecipePicture(result, location, jsonData));
 		return;
 	}
 
@@ -65,7 +64,7 @@ $('.save-recipe').on('click', function(e)
 	}
 
 	Grocy.Api.Put('objects/recipes/' + Grocy.EditObjectId, jsonData,
-		(result) => saveRecipePicture(result, location),
+		(result) => saveRecipePicture(result, location, jsonData),
 		function(xhr)
 		{
 			Grocy.FrontendHelpers.EndUiBusy("recipe-form");
@@ -81,8 +80,9 @@ var recipesPosTables = $('#recipes-pos-table').DataTable({
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 },
 		{ 'visible': false, 'targets': 4 }
-	],
+	].concat($.fn.dataTable.defaults.columnDefs),
 	'rowGroup': {
+		enable: true,
 		dataSrc: 4
 	}
 });
@@ -94,7 +94,7 @@ var recipesIncludesTables = $('#recipes-includes-table').DataTable({
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#recipes-includes-table tbody').removeClass("d-none");
 recipesIncludesTables.columns.adjust().draw();
@@ -126,7 +126,7 @@ $('#recipe-form input').keydown(function(event)
 
 $(document).on('click', '.recipe-pos-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-recipe-pos-name'));
+	var objectName = $(e.currentTarget).attr('data-recipe-pos-name');
 	var objectId = $(e.currentTarget).attr('data-recipe-pos-id');
 
 	bootbox.confirm({
@@ -163,7 +163,7 @@ $(document).on('click', '.recipe-pos-delete-button', function(e)
 
 $(document).on('click', '.recipe-include-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-recipe-include-name'));
+	var objectName = $(e.currentTarget).attr('data-recipe-include-name');
 	var objectId = $(e.currentTarget).attr('data-recipe-include-id');
 
 	bootbox.confirm({
@@ -200,7 +200,7 @@ $(document).on('click', '.recipe-include-delete-button', function(e)
 
 $(document).on('click', '.recipe-pos-show-note-button', function(e)
 {
-	var note = SanitizeHtml($(e.currentTarget).attr('data-recipe-pos-note'));
+	var note = $(e.currentTarget).attr('data-recipe-pos-note');
 
 	bootbox.alert(note);
 });
@@ -284,6 +284,7 @@ $("#recipe-include-add-button").on("click", function(e)
 			$("#recipe-include-editform-title").text(__t("Add included recipe"));
 			$("#recipe-include-form").data("edit-mode", "create");
 			Grocy.Components.RecipePicker.Clear();
+			Grocy.Components.RecipePicker.GetInputElement().focus();
 			$("#recipe-include-editform-modal").modal("show");
 			Grocy.FrontendHelpers.ValidateForm("recipe-include-form");
 		},
@@ -378,36 +379,3 @@ $(window).on("message", function(e)
 		);
 	}
 });
-
-// Grocy.Components.RecipePicker.GetPicker().on('change', function (e)
-// {
-// 	var value = Grocy.Components.RecipePicker.GetValue();
-// 	if (value.toString().isEmpty())
-// 	{
-// 		return;
-// 	}
-
-// 	Grocy.Api.Get('objects/recipes/' + value,
-// 		function(recipe)
-// 		{
-// 			$("#includes_servings").val(recipe.servings);
-// 		},
-// 		function(xhr)
-// 		{
-// 			console.error(xhr);
-// 		}
-// 	);
-// });
-
-// Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
-// {
-// 	// Just save the current recipe on every change of the product picker as a workflow could be started which leaves the page...
-// 	Grocy.Api.Put('objects/recipes/' + Grocy.EditObjectId, $('#recipe-form').serializeJSON(), function () { }, function () { });
-// });
-
-// As the /recipe/new route immediately creates a new recipe on load,
-// always replace the current location by the created recipes edit page location
-// if (window.location.pathname.toLowerCase() === "/recipe/new")
-// {
-// 	window.history.replaceState(null, null, U("/recipe/" + Grocy.EditObjectId));
-// }

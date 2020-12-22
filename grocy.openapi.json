@@ -26,7 +26,7 @@
 			"name": "User management"
 		},
 		{
-			"name": "User settings"
+			"name": "Current user"
 		},
 		{
 			"name": "Stock"
@@ -138,7 +138,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -173,7 +173,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -194,8 +194,20 @@
 						"required": true,
 						"description": "A valid entity name",
 						"schema": {
-							"$ref": "#/components/internalSchemas/ExposedEntityButNoListing"
+							"$ref": "#/components/internalSchemas/ExposedEntity_NotIncludingNotListable"
 						}
+					},
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
 					}
 				],
 				"responses": {
@@ -227,6 +239,9 @@
 											},
 											{
 												"$ref": "#/components/schemas/StockEntry"
+											},
+											{
+												"$ref": "#/components/schemas/ProductBarcode"
 											}
 										]
 									}
@@ -239,7 +254,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -258,7 +283,7 @@
 						"required": true,
 						"description": "A valid entity name",
 						"schema": {
-							"$ref": "#/components/internalSchemas/ExposedEntity"
+							"$ref": "#/components/internalSchemas/ExposedEntity_NotIncludingNotEditable"
 						}
 					}
 				],
@@ -289,6 +314,9 @@
 									},
 									{
 										"$ref": "#/components/schemas/StockEntry"
+									},
+									{
+										"$ref": "#/components/schemas/ProductBarcode"
 									}
 								]
 							}
@@ -318,7 +346,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -339,7 +367,7 @@
 						"required": true,
 						"description": "A valid entity name",
 						"schema": {
-							"$ref": "#/components/internalSchemas/ExposedEntityButNoListing"
+							"$ref": "#/components/internalSchemas/ExposedEntity_NotIncludingNotListable"
 						}
 					},
 					{
@@ -357,7 +385,7 @@
 						"description": "An entity object",
 						"content": {
 							"application/json": {
-								"schema":{
+								"schema": {
 									"type": "object",
 									"oneOf": [
 										{
@@ -380,6 +408,9 @@
 										},
 										{
 											"$ref": "#/components/schemas/StockEntry"
+										},
+										{
+											"$ref": "#/components/schemas/ProductBarcode"
 										}
 									]
 								}
@@ -391,7 +422,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -401,7 +432,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -420,7 +451,7 @@
 						"required": true,
 						"description": "A valid entity name",
 						"schema": {
-							"$ref": "#/components/internalSchemas/ExposedEntity"
+							"$ref": "#/components/internalSchemas/ExposedEntity_NotIncludingNotEditable"
 						}
 					},
 					{
@@ -460,6 +491,9 @@
 									},
 									{
 										"$ref": "#/components/schemas/StockEntry"
+									},
+									{
+										"$ref": "#/components/schemas/ProductBarcode"
 									}
 								]
 							}
@@ -475,7 +509,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -494,7 +528,7 @@
 						"required": true,
 						"description": "A valid entity name",
 						"schema": {
-							"$ref": "#/components/internalSchemas/ExposedEntity"
+							"$ref": "#/components/internalSchemas/ExposedEntity_NotIncludingNotDeletable"
 						}
 					},
 					{
@@ -516,82 +550,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/objects/{entity}/search/{searchString}": {
-			"get": {
-				"summary": "Returns all objects of the given entity where the field \"name\" contains the search string (so only works for entities which have that field)",
-				"tags": [
-					"Generic entity interactions"
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "entity",
-						"required": true,
-						"description": "A valid entity name",
-						"schema": {
-							"$ref": "#/components/internalSchemas/ExposedEntity"
-						}
-					},
-					{
-						"in": "path",
-						"name": "searchString",
-						"required": true,
-						"description": "The search string",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "An entity object",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "array",
-									"items": {
-										"oneOf": [
-											{
-												"$ref": "#/components/schemas/Product"
-											},
-											{
-												"$ref": "#/components/schemas/Chore"
-											},
-											{
-												"$ref": "#/components/schemas/Battery"
-											},
-											{
-												"$ref": "#/components/schemas/Location"
-											},
-											{
-												"$ref": "#/components/schemas/QuantityUnit"
-											},
-											{
-												"$ref": "#/components/schemas/ShoppingListItem"
-											},
-											{
-												"$ref": "#/components/schemas/StockEntry"
-											}
-										]
-									}
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "The operation was not successful",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -642,7 +601,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -661,7 +620,7 @@
 						"required": true,
 						"description": "A valid entity name",
 						"schema": {
-							"$ref": "#/components/internalSchemas/ExposedEntity"
+							"$ref": "#/components/internalSchemas/ExposedEntity_NotIncludingNotEditable"
 						}
 					},
 					{
@@ -694,7 +653,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -776,7 +735,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -828,7 +787,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -869,7 +828,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -882,6 +841,20 @@
 				"summary": "Returns all users",
 				"tags": [
 					"User management"
+				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
+					}
 				],
 				"responses": {
 					"200": {
@@ -902,7 +875,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -934,7 +917,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -979,7 +962,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1011,7 +994,191 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/{userId}/permissions": {
+			"get": {
+				"summary": "Returns the assigned permissions of the given user",
+				"tags": [
+					"User management"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"description": "A valid user id",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A list of user permission objects",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"permission_id": {
+												"type": "integer"
+											},
+											"user_id": {
+												"type": "integer"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The operation was not successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Adds a permission to the given user",
+				"tags": [
+					"User management"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"description": "A valid user id",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"permissions_id": {
+										"type": "integer",
+										"description": "A permission ids"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "The operation was successful"
+					},
+					"400": {
+						"description": "The operation was not successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"summary": "Replaces the assigned permissions of the given user",
+				"tags": [
+					"User management"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"description": "A valid user id",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"permissions": {
+										"type": "array",
+										"items": {
+											"type": "integer"
+										},
+										"description": "A list of permission ids"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "The operation was successful"
+					},
+					"400": {
+						"description": "The operation was not successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/user": {
+			"get": {
+				"summary": "Returns the currently authenticated user",
+				"tags": [
+					"Current user"
+				],
+				"responses": {
+					"200": {
+						"description": "A user object",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"items": {
+										"$ref": "#/components/schemas/UserDto"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "The operation was not successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1023,7 +1190,7 @@
 			"get": {
 				"summary": "Returns all settings of the currently logged in user",
 				"tags": [
-					"User settings"
+					"Current user"
 				],
 				"responses": {
 					"200": {
@@ -1042,7 +1209,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1054,7 +1221,7 @@
 			"get": {
 				"summary": "Returns the given setting of the currently logged in user",
 				"tags": [
-					"User settings"
+					"Current user"
 				],
 				"parameters": [
 					{
@@ -1083,7 +1250,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1093,7 +1260,7 @@
 			"put": {
 				"summary": "Sets the given setting of the currently logged in user",
 				"tags": [
-					"User settings"
+					"Current user"
 				],
 				"requestBody": {
 					"description": "A valid UserSetting object",
@@ -1126,7 +1293,39 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "Deletes the given setting of the currently logged in user",
+				"tags": [
+					"Current user"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "settingKey",
+						"required": true,
+						"description": "The key of the user setting",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "The operation was successful"
+					},
+					"400": {
+						"description": "The operation was not successful",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1136,7 +1335,7 @@
 		},
 		"/stock": {
 			"get": {
-				"summary": "Returns all products which are currently in stock incl. the next expiring date per product",
+				"summary": "Returns all products which are currently in stock incl. the next due date per product",
 				"tags": [
 					"Stock"
 				],
@@ -1190,7 +1389,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1228,12 +1427,12 @@
 									"best_before_date": {
 										"type": "string",
 										"format": "date",
-										"description": "The best before date of the product to add, when omitted, the current date is used"
+										"description": "The due date of the product to add, when omitted, the current date is used"
 									},
 									"price": {
 										"type": "number",
 										"format": "number",
-										"description": "The price per purchase quantity unit in configured currency"
+										"description": "The price per stock quantity unit in configured currency"
 									},
 									"open": {
 										"type": "boolean",
@@ -1274,7 +1473,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -1284,7 +1486,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1294,16 +1496,16 @@
 		},
 		"/stock/volatile": {
 			"get": {
-				"summary": "Returns all products which are expiring soon, are already expired or currently missing",
+				"summary": "Returns all products which are due soon, overdue, expired or currently missing",
 				"tags": [
 					"Stock"
 				],
 				"parameters": [
 					{
 						"in": "query",
-						"name": "expiring_days",
+						"name": "due_soon_days",
 						"required": false,
-						"description": "The number of days in which products are considered expiring soon",
+						"description": "The number of days in which products are considered to be due soon",
 						"schema": {
 							"type": "integer",
 							"default": 5
@@ -1360,7 +1562,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1383,6 +1585,27 @@
 						"schema": {
 							"type": "integer"
 						}
+					},
+					{
+						"in": "query",
+						"name": "include_sub_products",
+						"required": false,
+						"description": "If sub product locations should be included (if the given product is a parent product and in addition to the ones of the given product)",
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
 					}
 				],
 				"responses": {
@@ -1404,7 +1627,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -1414,7 +1647,7 @@
 		},
 		"/stock/products/{productId}/entries": {
 			"get": {
-				"summary": "Returns all stock entries of the given product in order of next use (first expiring first, then first in first out)",
+				"summary": "Returns all stock entries of the given product in order of next use (Opened first, then first due first, then first in first out)",
 				"tags": [
 					"Stock"
 				],
@@ -1436,6 +1669,18 @@
 						"schema": {
 							"type": "boolean"
 						}
+					},
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
 					}
 				],
 				"responses": {
@@ -1457,7 +1702,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -1501,7 +1756,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1541,7 +1796,7 @@
 									"best_before_date": {
 										"type": "string",
 										"format": "date",
-										"description": "The best before date of the product to add, when omitted, the current date is used"
+										"description": "The due date of the product to add, when omitted, the current date is used"
 									},
 									"transaction_type": {
 										"$ref": "#/components/internalSchemas/StockTransactionType"
@@ -1549,7 +1804,7 @@
 									"price": {
 										"type": "number",
 										"format": "number",
-										"description": "The price per purchase quantity unit in configured currency"
+										"description": "The price per stock quantity unit in configured currency"
 									},
 									"location_id": {
 										"type": "number",
@@ -1578,7 +1833,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -1588,7 +1846,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1644,6 +1902,14 @@
 										"type": "number",
 										"format": "integer",
 										"description": "A valid location id (if supplied, only stock at the given location is considered, if ommitted, stock of any location is considered)"
+									},
+									"exact_amount": {
+										"type": "boolean",
+										"description": "For tare weight handling enabled products, `true` when the given is the absolute amount to be consumed, not the amount including the container weight"
+									},
+									"allow_subproduct_substitution": {
+										"type": "boolean",
+										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -1661,7 +1927,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -1671,7 +1940,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1737,7 +2006,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -1747,7 +2019,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1786,7 +2058,7 @@
 									"best_before_date": {
 										"type": "string",
 										"format": "date",
-										"description": "The best before date which applies to added products"
+										"description": "The due date which applies to added products"
 									},
 									"shopping_location_id": {
 										"type": "number",
@@ -1814,7 +2086,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -1824,7 +2099,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1863,6 +2138,10 @@
 									"stock_entry_id": {
 										"type": "string",
 										"description": "A specific stock entry id to open, if used, the amount has to be 1"
+									},
+									"allow_subproduct_substitution": {
+										"type": "boolean",
+										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -1878,7 +2157,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -1888,7 +2170,50 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/stock/products/{productIdToKeep}/merge/{productIdToRemove}": {
+			"post": {
+				"summary": "Merges two products into one",
+				"tags": [
+					"Stock"
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productIdToKeep",
+						"required": true,
+						"description": "A valid product id of the product to keep",
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"in": "path",
+						"name": "productIdToRemove",
+						"required": true,
+						"description": "A valid product id of the product to remove",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "The operation was successful"
+					},
+					"400": {
+						"description": "The operation was not successful (possible errors are: Invalid product id)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1929,7 +2254,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -1969,7 +2294,7 @@
 									"best_before_date": {
 										"type": "string",
 										"format": "date",
-										"description": "The best before date of the product to add, when omitted, the current date is used"
+										"description": "The due date of the product to add, when omitted, the current date is used"
 									},
 									"transaction_type": {
 										"$ref": "#/components/internalSchemas/StockTransactionType"
@@ -1977,7 +2302,7 @@
 									"price": {
 										"type": "number",
 										"format": "number",
-										"description": "The price per purchase quantity unit in configured currency"
+										"description": "The price per stock quantity unit in configured currency"
 									},
 									"location_id": {
 										"type": "number",
@@ -2001,7 +2326,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -2011,7 +2339,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2067,6 +2395,14 @@
 										"type": "number",
 										"format": "integer",
 										"description": "A valid location id (if supplied, only stock at the given location is considered, if ommitted, stock of any location is considered)"
+									},
+									"exact_amount": {
+										"type": "boolean",
+										"description": "For tare weight handling enabled products, `true` when the given is the absolute amount to be consumed, not the amount including the container weight"
+									},
+									"allow_subproduct_substitution": {
+										"type": "boolean",
+										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -2084,7 +2420,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -2094,7 +2433,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2160,7 +2499,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -2170,7 +2512,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2209,7 +2551,7 @@
 									"best_before_date": {
 										"type": "string",
 										"format": "date",
-										"description": "The best before date which applies to added products"
+										"description": "The due date which applies to added products"
 									},
 									"location_id": {
 										"type": "number",
@@ -2232,7 +2574,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -2242,7 +2587,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2281,6 +2626,10 @@
 									"stock_entry_id": {
 										"type": "string",
 										"description": "A specific stock entry id to open, if used, the amount has to be 1"
+									},
+									"allow_subproduct_substitution": {
+										"type": "boolean",
+										"description": "`True` when any in-stock sub product should be used when the given product is a parent product and currently not in-stock"
 									}
 								},
 								"example": {
@@ -2296,7 +2645,10 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/StockLogEntry"
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/StockLogEntry"
+									}
 								}
 							}
 						}
@@ -2306,7 +2658,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2348,7 +2700,91 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/stock/shoppinglist/add-overdue-products": {
+			"post": {
+				"summary": "Adds overdue products to the given shopping list",
+				"tags": [
+					"Stock"
+				],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"list_id": {
+										"type": "integer",
+										"description": "The shopping list to use, when omitted, the default shopping list (with id 1) is used"
+									}
+								},
+								"example": {
+									"list_id": 2
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "The operation was successful"
+					},
+					"400": {
+						"description": "The operation was not successful (possible errors are: Not existing shopping list)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/stock/shoppinglist/add-expired-products": {
+			"post": {
+				"summary": "Adds expired products to the given shopping list",
+				"tags": [
+					"Stock"
+				],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"list_id": {
+										"type": "integer",
+										"description": "The shopping list to use, when omitted, the default shopping list (with id 1) is used"
+									}
+								},
+								"example": {
+									"list_id": 2
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "The operation was successful"
+					},
+					"400": {
+						"description": "The operation was not successful (possible errors are: Not existing shopping list)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2390,7 +2826,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2448,7 +2884,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2501,7 +2937,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2542,7 +2978,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2576,7 +3012,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2620,7 +3056,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2654,7 +3090,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2705,58 +3141,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
-								}
-							}
-						}
-					}
-				}
-			}
-		},
-		"/productbarcodedetails/{barcode}": {
-			"get": {
-				"summary": "Executes a product barcode details lookoup via the configured plugin with the given barcode",
-				"tags": [
-					"Product"
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "barcode",
-						"required": true,
-						"description": "The barcode to lookup up",
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "add",
-						"required": false,
-						"description": "When true, the product is added to the database on a successful lookup and the new product id is in included in the response",
-						"schema": {
-							"type": "boolean",
-							"default": false
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "An ProductBarcodeDetails object or null, when nothing was found for the given barcode",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/ProductBarcodeDetailsResponse"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "The operation was not successful (possible errors are: Plugin error)",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2790,7 +3175,7 @@
 								"properties": {
 									"excludedProductIds": {
 										"type": "array",
-										"items":{
+										"items": {
 											"type": "number",
 											"format": "integer"
 										},
@@ -2841,7 +3226,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -2879,6 +3264,20 @@
 				"tags": [
 					"Recipes"
 				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "An array of RecipeFulfillmentResponse objects",
@@ -2898,7 +3297,17 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -2912,6 +3321,20 @@
 				"tags": [
 					"Chores"
 				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "An array of CurrentChoreResponse objects",
@@ -2922,6 +3345,16 @@
 									"items": {
 										"$ref": "#/components/schemas/CurrentChoreResponse"
 									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -2962,7 +3395,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3024,7 +3457,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3058,7 +3491,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3100,7 +3533,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3114,6 +3547,20 @@
 				"tags": [
 					"Batteries"
 				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "An array of CurrentBatteryResponse objects",
@@ -3124,6 +3571,16 @@
 									"items": {
 										"$ref": "#/components/schemas/CurrentBatteryResponse"
 									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -3164,7 +3621,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3222,7 +3679,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3256,7 +3713,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3270,6 +3727,20 @@
 				"tags": [
 					"Tasks"
 				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/query"
+					},
+					{
+						"$ref": "#/components/parameters/order"
+					},
+					{
+						"$ref": "#/components/parameters/limit"
+					},
+					{
+						"$ref": "#/components/parameters/offset"
+					}
+				],
 				"responses": {
 					"200": {
 						"description": "An array of Task objects",
@@ -3280,6 +3751,16 @@
 									"items": {
 										"$ref": "#/components/schemas/Task"
 									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "The operation was not successful (possible errors are invalid field names or conditions in filter parameters provided)",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error500"
 								}
 							}
 						}
@@ -3330,7 +3811,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3364,7 +3845,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3394,7 +3875,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/GenericErrorResponse"
+									"$ref": "#/components/schemas/Error400"
 								}
 							}
 						}
@@ -3454,36 +3935,37 @@
 					"userfields",
 					"userentities",
 					"userobjects",
-					"meal_plan"
+					"meal_plan",
+					"stock_log",
+					"stock",
+					"stock_current_locations",
+					"api_keys"
 				]
 			},
-			"ExposedEntityButNoListing": {
+			"ExposedEntityNoListing": {
 				"type": "string",
 				"enum": [
-					"products",
-					"product_barcodes",
-					"chores",
-					"batteries",
-					"locations",
-					"quantity_units",
-					"quantity_unit_conversions",
-					"shopping_list",
-					"shopping_lists",
-					"shopping_locations",
-					"recipes",
-					"recipes_pos",
-					"recipes_nestings",
-					"tasks",
-					"task_categories",
-					"product_groups",
-					"equipment",
-					"userfields",
-					"userentities",
-					"userobjects",
-					"meal_plan"
+					"api_keys"
 				]
 			},
-			"EntityEditRequiresAdmin": {
+			"ExposedEntityNoEdit": {
+				"type": "string",
+				"enum": [
+					"stock_log",
+					"api_keys",
+					"stock",
+					"stock_current_locations"
+				]
+			},
+			"ExposedEntityNoDelete": {
+				"type": "string",
+				"enum": [
+					"stock_log",
+					"stock",
+					"stock_current_locations"
+				]
+			},
+			"ExposedEntityEditRequiresAdmin": {
 				"type": "string",
 				"enum": [
 					"api_keys"
@@ -3497,6 +3979,10 @@
 					"inventory-correction",
 					"product-opened"
 				]
+			},
+			"StringEnumTemplate": {
+				"type": "string",
+				"enum": []
 			}
 		},
 		"schemas": {
@@ -3560,9 +4046,6 @@
 					"picture_file_name": {
 						"type": "string"
 					},
-					"allow_partial_units_in_stock": {
-						"type": "boolean"
-					},
 					"row_created_timestamp": {
 						"type": "string",
 						"format": "date-time"
@@ -3590,7 +4073,6 @@
 					"product_group_id": "1",
 					"picture_file_name": "cookies.jpg",
 					"default_best_before_days_after_open": "0",
-					"allow_partial_units_in_stock": "0",
 					"enable_tare_weight_handling": "0",
 					"tare_weight": "0.0",
 					"not_check_stock_fulfillment_for_recipes": "0",
@@ -3818,9 +4300,9 @@
 						"$ref": "#/components/schemas/Product"
 					},
 					"product_barcodes": {
-						"$ref": "#/components/schemas/ProductBarcodeDetailsResponse"
+						"$ref": "#/components/schemas/ProductBarcode"
 					},
-					"quantity_unit_purchase": {
+					"default_quantity_unit_purchase": {
 						"$ref": "#/components/schemas/QuantityUnit"
 					},
 					"quantity_unit_stock": {
@@ -3840,7 +4322,7 @@
 					"stock_amount_opened": {
 						"type": "integer"
 					},
-					"next_best_before_date": {
+					"next_due_date": {
 						"type": "string",
 						"format": "date-time"
 					},
@@ -3887,7 +4369,6 @@
 						"product_group_id": "1",
 						"picture_file_name": "cookies.jpg",
 						"default_best_before_days_after_open": "0",
-						"allow_partial_units_in_stock": "0",
 						"enable_tare_weight_handling": "0",
 						"tare_weight": "0.0",
 						"not_check_stock_fulfillment_for_recipes": "0",
@@ -3898,15 +4379,16 @@
 							"id": "1",
 							"product_id": "13",
 							"barcode": "01321230213",
-							"qu_factor_purchase_to_stock": "10.0",
-							"shopping_location_id": "2"
+							"qu_id": "1",
+							"shopping_location_id": "2",
+							"amount": "10"
 						}
 					],
 					"last_purchased": null,
 					"last_used": null,
 					"stock_amount": "2",
 					"stock_amount_opened": null,
-					"quantity_unit_purchase": {
+					"default_quantity_unit_purchase": {
 						"id": "3",
 						"name": "Pack",
 						"description": null,
@@ -3926,7 +4408,7 @@
 					"avg_price": null,
 					"oldest_price": null,
 					"last_shopping_location_id": null,
-					"next_best_before_date": "2019-07-07",
+					"next_due_date": "2019-07-07",
 					"location": {
 						"id": "4",
 						"name": "Candy cupboard",
@@ -3946,14 +4428,14 @@
 					},
 					"price": {
 						"type": "number",
-						"format": "number"
+						"format": "float"
 					},
 					"shopping_location": {
 						"$ref": "#/components/schemas/ShoppingLocation"
 					}
 				}
 			},
-			"ProductBarcodeDetailsResponse": {
+			"ProductBarcode": {
 				"type": "object",
 				"properties": {
 					"product_id": {
@@ -3962,16 +4444,22 @@
 					"barcode": {
 						"type": "string"
 					},
-					"qu_factor_purchase_to_stock": {
-						"type": "number",
-						"format": "number"
-					},
-					"barcode": {
-						"type": "string",
-						"description": "Can contain multiple barcodes separated by comma"
+					"qu_id": {
+						"type": "integer"
 					},
 					"shopping_location_id": {
 						"type": "integer"
+					},
+					"amount": {
+						"type": "number",
+						"format": "number"
+					},
+					"last_price": {
+						"type": "number",
+						"format": "float"
+					},
+					"note": {
+						"type": "string"
 					}
 				}
 			},
@@ -4127,6 +4615,9 @@
 					"password": {
 						"type": "string"
 					},
+					"picture_file_name": {
+						"type": "string"
+					},
 					"row_created_timestamp": {
 						"type": "string",
 						"format": "date-time"
@@ -4150,6 +4641,9 @@
 						"type": "string"
 					},
 					"display_name": {
+						"type": "string"
+					},
+					"picture_file_name": {
 						"type": "string"
 					},
 					"row_created_timestamp": {
@@ -4367,6 +4861,9 @@
 					"stock_id": {
 						"type": "string"
 					},
+					"transaction_id": {
+						"type": "string"
+					},
 					"transaction_type": {
 						"$ref": "#/components/internalSchemas/StockTransactionType"
 					},
@@ -4376,11 +4873,141 @@
 					}
 				}
 			},
-			"GenericErrorResponse": {
+			"StockJournal": {
+				"type": "object",
+				"properties": {
+					"correlation_id": {
+						"type": "string"
+					},
+					"undone": {
+						"type": "integer"
+					},
+					"undone_timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"amount": {
+						"type": "number",
+						"format": "float"
+					},
+					"location_id": {
+						"type": "integer"
+					},
+					"location_name": {
+						"type": "string"
+					},
+					"product_name": {
+						"type": "string"
+					},
+					"qu_name": {
+						"type": "string"
+					},
+					"qu_name_plural": {
+						"type": "string"
+					},
+					"user_display_name": {
+						"type": "string"
+					},
+					"spoiled": {
+						"type": "boolean",
+						"default": false
+					},
+					"transaction_type": {
+						"$ref": "#/components/internalSchemas/StockTransactionType"
+					},
+					"row_created_timestamp": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"example": {
+					"id": "1",
+					"correlation_id": null,
+					"undone": "0",
+					"undone_timestamp": null,
+					"transaction_type": "purchase",
+					"spoiled": "0",
+					"amount": "1",
+					"location_id": "4",
+					"location_name": "Candy cupboard",
+					"product_name": "Gummy bears",
+					"qu_name": "Pack",
+					"qu_name_plural": "Packs",
+					"user_display_name": "Demo User",
+					"row_created_timestamp": "2020-11-14 16:42:21"
+				}
+			},
+			"StockJournalSummary": {
+				"type": "object",
+				"properties": {
+					"amount": {
+						"type": "number",
+						"format": "float"
+					},
+					"user_id": {
+						"type": "integer"
+					},
+					"product_name": {
+						"type": "string"
+					},
+					"product_id": {
+						"type": "integer"
+					},
+					"qu_name": {
+						"type": "string"
+					},
+					"qu_name_plural": {
+						"type": "string"
+					},
+					"user_display_name": {
+						"type": "string"
+					},
+					"transaction_type": {
+						"$ref": "#/components/internalSchemas/StockTransactionType"
+					}
+				},
+				"example": {
+					"id": "1",
+					"user_id": "1",
+					"user_display_name": "Demo User",
+					"product_name": "Chocolate",
+					"product_id": "2",
+					"transaction_type": "purchase",
+					"qu_name": "Pack",
+					"qu_name_plural": "Packs",
+					"amount": "1"
+				}
+			},
+			"Error400": {
 				"type": "object",
 				"properties": {
 					"error_message": {
 						"type": "string"
+					}
+				},
+				"example": {
+					"error_message": "The error message..."
+				}
+			},
+			"Error500": {
+				"type": "object",
+				"properties": {
+					"error_message": {
+						"type": "string"
+					},
+					"error_details": {
+						"type": "object",
+						"properties": {
+							"stack_trace": {
+								"type": "string"
+							},
+							"file": {
+								"type": "string"
+							},
+							"line": {
+								"type": "integer"
+							}
+						}
 					}
 				},
 				"example": {
@@ -4408,7 +5035,7 @@
 					"best_before_date": {
 						"type": "string",
 						"format": "date",
-						"description": "The next best before date for this product"
+						"description": "The next due date for this product"
 					},
 					"is_aggregated_amount": {
 						"type": "boolean",
@@ -4456,9 +5083,15 @@
 			"CurrentVolatilStockResponse": {
 				"type": "object",
 				"properties": {
-					"expiring_products": {
+					"due_products": {
 						"type": "array",
-						"items":{
+						"items": {
+							"$ref": "#/components/schemas/CurrentStockResponse"
+						}
+					},
+					"overdue_products": {
+						"type": "array",
+						"items": {
 							"$ref": "#/components/schemas/CurrentStockResponse"
 						}
 					},
@@ -4560,11 +5193,52 @@
 				"in": "header",
 				"name": "GROCY-API-KEY"
 			}
+		},
+		"parameters": {
+			"order": {
+				"in": "query",
+				"name": "order",
+				"required": false,
+				"description": "A valid field name by which the response should be ordered, use the separator `:` to specify the sort order (`asc` or `desc`, defaults to `asc` when omitted)",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"limit": {
+				"in": "query",
+				"name": "limit",
+				"required": false,
+				"description": "The maximum number of objects to return",
+				"schema": {
+					"type": "integer"
+				}
+			},
+			"offset": {
+				"in": "query",
+				"name": "offset",
+				"required": false,
+				"description": "The number of objects to skip",
+				"schema": {
+					"type": "integer"
+				}
+			},
+			"query": {
+				"in": "query",
+				"name": "query[]",
+				"required": false,
+				"description": "An array of filter conditions, each of them is a string in the form of `<field><condition><value>` where<br>`<field>` is a valid field name<br>`<condition>` is a comparison operator, one of<br>&nbsp;&nbsp;`=` equal<br>&nbsp;&nbsp;`!=` not equal<br>&nbsp;&nbsp;`~` LIKE<br>&nbsp;&nbsp;`!~` not LIKE<br>&nbsp;&nbsp;`<` less<br>&nbsp;&nbsp;`>` greater<br>&nbsp;&nbsp;`<=` less or equal<br>&nbsp;&nbsp;`>=` greater or equal<br>&nbsp;&nbsp;`§` regular expression<br>`<value>` is the value to search for",
+				"schema": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			}
 		}
 	},
 	"security": [
 		{
-			"ApiKeyAuth": [ ]
+			"ApiKeyAuth": []
 		}
 	]
 }

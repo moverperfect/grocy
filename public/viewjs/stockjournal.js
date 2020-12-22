@@ -4,7 +4,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#stock-journal-table tbody').removeClass("d-none");
 stockJournalTable.columns.adjust().draw();
@@ -21,6 +21,42 @@ $("#product-filter").on("change", function()
 	stockJournalTable.column(1).search(text).draw();
 });
 
+$("#transaction-type-filter").on("change", function()
+{
+	var value = $(this).val();
+	var text = $("#transaction-type-filter option:selected").text();
+	if (value === "all")
+	{
+		text = "";
+	}
+
+	stockJournalTable.column(4).search(text).draw();
+});
+
+$("#location-filter").on("change", function()
+{
+	var value = $(this).val();
+	var text = $("#location-filter option:selected").text();
+	if (value === "all")
+	{
+		text = "";
+	}
+
+	stockJournalTable.column(5).search(text).draw();
+});
+
+$("#user-filter").on("change", function()
+{
+	var value = $(this).val();
+	var text = $("#user-filter option:selected").text();
+	if (value === "all")
+	{
+		text = "";
+	}
+
+	stockJournalTable.column(6).search(text).draw();
+});
+
 $("#search").on("keyup", Delay(function()
 {
 	var value = $(this).val();
@@ -31,6 +67,20 @@ $("#search").on("keyup", Delay(function()
 
 	stockJournalTable.search(value).draw();
 }, 200));
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#transaction-type-filter").val("all");
+	$("#location-filter").val("all");
+	$("#user-filter").val("all");
+	$("#product-filter").val("all");
+	stockJournalTable.column(1).search("").draw();
+	stockJournalTable.column(4).search("").draw();
+	stockJournalTable.column(5).search("").draw();
+	stockJournalTable.column(6).search("").draw();
+	stockJournalTable.search("").draw();
+});
 
 if (typeof GetUriParam("product") !== "undefined")
 {

@@ -4,7 +4,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#chores-journal-table tbody').removeClass("d-none");
 choresJournalTable.columns.adjust().draw();
@@ -31,6 +31,14 @@ $("#search").on("keyup", Delay(function()
 
 	choresJournalTable.search(value).draw();
 }, 200));
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#chore-filter").val("all");
+	choresJournalTable.column(1).search("").draw();
+	choresJournalTable.search("").draw();
+});
 
 if (typeof GetUriParam("chore") !== "undefined")
 {

@@ -2,8 +2,10 @@
 	'order': [[2, 'desc']],
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
-		{ 'searchable': false, "targets": 0 }
-	]
+		{ 'searchable': false, "targets": 0 },
+		{ "type": "html", "targets": 3 },
+		{ "type": "html", "targets": 4 }
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#batteries-overview-table tbody').removeClass("d-none");
 batteriesOverviewTable.columns.adjust().draw();
@@ -19,6 +21,14 @@ $("#search").on("keyup", Delay(function()
 	batteriesOverviewTable.search(value).draw();
 }, 200));
 
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#status-filter").val("all");
+	batteriesOverviewTable.column(5).search("").draw();
+	batteriesOverviewTable.search("").draw();
+});
+
 $("#status-filter").on("change", function()
 {
 	var value = $(this).val();
@@ -30,7 +40,7 @@ $("#status-filter").on("change", function()
 	// Transfer CSS classes of selected element to dropdown element (for background)
 	$(this).attr("class", $("#" + $(this).attr("id") + " option[value='" + value + "']").attr("class") + " form-control");
 
-	batteriesOverviewTable.column(4).search(value).draw();
+	batteriesOverviewTable.column(5).search(value).draw();
 });
 
 $(".status-filter-message").on("click", function()
@@ -135,8 +145,8 @@ function RefreshStatistics()
 				}
 			});
 
-			$("#info-due-batteries").text(__n(dueCount, '%s battery is due to be charged', '%s batteries are due to be charged') + ' ' + __n(nextXDays, 'within the next day', 'within the next %s days'));
-			$("#info-overdue-batteries").text(__n(overdueCount, '%s battery is overdue to be charged', '%s batteries are overdue to be charged'));
+			$("#info-due-batteries").html('<span class="d-block d-md-none">' + dueCount + ' <i class="fas fa-clock"></i></span><span class="d-none d-md-block">' + __n(dueCount, '%s battery is due to be charged', '%s batteries are due to be charged') + ' ' + __n(nextXDays, 'within the next day', 'within the next %s days'));
+			$("#info-overdue-batteries").html('<span class="d-block d-md-none">' + overdueCount + ' <i class="fas fa-times-circle"></i></span><span class="d-none d-md-block">' + __n(overdueCount, '%s battery is overdue to be charged', '%s batteries are overdue to be charged'));
 		},
 		function(xhr)
 		{

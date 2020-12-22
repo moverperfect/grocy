@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#productgroups-table tbody').removeClass("d-none");
 groupsTable.columns.adjust().draw();
@@ -19,9 +19,15 @@ $("#search").on("keyup", Delay(function()
 	groupsTable.search(value).draw();
 }, 200));
 
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	groupsTable.search("").draw();
+});
+
 $(document).on('click', '.product-group-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-group-name'));
+	var objectName = $(e.currentTarget).attr('data-group-name');
 	var objectId = $(e.currentTarget).attr('data-group-id');
 
 	bootbox.confirm({

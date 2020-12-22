@@ -7,17 +7,35 @@
 @section('content')
 <div class="title-related-links">
 	<h2 class="title">@yield('title')</h2>
-	<div class="related-links">
-		<a class="btn btn-outline-dark responsive-button"
+	<div class="float-right">
+		<button class="btn btn-outline-dark d-md-none mt-2 order-1 order-md-3"
+			type="button"
+			data-toggle="collapse"
+			data-target="#table-filter-row">
+			<i class="fas fa-filter"></i>
+		</button>
+		<button class="btn btn-outline-dark d-md-none mt-2 order-1 order-md-3"
+			type="button"
+			data-toggle="collapse"
+			data-target="#related-links">
+			<i class="fas fa-ellipsis-v"></i>
+		</button>
+	</div>
+	<div class="related-links collapse d-md-flex order-2 width-xs-sm-100"
+		id="related-links">
+		<a class="btn btn-outline-dark responsive-button m-1 mt-md-0 mb-md-0 float-right"
 			href="{{ $U('/stockjournal/summary') }}">
 			{{ $__t('Journal summary') }}
 		</a>
 	</div>
 </div>
-<hr>
-<div class="row my-3">
-	<div class="col-xs-12 col-md-6 col-xl-3">
-		<div class="input-group mb-3">
+
+<hr class="my-2">
+
+<div class="row collapse d-md-flex"
+	id="table-filter-row">
+	<div class="col-xs-12 col-md-6 col-xl-2">
+		<div class="input-group">
 			<div class="input-group-prepend">
 				<span class="input-group-text"><i class="fas fa-search"></i></span>
 			</div>
@@ -27,12 +45,12 @@
 				placeholder="{{ $__t('Search') }}">
 		</div>
 	</div>
-	<div class="col-xs-12 col-md-6 col-xl-3">
-		<div class="input-group mb-3">
+	<div class="col-xs-12 col-md-6 col-xl-2">
+		<div class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text"><i class="fas fa-filter"></i></span>
+				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Product') }}</span>
 			</div>
-			<select class="form-control"
+			<select class="custom-control custom-select"
 				id="product-filter">
 				<option value="all">{{ $__t('All') }}</option>
 				@foreach($products as $product)
@@ -41,19 +59,76 @@
 			</select>
 		</div>
 	</div>
+	<div class="col-xs-12 col-md-6 col-xl-3">
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Transaction type') }}</span>
+			</div>
+			<select class="custom-control custom-select"
+				id="transaction-type-filter">
+				<option value="all">{{ $__t('All') }}</option>
+				@foreach($transactionTypes as $transactionType)
+				<option value="{{ $transactionType }}">{{ $__t($transactionType) }}</option>
+				@endforeach
+			</select>
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-6 col-xl-2">
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('Location') }}</span>
+			</div>
+			<select class="custom-control custom-select"
+				id="location-filter">
+				<option value="all">{{ $__t('All') }}</option>
+				@foreach($locations as $location)
+				<option value="{{ $location->id }}">{{ $location->name }}</option>
+				@endforeach
+			</select>
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-6 col-xl-2">
+		<div class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text"><i class="fas fa-filter"></i>&nbsp;{{ $__t('User') }}</span>
+			</div>
+			<select class="custom-control custom-select"
+				id="user-filter">
+				<option value="all">{{ $__t('All') }}</option>
+				@foreach($users as $user)
+				<option value="{{ $user->id }}">{{ $user->display_name }}</option>
+				@endforeach
+			</select>
+		</div>
+	</div>
+	<div class="col">
+		<div class="float-right mt-1">
+			<a id="clear-filter-button"
+				class="btn btn-sm btn-outline-info"
+				href="#">
+				{{ $__t('Clear filter') }}
+			</a>
+		</div>
+	</div>
 </div>
 
-<div class="row">
+<div class="row mt-2">
 	<div class="col">
 		<table id="stock-journal-table"
-			class="table table-sm table-striped dt-responsive">
+			class="table table-sm table-striped nowrap w-100">
 			<thead>
 				<tr>
-					<th class="border-right"></th>
+					<th class="border-right"><a class="text-muted change-table-columns-visibility-button"
+							data-toggle="tooltip"
+							data-toggle="tooltip"
+							title="{{ $__t('Table options') }}"
+							data-table-selector="#stock-journal-table"
+							href="#"><i class="fas fa-eye"></i></a>
+					</th>
 					<th>{{ $__t('Product') }}</th>
 					<th>{{ $__t('Amount') }}</th>
-					<th>{{ $__t('Booking time') }}</th>
-					<th>{{ $__t('Booking type') }}</th>
+					<th>{{ $__t('Transaction time') }}</th>
+					<th>{{ $__t('Transaction type') }}</th>
 					<th class="@if(!GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING) d-none @endif">{{ $__t('Location') }}</th>
 					<th>{{ $__t('Done by') }}</th>
 				</tr>
@@ -69,7 +144,7 @@
 							data-booking-id="{{ $stockLogEntry->id }}"
 							data-toggle="tooltip"
 							data-placement="left"
-							title="{{ $__t('Undo booking') }}">
+							title="{{ $__t('Undo transaction') }}">
 							<i class="fas fa-undo"></i>
 						</a>
 					</td>

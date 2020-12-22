@@ -19,8 +19,12 @@
 <div id="datetimepicker-wrapper"
 	class="form-group {{ $additionalGroupCssClasses }}">
 	<label for="{{ $id }}">{{ $__t($label) }}
+		@if(!empty($hint))
+		&nbsp;<i class="fas fa-question-circle text-muted"
+			data-toggle="tooltip"
+			title="{{ $hint }}"></i>
+		@endif
 		<span class="small text-muted">
-			@if(!empty($hint)){{ $__t($hint) }}@endif
 			<time id="datetimepicker-timeago"
 				class="timeago timeago-contextual"></time>
 		</span>
@@ -61,15 +65,20 @@
 			<div class="invalid-feedback">{{ $invalidFeedback }}</div>
 		</div>
 		<div id="datetimepicker-earlier-than-info"
-			class="form-text text-info font-italic d-none">{{ $earlierThanInfoText }}</div>
+			class="form-text text-info font-italic w-100 d-none">{{ $earlierThanInfoText }}</div>
 		@if(isset($shortcutValue) && isset($shortcutLabel))
-		<div class="form-check w-100">
-			<input class="form-check-input"
-				type="checkbox"
-				id="datetimepicker-shortcut"
-				data-datetimepicker-shortcut-value="{{ $shortcutValue }}">
-			<label class="form-check-label"
-				for="datetimepicker-shortcut">{{ $__t($shortcutLabel) }}</label>
+		<div class="form-group mt-n2 mb-0">
+			<div class="custom-control custom-checkbox">
+				<input class="form-check-input custom-control-input"
+					type="checkbox"
+					id="datetimepicker-shortcut"
+					name="datetimepicker-shortcut"
+					value="1"
+					data-datetimepicker-shortcut-value="{{ $shortcutValue }}">
+				<label class="form-check-label custom-control-label"
+					for="datetimepicker-shortcut">{{ $__t($shortcutLabel) }}
+				</label>
+			</div>
 		</div>
 		@endif
 	</div>

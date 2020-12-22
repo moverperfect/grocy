@@ -13,9 +13,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 		<form id="quantityunitpluraltesting-form"
@@ -23,7 +25,7 @@
 
 			<div class="form-group">
 				<label for="qu_id">{{ $__t('Quantity unit') }}</label>
-				<select class="form-control"
+				<select class="custom-control custom-select"
 					id="qu_id"
 					name="qu_id">
 					<option></option>
@@ -38,10 +40,11 @@
 			@include('components.numberpicker', array(
 			'id' => 'amount',
 			'label' => 'Amount',
-			'min' => 0,
-			'step' => 1,
+			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'decimals' => $userSettings['stock_decimal_places_amounts'],
 			'isRequired' => false,
-			'value' => 1
+			'value' => 1,
+			'additionalCssClasses' => 'locale-number-input locale-number-quantity-amount'
 			))
 
 		</form>

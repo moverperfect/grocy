@@ -6,13 +6,19 @@
 @php if(empty($prefillById)) { $prefillById = ''; } @endphp
 @php if(!isset($isRequired)) { $isRequired = true; } @endphp
 @php if(empty($hint)) { $hint = ''; } @endphp
+@php if(empty($nextInputSelector)) { $nextInputSelector = ''; } @endphp
 
 <div class="form-group"
-	@if(isset($nextInputSelector))data-next-input-selector="{{ $nextInputSelector }}" @endif
+	data-next-input-selector="{{ $nextInputSelector }}"
 	data-prefill-by-name="{{ $prefillByName }}"
 	data-prefill-by-id="{{ $prefillById }}">
-	<label for="location_id">{{ $__t('Location') }}&nbsp;&nbsp;<span @if(!empty($hintId))id="{{ $hintId }}" @endif
-			class="small text-muted">{{ $hint }}</span></label>
+	<label for="location_id">{{ $__t('Location') }}
+		@if(!empty($hint))
+		<i class="fas fa-question-circle text-muted"
+			data-toggle="tooltip"
+			title="{{ $hint }}"></i>
+		@endif
+	</label>
 	<select class="form-control location-combobox"
 		id="location_id"
 		name="location_id"

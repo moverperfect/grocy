@@ -3,7 +3,7 @@
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
 		{ 'searchable': false, "targets": 0 }
-	]
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#users-table tbody').removeClass("d-none");
 usersTable.columns.adjust().draw();
@@ -19,9 +19,15 @@ $("#search").on("keyup", Delay(function()
 	usersTable.search(value).draw();
 }, 200));
 
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	usersTable.search("").draw();
+});
+
 $(document).on('click', '.user-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-user-username'));
+	var objectName = $(e.currentTarget).attr('data-user-username');
 	var objectId = $(e.currentTarget).attr('data-user-id');
 
 	bootbox.confirm({

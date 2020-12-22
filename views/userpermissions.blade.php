@@ -10,16 +10,27 @@
 </script>
 @endpush
 
+@push('pageStyles')
+<style>
+	ul {
+		list-style-type: none;
+	}
+
+</style>
+@endpush
+
 @section('content')
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
 	</div>
 </div>
-<hr>
-<div class="row mt-3">
+
+<hr class="my-2">
+
+<div class="row">
 	<div class="col">
-		<ul>
+		<ul class="pl-0">
 			@foreach($permissions as $perm)
 			<li>
 				@include('components.userpermission_select', array(

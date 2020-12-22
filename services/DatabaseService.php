@@ -5,9 +5,7 @@ namespace Grocy\Services;
 class DatabaseService
 {
 	private static $DbConnection = null;
-
 	private static $DbConnectionRaw = null;
-
 	private static $instance = null;
 
 	/**
@@ -67,6 +65,12 @@ class DatabaseService
 		{
 			$pdo = new \PDO('sqlite:' . $this->GetDbFilePath());
 			$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+			$pdo->sqliteCreateFunction('regexp', function ($pattern, $value) {
+				mb_regex_encoding('UTF-8');
+				return (false !== mb_ereg($pattern, $value)) ? 1 : 0;
+			});
+
 			self::$DbConnectionRaw = $pdo;
 		}
 
@@ -92,7 +96,13 @@ class DatabaseService
 	{
 		if (GROCY_MODE === 'demo' || GROCY_MODE === 'prerelease')
 		{
-			return GROCY_DATAPATH . '/grocy_' . GROCY_DEFAULT_LOCALE . '.db';
+			$dbSuffix = GROCY_DEFAULT_LOCALE;
+			if (defined('GROCY_DEMO_DB_SUFFIX'))
+			{
+				$dbSuffix = GROCY_DEMO_DB_SUFFIX;
+			}
+
+			return GROCY_DATAPATH . '/grocy_' . $dbSuffix . '.db';
 		}
 
 		return GROCY_DATAPATH . '/grocy.db';

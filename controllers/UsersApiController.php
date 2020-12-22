@@ -11,7 +11,7 @@ class UsersApiController extends BaseApiController
 		try
 		{
 			User::checkPermission($request, User::PERMISSION_ADMIN);
-			$requestBody = $request->getParsedBody();
+			$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 			$this->getDatabase()->user_permissions()->createRow([
 				'user_id' => $args['userId'],
@@ -32,7 +32,7 @@ class UsersApiController extends BaseApiController
 	public function CreateUser(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
 		User::checkPermission($request, User::PERMISSION_USERS_CREATE);
-		$requestBody = $request->getParsedBody();
+		$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 		try
 		{
@@ -41,7 +41,7 @@ class UsersApiController extends BaseApiController
 				throw new \Exception('Request body could not be parsed (probably invalid JSON format or missing/wrong Content-Type header)');
 			}
 
-			$this->getUsersService()->CreateUser($requestBody['username'], $requestBody['first_name'], $requestBody['last_name'], $requestBody['password']);
+			$this->getUsersService()->CreateUser($requestBody['username'], $requestBody['first_name'], $requestBody['last_name'], $requestBody['password'], $requestBody['picture_file_name']);
 			return $this->EmptyApiResponse($response);
 		}
 		catch (\Exception $ex)
@@ -75,11 +75,11 @@ class UsersApiController extends BaseApiController
 			User::checkPermission($request, User::PERMISSION_USERS_EDIT);
 		}
 
-		$requestBody = $request->getParsedBody();
+		$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 		try
 		{
-			$this->getUsersService()->EditUser($args['userId'], $requestBody['username'], $requestBody['first_name'], $requestBody['last_name'], $requestBody['password']);
+			$this->getUsersService()->EditUser($args['userId'], $requestBody['username'], $requestBody['first_name'], $requestBody['last_name'], $requestBody['password'], $requestBody['picture_file_name']);
 			return $this->EmptyApiResponse($response);
 		}
 		catch (\Exception $ex)
@@ -126,6 +126,18 @@ class UsersApiController extends BaseApiController
 		}
 	}
 
+	public function CurrentUser(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
+	{
+		try
+		{
+			return $this->ApiResponse($response, $this->getUsersService()->GetUsersAsDto()->where('id', GROCY_USER_ID));
+		}
+		catch (\Exception $ex)
+		{
+			return $this->GenericErrorResponse($response, $ex->getMessage());
+		}
+	}
+
 	public function ListPermissions(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
 	{
 		try
@@ -134,7 +146,7 @@ class UsersApiController extends BaseApiController
 
 			return $this->ApiResponse(
 				$response,
-				$this->getDatabase()->user_permissions()->where($args['userId'])
+				$this->getDatabase()->user_permissions()->where('user_id', $args['userId'])
 			);
 		}
 		catch (\Slim\Exception\HttpSpecializedException $ex)
@@ -152,6 +164,7 @@ class UsersApiController extends BaseApiController
 		try
 		{
 			User::checkPermission($request, User::PERMISSION_ADMIN);
+
 			$requestBody = $request->getParsedBody();
 			$db = $this->getDatabase();
 			$db->user_permissions()
@@ -159,15 +172,24 @@ class UsersApiController extends BaseApiController
 				->delete();
 
 			$perms = [];
-
-			foreach ($requestBody['permissions'] as $perm_id)
+			if (GROCY_MODE === 'demo' || GROCY_MODE === 'prerelease')
 			{
+				// For demo mode always all users have and keep the ADMIN permission
 				$perms[] = [
 					'user_id' => $args['userId'],
-					'permission_id' => $perm_id
+					'permission_id' => 1
 				];
 			}
-
+			else
+			{
+				foreach ($requestBody['permissions'] as $perm_id)
+				{
+					$perms[] = [
+						'user_id' => $args['userId'],
+						'permission_id' => $perm_id
+					];
+				}
+			}
 			$db->insert('user_permissions', $perms, 'batch');
 
 			return $this->EmptyApiResponse($response);
@@ -186,9 +208,22 @@ class UsersApiController extends BaseApiController
 	{
 		try
 		{
-			$requestBody = $request->getParsedBody();
+			$requestBody = $this->GetParsedAndFilteredRequestBody($request);
 
 			$value = $this->getUsersService()->SetUserSetting(GROCY_USER_ID, $args['settingKey'], $requestBody['value']);
+			return $this->EmptyApiResponse($response);
+		}
+		catch (\Exception $ex)
+		{
+			return $this->GenericErrorResponse($response, $ex->getMessage());
+		}
+	}
+
+	public function DeleteUserSetting(\Psr\Http\Message\ServerRequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
+	{
+		try
+		{
+			$value = $this->getUsersService()->DeleteUserSetting(GROCY_USER_ID, $args['settingKey']);
 			return $this->EmptyApiResponse($response);
 		}
 		catch (\Exception $ex)

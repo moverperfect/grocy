@@ -9,8 +9,8 @@ class BaseApiController extends BaseController
 	protected $OpenApiSpec = null;
 
 	const PATTERN_FIELD = '[A-Za-z_][A-Za-z0-9_]+';
-	const PATTERN_OPERATOR = '!?(=|~|<|>|(>=)|(<=))';
-	const PATTERN_VALUE = '[A-Za-z_0-9.]+';
+	const PATTERN_OPERATOR = '!?(=|~|<|>|(>=)|(<=)|(§))';
+	const PATTERN_VALUE = '[A-Za-z_0-9.$#^|]+';
 
 	public function __construct(\DI\Container $container)
 	{
@@ -47,14 +47,31 @@ class BaseApiController extends BaseController
 		{
 			$data = $this->filter($data, $query['query']);
 		}
+
 		if (isset($query['limit']))
 		{
 			$data = $data->limit(intval($query['limit']), intval($query['offset'] ?? 0));
 		}
+
 		if (isset($query['order']))
 		{
-			$data = $data->orderBy($query['order']);
+			$parts = explode(':', $query['order']);
+
+			if (count($parts) == 1)
+			{
+				$data = $data->orderBy($parts[0]);
+			}
+			else
+			{
+				if ($parts[1] != 'asc' && $parts[1] != 'desc')
+				{
+					throw new \Exception('Invalid sort order ' . $parts[1]);
+				}
+
+				$data = $data->orderBy($parts[0], $parts[1]);
+			}
 		}
+
 		return $data;
 	}
 
@@ -70,13 +87,24 @@ class BaseApiController extends BaseController
 				$q,
 				$matches
 			);
-			error_log(var_export($matches, true));
+
+			if (!array_key_exists('field', $matches) || !array_key_exists('op', $matches) || !array_key_exists('value', $matches))
+			{
+				throw new \Exception('Invalid query');
+			}
+
+			$sqlOrNull = '';
+			if (strtolower($matches['value']) == 'null')
+			{
+				$sqlOrNull = ' OR ' . $matches['field'] . ' IS NULL';
+			}
+
 			switch ($matches['op']) {
 				case '=':
-					$data = $data->where($matches['field'], $matches['value']);
+					$data = $data->where($matches['field'] . ' = ?' . $sqlOrNull, $matches['value']);
 					break;
 				case '!=':
-					$data = $data->whereNot($matches['field'], $matches['value']);
+					$data = $data->where($matches['field'] . ' != ?' . $sqlOrNull, $matches['value']);
 					break;
 				case '~':
 					$data = $data->where($matches['field'] . ' LIKE ?', '%' . $matches['value'] . '%');
@@ -84,25 +112,25 @@ class BaseApiController extends BaseController
 				case '!~':
 					$data = $data->where($matches['field'] . ' NOT LIKE ?', '%' . $matches['value'] . '%');
 					break;
-				case '!>=':
 				case '<':
 					$data = $data->where($matches['field'] . ' < ?', $matches['value']);
 					break;
-				case '!<=':
 				case '>':
 					$data = $data->where($matches['field'] . ' > ?', $matches['value']);
 					break;
-				case '!<':
 				case '>=':
 					$data = $data->where($matches['field'] . ' >= ?', $matches['value']);
 					break;
-				case '!>':
 				case '<=':
 					$data = $data->where($matches['field'] . ' <= ?', $matches['value']);
+					break;
+				case '§':
+					$data = $data->where($matches['field'] . ' REGEXP ?', $matches['value']);
 					break;
 
 			}
 		}
+
 		return $data;
 	}
 

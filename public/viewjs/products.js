@@ -2,8 +2,10 @@
 	'order': [[1, 'asc']],
 	'columnDefs': [
 		{ 'orderable': false, 'targets': 0 },
-		{ 'searchable': false, "targets": 0 }
-	]
+		{ 'searchable': false, "targets": 0 },
+		{ 'visible': false, 'targets': 7 },
+		{ "type": "html-num-fmt", "targets": 3 }
+	].concat($.fn.dataTable.defaults.columnDefs)
 });
 $('#products-table tbody').removeClass("d-none");
 productsTable.columns.adjust().draw();
@@ -27,7 +29,16 @@ $("#product-group-filter").on("change", function()
 		value = "";
 	}
 
-	productsTable.column(7).search(value).draw();
+	productsTable.column(6).search(value).draw();
+});
+
+$("#clear-filter-button").on("click", function()
+{
+	$("#search").val("");
+	$("#product-group-filter").val("all");
+	productsTable.column(7).search("").draw();
+	productsTable.search("").draw();
+	$("#show-disabled").prop('checked', false);
 });
 
 if (typeof GetUriParam("product-group") !== "undefined")
@@ -38,61 +49,82 @@ if (typeof GetUriParam("product-group") !== "undefined")
 
 $(document).on('click', '.product-delete-button', function(e)
 {
-	var objectName = SanitizeHtml($(e.currentTarget).attr('data-product-name'));
+	var objectName = $(e.currentTarget).attr('data-product-name');
 	var objectId = $(e.currentTarget).attr('data-product-id');
 
-	Grocy.Api.Get('stock/products/' + objectId,
-		function(productDetails)
+	bootbox.confirm({
+		message: __t('Are you sure to delete product "%s"?', objectName) + '<br><br>' + __t('This also removes any stock amount, the journal and all other references of this product - consider disabling it instead, if you want to keep that and just hide the product.'),
+		closeButton: false,
+		buttons: {
+			confirm: {
+				label: __t('Yes'),
+				className: 'btn-success'
+			},
+			cancel: {
+				label: __t('No'),
+				className: 'btn-danger'
+			}
+		},
+		callback: function(result)
 		{
-			var stockAmount = productDetails.stock_amount || '0';
-
-			if (stockAmount.toString() == "0")
+			if (result === true)
 			{
-				bootbox.confirm({
-					message: __t('Are you sure you want to deactivate this product "%s"?', objectName),
-					closeButton: false,
-					buttons: {
-						confirm: {
-							label: __t('Yes'),
-							className: 'btn-success'
-						},
-						cancel: {
-							label: __t('No'),
-							className: 'btn-danger'
-						}
-					},
-					callback: function(result)
+				jsonData = {};
+				jsonData.active = 0;
+				Grocy.Api.Delete('objects/products/' + objectId, {},
+					function(result)
 					{
-						if (result === true)
-						{
-							jsonData = {};
-							jsonData.active = 0;
-							Grocy.Api.Put('objects/products/' + objectId, jsonData,
-								function(result)
-								{
-									window.location.href = U('/products');
-								},
-								function(xhr)
-								{
-									console.error(xhr);
-								}
-							);
-						}
+						window.location.href = U('/products');
+					},
+					function(xhr)
+					{
+						console.error(xhr);
 					}
-				});
+				);
 			}
-			else
-			{
-				bootbox.alert({
-					title: __t('Deactivation not possible'),
-					message: __t('This product cannot be deactivated because it is in stock, please remove the stock amount first.') + '<br><br>' + __t('Stock amount') + ': ' + stockAmount + ' ' + __n(stockAmount, productDetails.quantity_unit_stock.name, productDetails.quantity_unit_stock.name_plural),
-					closeButton: false
-				});
-			}
+		}
+	});
+});
+
+$("#show-disabled").change(function()
+{
+	if (this.checked)
+	{
+		window.location.href = U('/products?include_disabled');
+	}
+	else
+	{
+		window.location.href = U('/products');
+	}
+});
+
+if (GetUriParam('include_disabled'))
+{
+	$("#show-disabled").prop('checked', true);
+}
+
+
+$(".merge-products-button").on("click", function(e)
+{
+	var productId = $(e.currentTarget).attr("data-product-id");
+	$("#merge-products-keep").val(productId);
+	$("#merge-products-remove").val("");
+	$("#merge-products-modal").modal("show");
+});
+
+$("#merge-products-save-button").on("click", function()
+{
+	var productIdToKeep = $("#merge-products-keep").val();
+	var productIdToRemove = $("#merge-products-remove").val();
+
+	Grocy.Api.Post("stock/products/" + productIdToKeep.toString() + "/merge/" + productIdToRemove.toString(), {},
+		function(result)
+		{
+			window.location.href = U('/products');
 		},
 		function(xhr)
 		{
-			console.error(xhr);
+			Grocy.FrontendHelpers.ShowGenericError('Error while merging products', xhr.response);
 		}
 	);
 });

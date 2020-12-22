@@ -12,9 +12,11 @@
 <div class="row">
 	<div class="col">
 		<h2 class="title">@yield('title')</h2>
-		<hr>
 	</div>
 </div>
+
+<hr class="my-2">
+
 <div class="row">
 	<div class="col-lg-6 col-xs-12">
 		<script>
@@ -72,7 +74,7 @@
 
 			<div class="form-group">
 				<label for="category_id">{{ $__t('Category') }}</label>
-				<select class="form-control"
+				<select class="custom-control custom-select"
 					id="category_id"
 					name="category_id">
 					<option></option>
