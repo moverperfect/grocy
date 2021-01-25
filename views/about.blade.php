@@ -7,6 +7,7 @@
 <div class="row">
 	<div class="col-xs-12 col-md-6 text-center">
 		<h2 class="title">@yield('title')</h2>
+		<h3>Moverperfect Edition</h3>
 
 		<ul class="nav nav-tabs justify-content-center mt-3">
 			<li class="nav-item">
