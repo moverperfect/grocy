@@ -4,6 +4,11 @@ $('#save-recipe-pos-button').on('click', function(e)
 {
 	e.preventDefault();
 
+	if ($(".combobox-menu-visible").length)
+	{
+		return;
+	}
+
 	var jsonData = $('#recipe-pos-form').serializeJSON();
 	jsonData.recipe_id = Grocy.EditObjectParentId;
 	delete jsonData.display_amount;
@@ -140,7 +145,7 @@ $("#only_check_single_unit_in_stock").on("change", function()
 {
 	if (this.checked)
 	{
-		$("#display_amount").attr("min", "0." + "0".repeat(parseInt(Grocy.UserSettings.stock_decimal_places_amounts) - 1) + "1");
+		$("#display_amount").attr("min", Grocy.DefaultMinAmount);
 		Grocy.Components.ProductAmountPicker.AllowAnyQu(true);
 		Grocy.FrontendHelpers.ValidateForm("recipe-pos-form");
 	}

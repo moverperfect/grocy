@@ -78,3 +78,17 @@ $(".numberpicker").each(function()
 	});
 });
 $(".numberpicker").attr("data-initialised", "true"); // Dummy change to trigger MutationObserver above once
+
+$(".numberpicker").on("keydown", function(e)
+{
+	if (e.key == "ArrowUp")
+	{
+		e.preventDefault();
+		$(this).parent().find(".numberpicker-up-button").click();
+	}
+	else if (e.key == "ArrowDown")
+	{
+		e.preventDefault();
+		$(this).parent().find(".numberpicker-down-button").click();
+	}
+});

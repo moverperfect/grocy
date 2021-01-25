@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if ($(".combobox-menu-visible").length)
+	{
+		return;
+	}
+
 	var jsonData = $('#barcode-form').serializeJSON();
 	jsonData.amount = jsonData.display_amount;
 	delete jsonData.display_amount;
@@ -88,3 +93,13 @@ Grocy.FrontendHelpers.ValidateForm('barcode-form');
 $('#barcode').focus();
 RefreshLocaleNumberInput();
 Grocy.Components.UserfieldsForm.Load()
+
+$(document).on("Grocy.BarcodeScanned", function(e, barcode, target)
+{
+	if (target !== "#barcode")
+	{
+		return;
+	}
+
+	$("#barcode").val(barcode);
+});

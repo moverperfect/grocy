@@ -62,8 +62,9 @@
 				@include('components.productpicker', array(
 				'products' => $products,
 				'nextInputSelector' => '#amount',
-				'isRequired' => false,
-				'prefillById' => $productId
+				'isRequired' => true,
+				'prefillById' => $productId,
+				'validationMessage' => 'A product or a note is required'
 				))
 			</div>
 
@@ -72,16 +73,18 @@
 			@include('components.productamountpicker', array(
 			'value' => $value,
 			'initialQuId' => $initialQuId,
-			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'min' => $DEFAULT_MIN_AMOUNT,
 			'isRequired' => false
 			))
 
 			<div class="form-group">
 				<label for="note">{{ $__t('Note') }}</label>
 				<textarea class="form-control"
-					rows="2"
+					required
+					rows="10"
 					id="note"
 					name="note">@if($mode == 'edit'){{ $listItem->note }}@endif</textarea>
+				<div class="invalid-feedback">{{ $__t('A product or a note is required') }}</div>
 			</div>
 
 			@include('components.userfieldsform', array(

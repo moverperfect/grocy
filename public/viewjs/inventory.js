@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if ($(".combobox-menu-visible").length)
+	{
+		return;
+	}
+
 	var jsonForm = $('#inventory-form').serializeJSON();
 	Grocy.FrontendHelpers.BeginUiBusy("inventory-form");
 
@@ -144,7 +149,7 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 				}
 				else
 				{
-					$("#display_amount").attr("min", "0." + "0".repeat(parseInt(Grocy.UserSettings.stock_decimal_places_amounts) - 1) + "1");
+					$("#display_amount").attr("min", "0");
 					$("#tare-weight-handling-info").addClass("d-none");
 				}
 
@@ -175,6 +180,41 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 							Grocy.Components.DateTimePicker.SetValue(moment().add(productDetails.product.default_best_before_days, 'days').format('YYYY-MM-DD'));
 						}
 					}
+				}
+
+				if (document.getElementById("product_id").getAttribute("barcode") != "null")
+				{
+					Grocy.Api.Get('objects/product_barcodes?query[]=barcode=' + document.getElementById("product_id").getAttribute("barcode"),
+						function(barcodeResult)
+						{
+							if (barcodeResult != null)
+							{
+								var barcode = barcodeResult[0];
+
+								if (barcode != null)
+								{
+									if (barcode.amount != null && !barcode.amount.isEmpty())
+									{
+										$("#display_amount").val(barcode.amount);
+										$("#display_amount").select();
+									}
+
+									if (barcode.qu_id != null)
+									{
+										Grocy.Components.ProductAmountPicker.SetQuantityUnit(barcode.qu_id);
+									}
+
+									$(".input-group-productamountpicker").trigger("change");
+									Grocy.FrontendHelpers.ValidateForm('inventory-form');
+									RefreshLocaleNumberInput();
+								}
+							}
+						},
+						function(xhr)
+						{
+							console.error(xhr);
+						}
+					);
 				}
 
 				$('#display_amount').val(productDetails.stock_amount);
@@ -346,3 +386,5 @@ function UndoStockTransaction(transactionId)
 		}
 	);
 };
+
+$("#display_amount").attr("min", "0");

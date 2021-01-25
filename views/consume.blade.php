@@ -12,6 +12,7 @@
 <script>
 	Grocy.QuantityUnits = {!! json_encode($quantityUnits) !!};
 	Grocy.QuantityUnitConversionsResolved = {!! json_encode($quantityUnitConversionsResolved) !!};
+	Grocy.DefaultMinAmount = '{{$DEFAULT_MIN_AMOUNT}}';
 </script>
 
 <div class="row">
@@ -30,7 +31,7 @@
 				<button id="scan-mode-button"
 					class="btn @if(boolval($userSettings['scan_mode_consume_enabled'])) btn-success @else btn-danger @endif m-1 mt-md-0 mb-md-0 float-right"
 					data-toggle="tooltip"
-					title="{{ $__t('When enabled, the amount will always be filled with 1 after changing/scanning a product and if all fields could be automatically populated (by product defaults), the transaction is automatically submitted') }}">{{ $__t('Scan mode') }} <span id="scan-mode-status">@if(boolval($userSettings['scan_mode_consume_enabled'])) {{ $__t('on') }} @else {{ $__t('off') }} @endif</span></button>
+					title="{{ $__t('When enabled, after changing/scanning a product and if all fields could be automatically populated (by product and/or barcode defaults), the transaction is automatically submitted') }}">{{ $__t('Scan mode') }} <span id="scan-mode-status">@if(boolval($userSettings['scan_mode_consume_enabled'])) {{ $__t('on') }} @else {{ $__t('off') }} @endif</span></button>
 				<input id="scan-mode"
 					type="checkbox"
 					class="d-none user-setting-control"
@@ -78,8 +79,7 @@
 				class="text-info font-italic d-none">' . $__t('Tare weight handling enabled - please weigh the whole container, the amount to be posted will be automatically calculcated') . '</div>'
 			))
 
-			@if(GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING)
-			<div class="form-group">
+			<div class="form-group @if(!GROCY_FEATURE_FLAG_STOCK_LOCATION_TRACKING) d-none @endif">
 				<label for="location_id">{{ $__t('Location') }}</label>
 				<select required
 					class="custom-control custom-select location-combobox"
@@ -92,7 +92,6 @@
 				</select>
 				<div class="invalid-feedback">{{ $__t('A location is required') }}</div>
 			</div>
-			@endif
 
 			<div class="form-group">
 				<div class="custom-control custom-checkbox">

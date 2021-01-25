@@ -159,6 +159,17 @@ class BaseController
 			$this->View->set('permissions', User::PermissionList());
 		}
 
+		$decimalPlacesAmounts = intval($this->getUsersService()->GetUserSetting(GROCY_USER_ID, 'stock_decimal_places_amounts'));
+		if ($decimalPlacesAmounts <= 0)
+		{
+			$defaultMinAmount = 1;
+		}
+		else
+		{
+			$defaultMinAmount = '0.' . str_repeat('0', $decimalPlacesAmounts - 1) . '1';
+		}
+		$this->View->set('DEFAULT_MIN_AMOUNT', $defaultMinAmount);
+
 		return $this->View->render($response, $page, $data);
 	}
 
@@ -168,7 +179,6 @@ class BaseController
 		try
 		{
 			$usersService = $this->getUsersService();
-
 			if (defined('GROCY_USER_ID'))
 			{
 				$this->View->set('userSettings', $usersService->GetUserSettings(GROCY_USER_ID));
@@ -192,7 +202,12 @@ class BaseController
 	{
 		if (self::$htmlPurifierInstance == null)
 		{
-			self::$htmlPurifierInstance = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
+			$htmlPurifierConfig = \HTMLPurifier_Config::createDefault();
+			$htmlPurifierConfig->set('HTML.Allowed', 'div,b,strong,i,em,u,a[href|title],ul,ol,li,p[style],br,span[style],img[width|height|alt|src],table[border|width|style],tbody,tr,td,th,blockquote');
+			$htmlPurifierConfig->set('CSS.AllowedProperties', 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align');
+			$htmlPurifierConfig->set('URI.AllowedSchemes', ['data' => true]);
+
+			self::$htmlPurifierInstance = new \HTMLPurifier($htmlPurifierConfig);
 		}
 
 		$requestBody = $request->getParsedBody();
@@ -204,6 +219,9 @@ class BaseController
 			{
 				$value = self::$htmlPurifierInstance->purify($value);
 			}
+
+			// Allow some special chars
+			$value = str_replace('&amp;', '&', $value);
 		}
 
 		return $requestBody;

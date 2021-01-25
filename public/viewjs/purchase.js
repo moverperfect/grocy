@@ -4,6 +4,16 @@ $('#save-purchase-button').on('click', function(e)
 {
 	e.preventDefault();
 
+	if ($(".combobox-menu-visible").length)
+	{
+		return;
+	}
+
+	if ($(".combobox-menu-visible").length)
+	{
+		return;
+	}
+
 	var jsonForm = $('#purchase-form').serializeJSON();
 
 	Grocy.FrontendHelpers.BeginUiBusy("purchase-form");
@@ -35,7 +45,7 @@ $('#save-purchase-button').on('click', function(e)
 				jsonData.price = price;
 			}
 
-			if (Grocy.UserSettings.show_purchased_date_on_purchase)
+			if (BoolVal(Grocy.UserSettings.show_purchased_date_on_purchase))
 			{
 				jsonData.purchased_date = Grocy.Components.DateTimePicker2.GetValue();
 			}
@@ -99,7 +109,7 @@ $('#save-purchase-button').on('click', function(e)
 						);
 					}
 
-					var amountMessage = amount;
+					var amountMessage = parseFloat(jsonForm.amount).toLocaleString({ minimumFractionDigits: 0, maximumFractionDigits: Grocy.UserSettings.stock_decimal_places_amounts });
 					if (BoolVal(productDetails.product.enable_tare_weight_handling))
 					{
 						amountMessage = parseFloat(jsonForm.amount) - parseFloat(productDetails.stock_amount) - parseFloat(productDetails.product.tare_weight);
@@ -130,7 +140,7 @@ $('#save-purchase-button').on('click', function(e)
 
 						Grocy.Components.ProductAmountPicker.Reset();
 						$("#purchase-form").removeAttr("data-used-barcode");
-						$("#display_amount").attr("min", "0." + "0".repeat(parseInt(Grocy.UserSettings.stock_decimal_places_amounts) - 1) + "1");
+						$("#display_amount").attr("min", Grocy.DefaultMinAmount);
 						$('#display_amount').val(parseFloat(Grocy.UserSettings.stock_default_purchase_amount));
 						$(".input-group-productamountpicker").trigger("change");
 						$('#price').val('');
@@ -247,7 +257,7 @@ if (Grocy.Components.ProductPicker !== undefined)
 					}
 					else
 					{
-						$("#display_amount").attr("min", "0." + "0".repeat(parseInt(Grocy.UserSettings.stock_decimal_places_amounts) - 1) + "1");
+						$("#display_amount").attr("min", Grocy.DefaultMinAmount);
 						$("#tare-weight-handling-info").addClass("d-none");
 					}
 
@@ -275,23 +285,6 @@ if (Grocy.Components.ProductPicker !== undefined)
 					if (GetUriParam("flow") === "shoppinglistitemtostock" && BoolVal(Grocy.UserSettings.shopping_list_to_stock_workflow_auto_submit_when_prefilled) && document.getElementById("purchase-form").checkValidity() === true)
 					{
 						$("#save-purchase-button").click();
-					}
-
-					if (BoolVal(Grocy.UserSettings.scan_mode_purchase_enabled))
-					{
-						$("#display_amount").val(1);
-						$(".input-group-productamountpicker").trigger("change");
-
-						Grocy.FrontendHelpers.ValidateForm("purchase-form");
-						if (document.getElementById("purchase-form").checkValidity() === true)
-						{
-							$('#save-purchase-button').click();
-						}
-						else
-						{
-							toastr.warning(__t("Scan mode is on but not all required fields could be populated automatically"));
-							Grocy.UISound.Error();
-						}
 					}
 
 					RefreshLocaleNumberInput();
@@ -335,6 +328,8 @@ if (Grocy.Components.ProductPicker !== undefined)
 										RefreshLocaleNumberInput();
 									}
 								}
+
+								ScanModeSubmit(false);
 							},
 							function(xhr)
 							{
@@ -345,6 +340,7 @@ if (Grocy.Components.ProductPicker !== undefined)
 					else
 					{
 						$("#purchase-form").removeAttr("data-used-barcode");
+						ScanModeSubmit();
 					}
 
 					$('#display_amount').trigger("keyup");
@@ -578,3 +574,26 @@ $('#qu_id').on('change', function(e)
 	priceTypeUnitPriceLabel.text($("#qu_id option:selected").text() + " " + __t("price"));
 	refreshPriceHint();
 });
+
+function ScanModeSubmit(singleUnit = true)
+{
+	if (BoolVal(Grocy.UserSettings.scan_mode_purchase_enabled))
+	{
+		if (singleUnit)
+		{
+			$("#display_amount").val(1);
+			$(".input-group-productamountpicker").trigger("change");
+		}
+
+		Grocy.FrontendHelpers.ValidateForm("purchase-form");
+		if (document.getElementById("purchase-form").checkValidity() === true)
+		{
+			$('#save-purchase-button').click();
+		}
+		else
+		{
+			toastr.warning(__t("Scan mode is on but not all required fields could be populated automatically"));
+			Grocy.UISound.Error();
+		}
+	}
+}

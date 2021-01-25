@@ -139,7 +139,7 @@
 						id="saturday"
 						value="saturday">
 					<label class="form-check-label custom-control-label"
-						for="friday">{{ $__t('Saturday') }}</label>
+						for="saturday">{{ $__t('Saturday') }}</label>
 				</div>
 				<div class="custom-control custom-checkbox custom-control-inline">
 					<input class="form-check-input custom-control-input input-group-chore-period-type"
@@ -147,7 +147,7 @@
 						id="sunday"
 						value="sunday">
 					<label class="form-check-label custom-control-label"
-						for="friday">{{ $__t('Sunday') }}</label>
+						for="sunday">{{ $__t('Sunday') }}</label>
 				</div>
 			</div>
 
@@ -267,7 +267,7 @@
 			'id' => 'product_amount',
 			'label' => 'Amount',
 			'contextInfoId' => 'amount_qu_unit',
-			'min' => '0.' . str_repeat('0', $userSettings['stock_decimal_places_amounts'] - 1) . '1',
+			'min' => $DEFAULT_MIN_AMOUNT,
 			'decimals' => $userSettings['stock_decimal_places_amounts'],
 			'isRequired' => false,
 			'value' => $value,

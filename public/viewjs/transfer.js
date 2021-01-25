@@ -2,6 +2,11 @@
 {
 	e.preventDefault();
 
+	if ($(".combobox-menu-visible").length)
+	{
+		return;
+	}
+
 	var jsonForm = $('#transfer-form').serializeJSON();
 	Grocy.FrontendHelpers.BeginUiBusy("transfer-form");
 
@@ -89,7 +94,7 @@
 
 						Grocy.Components.ProductAmountPicker.Reset();
 						$("#location_id_from").find("option").remove().end().append("<option></option>");
-						$("#display_amount").attr("min", "0." + "0".repeat(parseInt(Grocy.UserSettings.stock_decimal_places_amounts) - 1) + "1");
+						$("#display_amount").attr("min", Grocy.DefaultMinAmount);
 						$("#display_amount").removeAttr("max");
 						$('#display_amount').val(parseFloat(Grocy.UserSettings.stock_default_transfer_amount));
 						RefreshLocaleNumberInput();
@@ -187,6 +192,41 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 					}
 				);
 
+				if (document.getElementById("product_id").getAttribute("barcode") != "null")
+				{
+					Grocy.Api.Get('objects/product_barcodes?query[]=barcode=' + document.getElementById("product_id").getAttribute("barcode"),
+						function(barcodeResult)
+						{
+							if (barcodeResult != null)
+							{
+								var barcode = barcodeResult[0];
+
+								if (barcode != null)
+								{
+									if (barcode.amount != null && !barcode.amount.isEmpty())
+									{
+										$("#display_amount").val(barcode.amount);
+										$("#display_amount").select();
+									}
+
+									if (barcode.qu_id != null)
+									{
+										Grocy.Components.ProductAmountPicker.SetQuantityUnit(barcode.qu_id);
+									}
+
+									$(".input-group-productamountpicker").trigger("change");
+									Grocy.FrontendHelpers.ValidateForm('transfer-form');
+									RefreshLocaleNumberInput();
+								}
+							}
+						},
+						function(xhr)
+						{
+							console.error(xhr);
+						}
+					);
+				}
+
 				if (productDetails.product.enable_tare_weight_handling == 1)
 				{
 					$("#display_amount").attr("min", productDetails.product.tare_weight);
@@ -194,7 +234,7 @@ Grocy.Components.ProductPicker.GetPicker().on('change', function(e)
 				}
 				else
 				{
-					$("#display_amount").attr("min", "0." + "0".repeat(parseInt(Grocy.UserSettings.stock_decimal_places_amounts) - 1) + "1");
+					$("#display_amount").attr("min", Grocy.DefaultMinAmount);
 					$("#tare-weight-handling-info").addClass("d-none");
 				}
 
